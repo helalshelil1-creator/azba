@@ -1,0 +1,42 @@
+import { z } from 'zod';
+export declare const emailSchema: z.ZodString;
+export declare const passwordSchema: z.ZodString;
+export declare const phoneSchema: z.ZodString;
+export declare const uuidSchema: z.ZodString;
+export declare const decimalSchema: z.ZodUnion<[z.ZodNumber, z.ZodString]>;
+export declare const dateSchema: z.ZodUnion<[z.ZodString, z.ZodDate]>;
+export declare const paginationSchema: z.ZodObject<{
+    page: z.ZodDefault<z.ZodNumber>;
+    limit: z.ZodDefault<z.ZodNumber>;
+    search: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+}, {
+    page?: number | undefined;
+    limit?: number | undefined;
+    search?: string | undefined;
+}>;
+export declare function roundMoney(value: number, decimals?: number): number;
+export declare function formatMoney(value: number, currency?: string, locale?: string): string;
+export declare function formatNumber(value: number, locale?: string): string;
+export declare function formatPercent(value: number, locale?: string): string;
+export declare function formatDate(date: Date | string, locale?: string): string;
+export declare function formatDateTime(date: Date | string, locale?: string): string;
+export declare function daysBetween(a: Date, b: Date): number;
+export declare function monthsBetween(a: Date, b: Date): number;
+export declare function addDays(date: Date, days: number): Date;
+export declare function addMonths(date: Date, months: number): Date;
+export declare function generateCode(prefix: string, length?: number): string;
+export declare function generateNumericCode(length?: number): string;
+export declare function sanitizeString(input: string): string;
+export declare function maskEmail(email: string): string;
+export declare function maskPhone(phone: string): string;
+export declare function groupBy<T>(arr: T[], key: keyof T): Record<string, T[]>;
+export declare function sum(arr: number[]): number;
+export declare function average(arr: number[]): number;
+export declare function sleep(ms: number): Promise<void>;
+export declare function retry<T>(fn: () => Promise<T>, attempts?: number, delay?: number): Promise<T>;
+export declare function slugify(text: string): string;
+export declare function isValidUrl(url: string): boolean;

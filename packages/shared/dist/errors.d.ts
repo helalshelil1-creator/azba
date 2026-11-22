@@ -1,0 +1,41 @@
+export declare const ERROR_CODES: {
+    readonly INVALID_CREDENTIALS: "INVALID_CREDENTIALS";
+    readonly EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED";
+    readonly ACCOUNT_LOCKED: "ACCOUNT_LOCKED";
+    readonly ACCOUNT_SUSPENDED: "ACCOUNT_SUSPENDED";
+    readonly TOKEN_EXPIRED: "TOKEN_EXPIRED";
+    readonly TOKEN_INVALID: "TOKEN_INVALID";
+    readonly UNAUTHORIZED: "UNAUTHORIZED";
+    readonly FORBIDDEN: "FORBIDDEN";
+    readonly VALIDATION_ERROR: "VALIDATION_ERROR";
+    readonly INVALID_INPUT: "INVALID_INPUT";
+    readonly NOT_FOUND: "NOT_FOUND";
+    readonly ALREADY_EXISTS: "ALREADY_EXISTS";
+    readonly INSUFFICIENT_SHARES: "INSUFFICIENT_SHARES";
+    readonly PROJECT_NOT_FUNDING: "PROJECT_NOT_FUNDING";
+    readonly RESERVATION_EXPIRED: "RESERVATION_EXPIRED";
+    readonly RESERVATION_NOT_FOUND: "RESERVATION_NOT_FOUND";
+    readonly PAYMENT_FAILED: "PAYMENT_FAILED";
+    readonly PAYMENT_ALREADY_CONFIRMED: "PAYMENT_ALREADY_CONFIRMED";
+    readonly INVESTMENT_NOT_FOUND: "INVESTMENT_NOT_FOUND";
+    readonly INSUFFICIENT_WALLET_BALANCE: "INSUFFICIENT_WALLET_BALANCE";
+    readonly WITHDRAWAL_LIMIT_EXCEEDED: "WITHDRAWAL_LIMIT_EXCEEDED";
+    readonly UNAUTHORIZED_TRANSACTION: "UNAUTHORIZED_TRANSACTION";
+    readonly APPROVAL_REQUIRED: "APPROVAL_REQUIRED";
+    readonly ACCOUNTING_IMBALANCE: "ACCOUNTING_IMBALANCE";
+    readonly ANIMAL_NOT_FOUND: "ANIMAL_NOT_FOUND";
+    readonly PEN_CAPACITY_EXCEEDED: "PEN_CAPACITY_EXCEEDED";
+    readonly FARM_INACTIVE: "FARM_INACTIVE";
+    readonly RATE_LIMITED: "RATE_LIMITED";
+    readonly INTERNAL_ERROR: "INTERNAL_ERROR";
+    readonly SERVICE_UNAVAILABLE: "SERVICE_UNAVAILABLE";
+    readonly MAINTENANCE_MODE: "MAINTENANCE_MODE";
+};
+export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
+export declare class AppError extends Error {
+    code: ErrorCode;
+    statusCode: number;
+    details?: Record<string, string[]>;
+    constructor(code: ErrorCode, message: string, statusCode?: number, details?: Record<string, string[]>);
+}
+export declare function isAppError(err: unknown): err is AppError;

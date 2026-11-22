@@ -1,5 +1,6 @@
 // AZBA API client
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+/** عنوان الخادم: من متغير البيئة NEXT_PUBLIC_API_URL (فارغ = نفس النطاق). */
+const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
 export class ApiError extends Error {
   code: string
@@ -21,7 +22,9 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 function buildUrl(path: string, params?: RequestOptions['params']): string {
-  const url = new URL(path.startsWith('http') ? path : `${API_URL}${path}`)
+  const full = path.startsWith('http') ? path : `${API_URL}${path}`
+  const base = typeof window !== 'undefined' ? window.location.origin : undefined
+  const url = new URL(full, base)
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {

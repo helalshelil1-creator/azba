@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "prebuild": "npm --prefix ../../packages/shared run build && npm --prefix ../../packages/ui run build"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "^14.2.15",

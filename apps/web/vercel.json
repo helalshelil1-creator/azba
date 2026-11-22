@@ -1,13 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "regions": [
-    "cai1"
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    }
-  ]
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }
