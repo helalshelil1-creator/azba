@@ -94,19 +94,7 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col">
-        <div className="container-page flex flex-1 flex-col items-center justify-center text-center">
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mb-6"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/5 px-5 py-2 text-sm font-semibold text-gold backdrop-blur-md">
-              <Sparkles className="h-4 w-4" />
-              منصة الاستثمار الزراعي الأولى في مصر
-            </span>
-          </motion.div>
+        <div className="container-page flex flex-1 flex-col items-center justify-center pt-16 text-center lg:pt-24">
 
           {/* Main heading */}
           <motion.h1
