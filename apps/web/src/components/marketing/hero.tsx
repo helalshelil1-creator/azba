@@ -196,7 +196,7 @@ export function HeroSection() {
               ))}
             </div>
             <p className="mt-3 text-center text-[11px] text-ivory/30">
-              أرقام استرشادية لأغراض العرض — لا تمثل أرباحًا مضمونة
+              لا تمثل أرباحًا مضمونة
             </p>
           </div>
         </motion.div>
