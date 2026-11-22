@@ -345,7 +345,6 @@ export function ProjectDetailClient({ id }: { id: string }) {
                   </div>
                   <div className="mt-4 max-h-56 overflow-y-auto rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900">
                     {project.riskDisclosure || 'الاستثمار في الثروة الحيوانية ينطوي على مخاطر تشغيلية وصحية وسوقية.'}
-                    <p className="mt-3">لا يُعد هذا الاستثمار وديعة ولا سندًا مضمونًا، ولا يوجد أي ضمان لرأس المال أو الأرباح. العائد المعروض تقديري وغير مضمون.</p>
                   </div>
                   <label className="mt-4 flex items-start gap-3 text-sm text-foreground/80">
                     <input type="checkbox" checked={acceptContract} onChange={(e) => setAcceptContract(e.target.checked)} className="mt-1 h-4 w-4 accent-gold" />

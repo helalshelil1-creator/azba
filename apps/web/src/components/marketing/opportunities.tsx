@@ -97,8 +97,7 @@ export function Opportunities() {
               مشاريع <span className="text-gradient-gold">موثقة</span> متاحة الآن
             </h2>
             <p className="mt-4 text-muted-foreground">
-              كل مشروع يمر بمراجعة بيطرية ومالية وقانونية قبل نشره. العوائد المذكورة
-              تقديرية غير مضمونة.
+              كل مشروع يمر بمراجعة بيطرية ومالية وقانونية قبل نشره.
             </p>
           </div>
           <Link href="/opportunities" className="btn-outline shrink-0 group">
@@ -210,9 +209,6 @@ export function Opportunities() {
           ))}
         </div>
 
-        <p className="mt-8 text-center text-xs text-muted-foreground">
-          البيانات والأرقام أعلاه من قاعدة بيانات المنصة. العوائد تقديرية وغير مضمونة، وقد تؤدي المخاطر إلى خسارة رأس المال.
-        </p>
       </div>
     </section>
   )

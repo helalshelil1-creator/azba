@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Loader2, AlertTriangle, Search, MapPin, TrendingUp, Users, Sparkles } from 'lucide-react'
+import { Loader2, AlertTriangle, Search, MapPin, Users, Sparkles } from 'lucide-react'
 import { http } from '@/lib/api'
 import { getToken } from '@/lib/api'
 import { cn, formatEGP } from '@/lib/utils'
@@ -167,10 +167,6 @@ export default function InvestPage() {
         })}
       </div>
 
-      <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
-        <TrendingUp className="mt-0.5 h-4 w-4 shrink-0" />
-        العوائد المعروضة تقديرية وغير مضمونة. الاستثمار في الثروة الحيوانية ينطوي على مخاطر تشغيلية وصحية وقد يؤدي إلى خسارة رأس المال.
-      </div>
     </div>
   )
 }

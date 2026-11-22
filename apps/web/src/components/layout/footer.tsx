@@ -6,7 +6,7 @@ import { Logo } from '@azba/ui/logo'
 import { CONTACT } from '@/lib/contact'
 import {
   Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin, ArrowUp,
-  ShieldCheck, FileText, Scale, AlertTriangle, Globe,
+  ShieldCheck, Scale, AlertTriangle, Globe,
 } from 'lucide-react'
 
 const COLUMNS = [
@@ -147,10 +147,6 @@ export function Footer() {
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-gold" />
               أموال المستثمرين محفوظة في حسابات منفصلة
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5 text-gold" />
-              جميع العوائد تقديرية وغير مضمونة
             </span>
             <span className="inline-flex items-center gap-1.5">
               <AlertTriangle className="h-3.5 w-3.5 text-gold" />

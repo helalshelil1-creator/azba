@@ -40,8 +40,7 @@ export function Transparency() {
               نؤمن أن <span className="text-gradient-gold">الثقة</span> تُبنى بالبيانات
             </h2>
             <p className="mt-4 text-muted-foreground">
-              لا أرباح مضمونة، ولا وعود غير موثقة. ما نقدمه هو وضوح كامل في الأرقام
-              والمستندات والمخاطر — لتتخذ قرارك عن بينة.
+              ما نقدمه هو وضوح كامل في الأرقام والمستندات والمخاطر — لتتخذ قرارك عن بينة.
             </p>
             <div className="mt-8 space-y-4">
               {ITEMS.map((item, i) => (
