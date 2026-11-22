@@ -10,7 +10,7 @@ import { animalImage } from '@/lib/animals'
 
 const TYPE_AR: Record<string, string> = {
   DAIRY_COW: 'أبقار حلابة', BEEF_CATTLE: 'أبقار لحم', BUFFALO: 'جاموس',
-  GOAT: 'ماعز', SHEEP: 'أغنام', POULTRY: 'دواجن', FISH: 'أسماك', OTHER: 'أخرى',
+  GOAT: 'ماعز', SHEEP: 'أغنام', HORSE: 'خيل', CALVES: 'عجول', POULTRY: 'دواجن', FISH: 'أسماك', OTHER: 'أخرى',
 }
 const RISK: Record<string, { ar: string; cls: string }> = {
   LOW: { ar: 'منخفض', cls: 'badge-success' },

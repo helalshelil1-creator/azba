@@ -285,8 +285,9 @@ async function seedFarmsAndAnimals(investorId: string) {
 async function seedProjects(farmId: string, animalIds: string[], investorId: string) {
   console.log('🌱 Seeding projects & shares...')
 
-  const project = await prisma.project.create({
-    data: {
+  const project = await prisma.project.upsert({
+    where: { code: 'PRJ-DEMO-001' },
+    create: {
       farmId,
       code: 'PRJ-DEMO-001',
       name: 'مشروع تسمين البقار الهولشتاين — الدفعة الأولى',
@@ -320,7 +321,136 @@ async function seedProjects(farmId: string, animalIds: string[], investorId: str
       },
       projectAnimals: { create: animalIds.map((id) => ({ animalId: id })) },
     },
+    update: { availableShares: 850, status: 'FUNDING' },
   })
+
+  // مشاريع لكل أنواع الحيوانات: خيل، أغنام وخرفان، ماعز، جاموس، عجول
+  const extraProjects = [
+    {
+      code: 'PRJ-DEMO-002',
+      name: 'مشروع تربية الخيل الأصيل — الموسم الأول',
+      nameEn: 'Purebred Horse Breeding — Season 1',
+      description: 'تربية وتدريب الخيول العربية الأصيلة في مزرعة شريكة، مع متابعة بيطرية وغذائية متخصصة وبرنامج تمهين للسباق.',
+      animalType: 'HORSE',
+      breed: 'Arabian',
+      breedEn: 'Arabian',
+      purpose: 'BREEDING',
+      totalShares: 400,
+      availableShares: 260,
+      sharePrice: 1500,
+      minSharesPerInvestor: 1,
+      maxSharesPerInvestor: 40,
+      targetAmount: 600000,
+      totalBudget: 600000,
+      expectedReturnRate: 22,
+      riskLevel: 'MEDIUM',
+      soldShares: 140,
+    },
+    {
+      code: 'PRJ-DEMO-003',
+      name: 'مشروع تسمين الأغنام والخرفان — دفعة الشتاء',
+      nameEn: 'Sheep & Lamb Fattening — Winter Batch',
+      description: 'تسمين الخرفان والأغنام الموسمية على عليقة متوازنة لمدة ٥ أشهر مع متابعة بيطرية دورية وبيع موسمي.',
+      animalType: 'SHEEP',
+      breed: 'Barki',
+      breedEn: 'Barki',
+      purpose: 'FATTENING',
+      totalShares: 800,
+      availableShares: 520,
+      sharePrice: 400,
+      minSharesPerInvestor: 1,
+      maxSharesPerInvestor: 80,
+      targetAmount: 320000,
+      totalBudget: 320000,
+      expectedReturnRate: 19,
+      riskLevel: 'MEDIUM',
+      soldShares: 280,
+    },
+    {
+      code: 'PRJ-DEMO-004',
+      name: 'مشروع تربية الماعز الحلاب — القطيع الأول',
+      nameEn: 'Dairy Goat Herd — First Flock',
+      description: 'تربية ماعز حلاب من سلالات محسنة لإنتاج الألبان طوال العام مع تصنيع محلي للمنتجات.',
+      animalType: 'GOAT',
+      breed: 'Baladi',
+      breedEn: 'Baladi',
+      purpose: 'DAIRY',
+      totalShares: 600,
+      availableShares: 410,
+      sharePrice: 450,
+      minSharesPerInvestor: 1,
+      maxSharesPerInvestor: 60,
+      targetAmount: 270000,
+      totalBudget: 270000,
+      expectedReturnRate: 18,
+      riskLevel: 'MEDIUM',
+      soldShares: 190,
+    },
+    {
+      code: 'PRJ-DEMO-005',
+      name: 'مشروع تسمين الجاموس البحيري — الدفعة الأولى',
+      nameEn: 'Egyptian Buffalo Fattening — Batch 1',
+      description: 'تسمين الجاموس البحيري على عليقة مركزة مع متابعة بيطرية يومية وخطة بيع لمصانع الألبان واللحوم.',
+      animalType: 'BUFFALO',
+      breed: 'Egyptian',
+      breedEn: 'Egyptian',
+      purpose: 'FATTENING',
+      totalShares: 500,
+      availableShares: 330,
+      sharePrice: 900,
+      minSharesPerInvestor: 1,
+      maxSharesPerInvestor: 50,
+      targetAmount: 450000,
+      totalBudget: 450000,
+      expectedReturnRate: 20,
+      riskLevel: 'MEDIUM',
+      soldShares: 170,
+    },
+    {
+      code: 'PRJ-DEMO-006',
+      name: 'مشروع تسمين العجول الصغيرة — الدفعة الأولى',
+      nameEn: 'Calf Fattening — Batch 1',
+      description: 'تسمين العجول الصغيرة ( milk-fed veal ) لمدة ٦ أشهر تحت إشراف بيطري مباشر وتغذية مكثفة.',
+      animalType: 'CALVES',
+      breed: 'Holstein',
+      breedEn: 'Holstein',
+      purpose: 'FATTENING',
+      totalShares: 700,
+      availableShares: 480,
+      sharePrice: 600,
+      minSharesPerInvestor: 1,
+      maxSharesPerInvestor: 70,
+      targetAmount: 420000,
+      totalBudget: 420000,
+      expectedReturnRate: 21,
+      riskLevel: 'MEDIUM',
+      soldShares: 220,
+    },
+  ]
+
+  for (const item of extraProjects) {
+    const { soldShares, ...rest } = item
+    await prisma.project.upsert({
+      where: { code: item.code },
+      create: {
+        ...rest,
+        farmId,
+        status: 'FUNDING',
+        startDate: new Date(),
+        expectedEndDate: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000),
+        fundedAmount: Math.round((item.targetAmount * soldShares) / item.totalShares),
+        riskDisclosure: 'يحمل هذا المشروع مخاطر تشمل تقلب أسعار الأعلاف، وأسعار البيع، والأمراض، والنفوق.',
+        publishedAt: new Date(),
+        shares: {
+          create: Array.from({ length: item.totalShares }, (_, i) => ({
+            shareNumber: `${item.code}-${i + 1}`,
+            status: i < soldShares ? 'SOLD' : 'AVAILABLE',
+          })),
+        },
+      },
+      update: { availableShares: item.availableShares, status: 'FUNDING' },
+    })
+  }
 
   console.log('✅ Projects seeded')
   return project

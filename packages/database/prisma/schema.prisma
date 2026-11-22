@@ -44,6 +44,8 @@ enum AnimalType {
   BUFFALO
   GOAT
   SHEEP
+  HORSE
+  CALVES
   POULTRY
   FISH
   OTHER

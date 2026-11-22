@@ -42,7 +42,7 @@ const TYPE_AR: Record<string, string> = {
   BEEF_CATTLE: 'أبقار لحم',
   BUFFALO: 'جاموس',
   GOAT: 'ماعز',
-  SHEEP: 'أغنام',
+  SHEEP: 'أغنام', HORSE: 'خيل', CALVES: 'عجول',
   POULTRY: 'دواجن',
   FISH: 'أسماك',
   OTHER: 'أخرى',
