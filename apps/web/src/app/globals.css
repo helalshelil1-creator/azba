@@ -26,7 +26,8 @@
     --radius: 0.75rem;
     --font-tajawal: 'Tajawal', 'Cairo', sans-serif;
     --font-cairo: 'Cairo', 'Tajawal', sans-serif;
-    --font-inter: 'Inter', sans-serif;
+    --font-montserrat: 'Montserrat', sans-serif;
+    --font-inter: 'Montserrat', sans-serif;
     --font-instrument: 'Instrument Serif', serif;
     --success: 22 163 74;
     --warning: 217 119 6;
@@ -74,7 +75,7 @@
   }
 
   [dir='ltr'] body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', 'Tajawal', sans-serif;
   }
 
   h1, h2, h3, h4 {

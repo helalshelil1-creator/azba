@@ -3,14 +3,14 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Wallet, FolderKanban, Briefcase, Menu } from 'lucide-react'
+import { LayoutDashboard, Wallet, Store, Briefcase, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
   { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/invest', label: 'الاستثمارات', icon: Briefcase },
+  { href: '/opportunities', label: 'الأسواق', icon: Store },
   { href: '/dashboard/portfolio', label: 'محفظتي', icon: Wallet },
-  { href: '/dashboard/projects', label: 'المشاريع', icon: FolderKanban },
-  { href: '/dashboard/invest', label: 'الاستثمار', icon: Briefcase },
 ]
 
 export function MobileNav({ onMore }: { onMore: () => void }) {

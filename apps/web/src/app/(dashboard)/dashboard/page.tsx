@@ -126,28 +126,33 @@ export default function InvestorDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-primary">
-            مرحبًا، {user?.firstName}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            إليك نظرة شاملة على محفظتك الاستثمارية
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/opportunities" className="btn-gold">
-            <Sparkles className="h-4 w-4" />
-            فرص جديدة
-          </Link>
-          <button
-            onClick={load}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 text-primary hover:bg-primary/5"
-            aria-label="تحديث"
-          >
-            <RefreshCw className={cn('h-5 w-5', loading && 'animate-spin')} />
-          </button>
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-primary-950 text-white shadow-sm">
+        <img src="/images/cattle.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-35" />
+        <div className="absolute inset-0 bg-gradient-to-l from-primary-950 via-primary-950/80 to-primary-950/20" />
+        <div className="relative flex flex-col justify-between gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
+          <div>
+            <span className="badge border border-gold/40 bg-gold/15 text-gold">AZBA | عزبة</span>
+            <h2 className="mt-3 text-2xl font-extrabold leading-snug sm:text-3xl">
+              استثمر في مستقبل <span className="text-gradient-gold">أكثر ازدهارًا</span>
+            </h2>
+            <p className="mt-2 max-w-xl text-sm text-ivory/75">
+              مرحبًا {user?.firstName} — إليك نظرة شاملة على محفظتك الاستثمارية ومشاريعك.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Link href="/dashboard/invest" className="btn-gold">
+              <Sparkles className="h-4 w-4" />
+              ابدأ الاستثمار
+            </Link>
+            <button
+              onClick={load}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
+              تحديث
+            </button>
+          </div>
         </div>
       </div>
 

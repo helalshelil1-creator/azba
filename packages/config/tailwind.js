@@ -76,8 +76,8 @@ const config = {
       },
       fontFamily: {
         arabic: ['Tajawal', 'Cairo', 'sans-serif'],
-        heading: ['Instrument Serif', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        heading: ['Montserrat', 'Tajawal', 'sans-serif'],
+        body: ['Montserrat', 'Tajawal', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
