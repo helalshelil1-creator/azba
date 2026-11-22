@@ -1,15 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="0" fill="#123B2A"/>
-  <circle cx="256" cy="256" r="188" fill="none" stroke="#C9A45C" stroke-width="10"/>
-  <circle cx="256" cy="256" r="160" fill="none" stroke="#C9A45C" stroke-width="3" stroke-dasharray="8 12" opacity="0.7"/>
-  <g stroke="#C9A45C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <path d="M168 176 C 140 132, 118 118, 88 110"/>
-    <path d="M344 176 C 372 132, 394 118, 424 110"/>
-    <path d="M186 190 L 256 146 L 326 190 L 326 268 L 256 312 L 186 268 Z" fill="#C9A45C" stroke="none"/>
-    <path d="M176 204 L 140 188 L 154 226 Z" fill="#C9A45C" stroke="none"/>
-    <path d="M336 204 L 372 188 L 358 226 Z" fill="#C9A45C" stroke="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF6B0"/>
+      <stop offset="0.4" stop-color="#FFD700"/>
+      <stop offset="0.75" stop-color="#DAA520"/>
+      <stop offset="1" stop-color="#8B6914"/>
+    </linearGradient>
+    <linearGradient id="l" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8CE600"/>
+      <stop offset="1" stop-color="#006400"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="0" fill="#000000"/>
+  <g transform="translate(96 96) scale(2.25)">
+    <circle cx="60" cy="55" r="52" stroke="#DAA520" stroke-width="3.4" stroke-dasharray="268 60" stroke-linecap="round" transform="rotate(90 60 55)" fill="none"/>
+    <circle cx="60" cy="55" r="45" stroke="#DAA520" stroke-width="1" stroke-dasharray="3 6" opacity="0.6" fill="none"/>
+    <path d="M31 84 C 21 72, 19 60, 25 50 C 31 58, 35 68, 35 78 Z" fill="url(#g)"/>
+    <path d="M89 84 C 99 72, 101 60, 95 50 C 89 58, 85 68, 85 78 Z" fill="url(#l)"/>
+    <path d="M97 91 C 105 81, 107 71, 101 63 C 95 71, 93 81, 93 89 Z" fill="#006400"/>
+    <path d="M48 34 C 38 22, 28 18, 17 18" stroke="url(#g)" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+    <path d="M60 30 C 66 15, 76 9, 89 9" stroke="url(#g)" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+    <path d="M42 42 L29 38 L38 52 Z" fill="url(#g)"/>
+    <path d="M42 40 L58 32 L80 40 L91 52 L85 65 L66 69 L50 62 L40 52 Z" fill="url(#g)"/>
+    <path d="M62 46 L74 48 L72 52 L62 50 Z" fill="#08130C"/>
+    <circle cx="85" cy="58" r="2.2" fill="#08130C"/>
+    <path d="M64 65 L81 60" stroke="#08130C" stroke-width="1.6" stroke-linecap="round" fill="none"/>
   </g>
-  <circle cx="222" cy="238" r="9" fill="#F5F1E8"/>
-  <circle cx="290" cy="238" r="9" fill="#F5F1E8"/>
-  <text x="256" y="420" text-anchor="middle" font-family="Tajawal, Arial, sans-serif" font-size="72" font-weight="700" fill="#C9A45C">AZBA</text>
 </svg>

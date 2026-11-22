@@ -47,6 +47,20 @@ export const COLOR_TOKENS = {
 
 export const FONTS = {
   arabic: ['Tajawal', 'Cairo'],
-  englishHeading: ['Instrument Serif'],
-  englishBody: ['Inter'],
+  englishHeading: ['Montserrat'],
+  englishBody: ['Montserrat'],
+  wordmark: ['Instrument Serif', 'Times New Roman'],
+} as const
+
+/** لوحة الشعار الذهبية/الورقية كما في أيقونة التطبيق الرسمية. */
+export const LOGO_COLORS = {
+  goldLight: '#FFF6B0',
+  gold: '#FFD700',
+  goldMid: '#DAA520',
+  goldDark: '#8B6914',
+  leafLight: '#8CE600',
+  leaf: '#32CD32',
+  leafDark: '#006400',
+  ink: '#08130C',
+  background: '#000000',
 } as const
