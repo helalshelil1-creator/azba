@@ -2,7 +2,8 @@ import React from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
-import { Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, MessageCircle } from 'lucide-react'
+import { CONTACT } from '@/lib/contact'
 
 export const metadata = { title: 'اتصل بنا', description: 'فريق الدعم جاهز للإجابة على استفساراتك' }
 
@@ -29,8 +30,15 @@ export default function Page() {
             <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>الدعم العام: support@azba.com</p><p>الاستفسارات الاستثمارية: invest@azba.com</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Phone className="h-5 w-5 text-gold" />الهاتف</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>الخط الساخن: 19XXX (من داخل مصر)</p><p>من الخارج: +20 10 XXXX XXXX</p></div>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Phone className="h-5 w-5 text-gold" />الهاتف واتساب</h2>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80">
+              <p>رقم التواصل والواتساب: <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="font-semibold text-primary hover:text-gold-600" dir="ltr">{CONTACT.phoneDisplay}</a></p>
+              <p className="text-muted-foreground">متاح من داخل مصر وخارجها — يُفضل التواصل واتساب.</p>
+            </div>
+            <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn-gold mt-4 inline-flex items-center gap-2 text-sm">
+              <MessageCircle className="h-4 w-4" />
+              تواصل واتساب
+            </a>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><MapPin className="h-5 w-5 text-gold" />المقر</h2>

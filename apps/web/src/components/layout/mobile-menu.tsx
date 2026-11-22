@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { X, TrendingUp, ChevronLeft, Globe, Phone, Mail, MapPin } from 'lucide-react'
 import { Logo } from '@azba/ui/logo'
+import { CONTACT } from '@/lib/contact'
 import { cn } from '@/lib/utils'
 
 const MENU_ITEMS = [
@@ -112,7 +113,7 @@ export function MobileMenu({
             <p className="text-xs font-semibold uppercase tracking-wider text-gold">تواصل معنا</p>
             <div className="flex items-center gap-3 text-sm text-ivory/80">
               <Phone className="h-4 w-4 text-gold" />
-              <span dir="ltr">+20 100 000 0000</span>
+              <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" dir="ltr" className="hover:text-gold">{CONTACT.phoneDisplay}</a>
             </div>
             <div className="flex items-center gap-3 text-sm text-ivory/80">
               <Mail className="h-4 w-4 text-gold" />

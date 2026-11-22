@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Logo } from '@azba/ui/logo'
+import { CONTACT } from '@/lib/contact'
 import {
   Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin, ArrowUp,
   ShieldCheck, FileText, Scale, AlertTriangle, Globe,
@@ -95,7 +96,7 @@ export function Footer() {
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
             <div className="flex items-center gap-2.5">
               <Phone className="h-4 w-4 text-gold" />
-              <span dir="ltr">+20 100 000 0000</span>
+              <span dir="ltr">{CONTACT.phoneDisplay}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <Mail className="h-4 w-4 text-gold" />
