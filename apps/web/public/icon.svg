@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#123B2A"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="#C9A45C" stroke-width="10"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#C9A45C" stroke-width="3" stroke-dasharray="8 12" opacity="0.7"/>
+  <g stroke="#C9A45C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M168 176 C 140 132, 118 118, 88 110"/>
+    <path d="M344 176 C 372 132, 394 118, 424 110"/>
+    <path d="M186 190 L 256 146 L 326 190 L 326 268 L 256 312 L 186 268 Z" fill="#C9A45C" stroke="none"/>
+    <path d="M176 204 L 140 188 L 154 226 Z" fill="#C9A45C" stroke="none"/>
+    <path d="M336 204 L 372 188 L 358 226 Z" fill="#C9A45C" stroke="none"/>
+  </g>
+  <circle cx="222" cy="238" r="9" fill="#F5F1E8"/>
+  <circle cx="290" cy="238" r="9" fill="#F5F1E8"/>
+  <text x="256" y="420" text-anchor="middle" font-family="Tajawal, Arial, sans-serif" font-size="72" font-weight="700" fill="#C9A45C">AZBA</text>
+</svg>

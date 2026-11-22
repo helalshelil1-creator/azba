@@ -1,0 +1,33 @@
+{
+  "extends": "../../packages/config/tsconfig.next.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@azba/shared": [
+        "../../packages/shared/src"
+      ],
+      "@azba/database": [
+        "../../packages/database/src"
+      ],
+      "@azba/ui": [
+        "../../packages/ui/src"
+      ],
+      "@azba/ui/*": [
+        "../../packages/ui/src/*"
+      ]
+    },
+    "allowJs": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

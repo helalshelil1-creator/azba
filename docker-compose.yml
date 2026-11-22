@@ -1,0 +1,24 @@
+version: "3.9"
+
+# PostgreSQL للتطوير المحلي — اختياري (يمكن استخدام خادم محلي).
+services:
+  db:
+    image: postgres:16
+    container_name: azba-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: azba
+    ports:
+      - "5432:5432"
+    volumes:
+      - azba_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d azba"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  azba_pgdata:

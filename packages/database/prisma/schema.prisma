@@ -1,0 +1,1868 @@
+// AZBA | عزبة — Prisma Schema
+// Livestock investment & farm management platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── ENUMS ─────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  SALES_MANAGER
+  FARM_EMPLOYEE
+  PROCUREMENT_OFFICER
+  CUSTOMER_SUPPORT
+  ADMIN
+  FINANCE_MANAGER
+  ACCOUNTANT
+  FARM_MANAGER
+  VETERINARIAN
+  INVESTMENT_MANAGER
+  INVESTOR
+  SUPPORT_AGENT
+  SUPPORT_MANAGER
+  VIEWER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  BLOCKED
+}
+
+enum AnimalType {
+  DAIRY_COW
+  BEEF_CATTLE
+  BUFFALO
+  GOAT
+  SHEEP
+  POULTRY
+  FISH
+  OTHER
+}
+
+enum AnimalStatus {
+  ACTIVE
+  SOLD
+  DEAD
+  DECEASED
+  TRANSFERRED
+  QUARANTINE
+}
+
+enum HealthStatus {
+  HEALTHY
+  SICK
+  UNDER_TREATMENT
+  QUARANTINE
+  CRITICAL
+  DECEASED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ProjectStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ACTIVE
+  FUNDING
+  FUNDED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  SUSPENDED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InvestmentStatus {
+  RESERVED
+  PENDING_PAYMENT
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+  CONVERTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  WALLET
+  SANDBOX
+  BANK_TRANSFER
+  CARD
+  INSTAPAY
+  FAWRY
+  CASH
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  INVESTMENT
+  PROFIT
+  REFUND
+  FEE
+  ADJUSTMENT
+  DIVIDEND
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum JournalEntryStatus {
+  DRAFT
+  POSTED
+  REVERSED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_USER
+  RESOLVED
+  CLOSED
+  ESCALATED
+  ASSIGNED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum KYCStatus {
+  NOT_STARTED
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum NotificationType {
+  SYSTEM
+  INVESTMENT
+  INVESTMENT_CREATED
+  PAYMENT
+  PROJECT
+  VETERINARY
+  TASK
+  TICKET
+  ANNOUNCEMENT
+  WITHDRAWAL_REQUEST
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  LOGIN_FAILED
+  EXPORT
+  APPROVE
+  REJECT
+}
+
+enum MovementType {
+  IN
+  OUT
+  TRANSFER
+  DEATH
+  SALE
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum OrderStatus {
+  DRAFT
+  SENT
+  CONFIRMED
+  PARTIAL
+  RECEIVED
+  CANCELLED
+}
+
+enum ReceiptStatus {
+  PENDING
+  PARTIAL
+  COMPLETE
+}
+
+enum SaleStatus {
+  DRAFT
+  PENDING
+  PENDING_APPROVAL
+  APPROVED
+  SOLD
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum ClaimStatus {
+  FILED
+  UNDER_REVIEW
+  APPROVED
+  PARTIAL
+  PAID
+  REJECTED
+}
+
+enum InsuranceStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  CLAIM_PENDING
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// ───────────────────────────── IDENTITY ─────────────────────────────
+
+model User {
+  id                  String     @id @default(uuid())
+  email               String     @unique
+  phone               String?    @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  avatar              String?
+  role                UserRole   @default(INVESTOR)
+  status              UserStatus @default(PENDING_VERIFICATION)
+  emailVerified       DateTime?
+  phoneVerified       DateTime?
+  lastLoginAt         DateTime?
+  failedLoginAttempts Int        @default(0)
+  lockedUntil         DateTime?
+  preferredLang       String     @default("ar")
+  timezone            String     @default("Africa/Cairo")
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  deletedAt           DateTime?
+
+  sessions            Session[]
+  loginAttempts       LoginAttempt[]
+  investorProfile     InvestorProfile?
+  kycRecords          KYCRecord[]
+  managedFarms        Farm[]         @relation("FarmManager")
+  farmEmployments     FarmEmployee[]
+  veterinaryReports   VeterinaryReport[]
+  createdProjects     Project[]      @relation("ProjectCreator")
+  updatedProjects     Project[]      @relation("ProjectUpdater")
+  approvedProjects    Project[]      @relation("ProjectApprover")
+  reservations        ShareReservation[]
+  investments         Investment[]
+  wallet              Wallet?
+  payments            Payment[]
+  goodsReceipts       GoodsReceipt[]
+  tasks               Task[]         @relation("TaskAssignee")
+  createdTasks        Task[]         @relation("TaskCreator")
+  supportTickets      SupportTicket[] @relation("UserTickets")
+  assignedTickets     SupportTicket[] @relation("AssignedTickets")
+  supportMessages     SupportMessage[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  approvalSteps       ApprovalStep[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  refreshToken String?  @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model LoginAttempt {
+  id            String   @id @default(uuid())
+  userId        String?
+  email         String
+  success       Boolean
+  failureReason String?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([userId])
+  @@map("login_attempts")
+}
+
+model InvestorProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  nationalId          String?  @unique
+  nationalIdExpiry    DateTime?
+  address             String?
+  city                String?
+  governorate         String?
+  postalCode          String?
+  occupation          String?
+  employerName        String?
+  sourceOfFunds       String?
+  investmentExperience String?
+  riskTolerance       String?
+  annualIncome        Decimal? @db.Decimal(15, 2)
+  bankName            String?
+  bankAccountNumber   String?
+  bankAccountName     String?
+  iban                String?
+  swiftCode           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investor_profiles")
+}
+
+model KYCRecord {
+  id              String    @id @default(uuid())
+  userId          String
+  status          KYCStatus @default(PENDING)
+  idDocumentUrl   String?
+  selfieUrl       String?
+  addressProofUrl String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("kyc_records")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  displayName String
+  description String?
+  level       Int      @default(0)
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  nameAr      String?
+  description String?
+  group       String?
+  createdAt   DateTime @default(now())
+
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String @id @default(uuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ───────────────────────────── FARM ─────────────────────────────
+
+model Farm {
+  id            String   @id @default(uuid())
+  name          String
+  nameEn        String?
+  code          String   @unique
+  description   String?
+  address       String
+  city          String
+  governorate   String
+  country       String   @default("EG")
+  latitude      Decimal? @db.Decimal(10, 8)
+  longitude     Decimal? @db.Decimal(11, 8)
+  totalArea     Decimal? @db.Decimal(12, 2)
+  usableArea    Decimal? @db.Decimal(12, 2)
+  status        String   @default("ACTIVE")
+  managerId     String?
+  establishedAt DateTime?
+  licenseNumber String?
+  licenseExpiry DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  manager        User?           @relation("FarmManager", fields: [managerId], references: [id], onDelete: SetNull)
+  buildings      FarmBuilding[]
+  pens           Pen[]
+  animals        Animal[]
+  projects       Project[]
+  feedInventory  FeedInventory[]
+  feedRecipes    FeedRecipe[]
+  expenses       Expense[]
+  tasks          Task[]
+  employees      FarmEmployee[]
+  workOrders     WorkOrder[]
+  risks          RiskRegister[]
+  ledgerEntries  LedgerEntry[]
+  movementsOut   AnimalMovement[] @relation("FromFarmMovements")
+  movementsIn    AnimalMovement[] @relation("ToFarmMovements")
+
+  @@index([code])
+  @@index([managerId])
+  @@index([status])
+  @@map("farms")
+}
+
+model FarmBuilding {
+  id                String   @id @default(uuid())
+  farmId            String
+  name              String
+  code              String
+  type              String?
+  area              Decimal? @db.Decimal(12, 2)
+  capacity          Int?
+  description       String?
+  lastMaintenanceAt DateTime?
+  nextMaintenanceAt DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime?
+
+  farm Farm  @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  pens Pen[]
+
+  @@unique([farmId, code])
+  @@map("farm_buildings")
+}
+
+model Pen {
+  id           String   @id @default(uuid())
+  farmId       String
+  buildingId   String?
+  name         String
+  nameEn       String?
+  code         String
+  type         String?
+  area         Decimal? @db.Decimal(12, 2)
+  capacity     Int?
+  currentCount Int      @default(0)
+  floorType    String?
+  ventilation  String?
+  lighting     String?
+  waterSource  String?
+  feedSystem   String?
+  status       String   @default("ACTIVE")
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  farm             Farm          @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  building         FarmBuilding? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  animals          Animal[]
+  feedConsumptions FeedConsumption[]
+  movementsFrom    AnimalMovement[] @relation("FromPenMovements")
+  movementsTo      AnimalMovement[] @relation("ToPenMovements")
+
+  @@unique([farmId, code])
+  @@map("pens")
+}
+
+model FarmEmployee {
+  id         String   @id @default(uuid())
+  farmId     String
+  userId     String
+  position   String
+  role       String?
+  salary     Decimal? @db.Decimal(12, 2)
+  hireDate   DateTime?
+  startDate  DateTime @default(now())
+  endDate    DateTime?
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  farm Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([farmId, userId])
+  @@map("farm_employees")
+}
+
+model Animal {
+  id                 String        @id @default(uuid())
+  farmId             String
+  penId              String?
+  projectId          String?
+  animalId           String        @unique
+  tagNumber          String?       @unique
+  qrCode             String?       @unique
+  type               AnimalType
+  breed              String
+  breedEn            String?
+  gender             Gender        @default(FEMALE)
+  dateOfBirth        DateTime?
+  ageMonths          Int?
+  weight             Decimal?      @db.Decimal(8, 2)
+  purchaseDate       DateTime?
+  purchaseWeight     Decimal?      @db.Decimal(8, 2)
+  purchasePrice      Decimal?      @db.Decimal(15, 2)
+  purchaseCurrency   String        @default("EGP")
+  supplierId         String?
+  sireId             String?
+  damId              String?
+  color              String?
+  markings           String?
+  healthStatus       HealthStatus  @default(HEALTHY)
+  status             AnimalStatus  @default(ACTIVE)
+  location           String?
+  notes              String?
+  deathDate          DateTime?
+  deathCause         String?
+  deathNotes         String?
+  insurancePolicyId  String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  deletedAt          DateTime?
+
+  farm                Farm                @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  pen                 Pen?                @relation(fields: [penId], references: [id], onDelete: SetNull)
+  project             Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  supplier            Supplier?           @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  sire                Animal?             @relation("Sire", fields: [sireId], references: [id], onDelete: SetNull)
+  dam                 Animal?             @relation("Dam", fields: [damId], references: [id], onDelete: SetNull)
+  offspring           Animal[]            @relation("Sire")
+  offspringDam        Animal[]            @relation("Dam")
+  media               AnimalMedia[]
+  healthRecords       HealthRecord[]
+  weightRecords       WeightRecord[]
+  vaccinations        Vaccination[]
+  veterinaryReports   VeterinaryReport[]
+  movements           AnimalMovement[]
+  tasks               Task[]
+  risks               RiskRegister[]
+  insurancePolicies   InsurancePolicy[]
+  ledgerEntries       LedgerEntry[]
+  feedRecords         FeedRecord[]
+  feedConsumptions    FeedConsumption[]
+  projectAnimals      ProjectAnimal[]
+  expenses            Expense[]
+  sales               Sale[]
+
+  @@index([farmId])
+  @@index([projectId])
+  @@index([animalId])
+  @@index([status])
+  @@map("animals")
+}
+
+model AnimalMedia {
+  id          String   @id @default(uuid())
+  animalId    String
+  url         String
+  fileName    String?
+  fileSize    Int?
+  mimeType    String?
+  uploadedBy  String?
+  type        String   @default("IMAGE")
+  isPrimary   Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@map("animal_media")
+}
+
+model AnimalMovement {
+  id          String       @id @default(uuid())
+  animalId    String
+  type        MovementType @default(TRANSFER)
+  fromFarmId  String?
+  toFarmId    String?
+  fromPenId   String?
+  toPenId     String?
+  reason      String?
+  notes       String?
+  movedBy     String?
+  movedAt     DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+
+  animal  Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  fromFarm Farm?  @relation("FromFarmMovements", fields: [fromFarmId], references: [id], onDelete: SetNull)
+  toFarm   Farm?  @relation("ToFarmMovements", fields: [toFarmId], references: [id], onDelete: SetNull)
+  fromPen  Pen?   @relation("FromPenMovements", fields: [fromPenId], references: [id], onDelete: SetNull)
+  toPen    Pen?   @relation("ToPenMovements", fields: [toPenId], references: [id], onDelete: SetNull)
+
+  @@index([animalId])
+  @@map("animal_movements")
+}
+
+model HealthRecord {
+  id           String   @id @default(uuid())
+  animalId     String
+  title        String?
+  description  String?
+  diagnosis    String?
+  symptoms     String?
+  treatment    String?
+  medication   String?
+  dosage       String?
+  frequency    String?
+  followUpDate DateTime?
+  recordedById String?
+  recordedBy   String?
+  recordType   String?
+  cost         Decimal? @db.Decimal(12, 2)
+  startDate    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@index([animalId])
+  @@map("health_records")
+}
+
+model Vaccination {
+  id              String   @id @default(uuid())
+  animalId        String
+  vaccineName     String
+  vaccineType     String?
+  manufacturer    String?
+  batchNumber     String?
+  administeredAt  DateTime
+  nextDueDate     DateTime?
+  dosage          String?
+  administeredBy  String?
+  cost            Decimal? @db.Decimal(12, 2)
+  notes           String?
+  certificateUrl  String?
+  createdAt       DateTime @default(now())
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@index([animalId])
+  @@map("vaccinations")
+}
+
+model VeterinaryReport {
+  id                String   @id @default(uuid())
+  animalId          String
+  veterinarianId    String
+  reportNumber      String   @unique
+  examinationDate   DateTime
+  reportType        String   @default("GENERAL")
+  isApproved        Boolean  @default(false)
+  temperature       Decimal? @db.Decimal(4, 1)
+  heartRate         Int?
+  respiratoryRate   Int?
+  diagnosis         String?
+  prognosis         String?
+  treatmentPlan     String?
+  recommendations   String?
+  findings          String?
+  bodyConditionScore Int?
+  followUpDate      DateTime?
+  version           Int     @default(1)
+  approvedBy        String?
+  approvedAt        DateTime?
+  previousVersionId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  animal       Animal            @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  veterinarian User              @relation(fields: [veterinarianId], references: [id], onDelete: Restrict)
+  attachments  ReportAttachment[]
+
+  @@index([animalId])
+  @@index([veterinarianId])
+  @@map("veterinary_reports")
+}
+
+model ReportAttachment {
+  id         String   @id @default(uuid())
+  reportId   String
+  url        String
+  type       String   @default("IMAGE")
+  createdAt  DateTime @default(now())
+
+  report VeterinaryReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("report_attachments")
+}
+
+model WeightRecord {
+  id         String   @id @default(uuid())
+  animalId   String
+  projectId  String?
+  weight      Decimal  @db.Decimal(8, 2)
+  weighedAt   DateTime @default(now())
+  recordedBy  String?
+  recordedAt  DateTime @default(now())
+  method      String?
+  notes       String?
+  createdAt  DateTime @default(now())
+
+  animal  Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([animalId])
+  @@map("weight_records")
+}
+
+// ───────────────────────────── SUPPLIER & FEED ─────────────────────────────
+
+model Supplier {
+  id             String   @id @default(uuid())
+  code           String   @unique
+  name           String
+  contactPerson  String?
+  email          String?
+  phone          String?
+  mobile         String?
+  address        String?
+  city           String?
+  governorate    String?
+  taxId          String?
+  commercialReg  String?
+  notes          String?
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  feedInventory FeedInventory[]
+  animals       Animal[]
+  quotations    Quotation[]
+  purchaseOrders PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model FeedType {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  nameEn       String?
+  category     String?
+  unit         String   @default("KG")
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  inventories      FeedInventory[]
+  recipes          FeedRecipeIngredient[]
+  feedRecords      FeedRecord[]
+  quotationItems   QuotationItem[]
+  purchaseItems    PurchaseOrderItem[]
+  receiptItems     GoodsReceiptItem[]
+
+  @@map("feed_types")
+}
+
+model FeedInventory {
+  id              String   @id @default(uuid())
+  farmId          String
+  feedTypeId      String
+  supplierId      String?
+  batchNumber     String?
+  quantity        Decimal  @db.Decimal(12, 2)
+  unit            String   @default("KG")
+  unitCost        Decimal? @db.Decimal(12, 2)
+  totalCost       Decimal? @db.Decimal(15, 2)
+  purchaseDate    DateTime?
+  expiryDate      DateTime?
+  storageLocation String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  farm        Farm          @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  feedType    FeedType      @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+  supplier    Supplier?     @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  feedRecords FeedRecord[]
+  consumptions FeedConsumption[]
+
+  @@index([farmId])
+  @@map("feed_inventories")
+}
+
+model FeedRecipe {
+  id          String   @id @default(uuid())
+  farmId      String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  farm        Farm                    @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  ingredients FeedRecipeIngredient[]
+  feedRecords FeedRecord[]
+
+  @@map("feed_recipes")
+}
+
+model FeedRecipeIngredient {
+  id         String  @id @default(uuid())
+  recipeId   String
+  feedTypeId String
+  percentage Decimal @db.Decimal(6, 2)
+  quantity   Decimal @db.Decimal(10, 2)
+
+  recipe    FeedRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  feedType  FeedType   @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+
+  @@map("feed_recipe_ingredients")
+}
+
+model FeedRecord {
+  id          String   @id @default(uuid())
+  animalId    String
+  feedTypeId  String
+  inventoryId String?
+  recipeId    String?
+  quantity    Decimal  @db.Decimal(10, 2)
+  unit        String   @default("KG")
+  fedBy       String?
+  cost        Decimal? @db.Decimal(12, 2)
+  feedingTime String?
+  fedAt       DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  animal    Animal        @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  feedType  FeedType      @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+  inventory FeedInventory? @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+  recipe    FeedRecipe?    @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+
+  @@index([animalId])
+  @@map("feed_records")
+}
+
+model FeedConsumption {
+  id          String   @id @default(uuid())
+  inventoryId String
+  animalId    String?
+  penId       String?
+  projectId   String?
+  quantity    Decimal  @db.Decimal(10, 2)
+  unit        String   @default("KG")
+  consumedAt  DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  inventory FeedInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  animal    Animal?       @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  pen       Pen?          @relation(fields: [penId], references: [id], onDelete: SetNull)
+  project   Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("feed_consumptions")
+}
+
+// ───────────────────────────── PROJECT & INVESTMENT ─────────────────────────────
+
+model Project {
+  id                  String        @id @default(uuid())
+  code                String        @unique
+  name                String
+  nameEn              String?
+  farmId              String
+  animalType          AnimalType
+  breed               String
+  breedEn             String?
+  description         String?
+  purpose             String?
+  expectedReturn      Decimal?      @db.Decimal(6, 2)
+  expectedReturnRate  Decimal?      @db.Decimal(6, 2)
+  riskLevel           RiskLevel     @default(MEDIUM)
+  status              ProjectStatus @default(DRAFT)
+  targetAmount        Decimal       @db.Decimal(15, 2)
+  totalBudget         Decimal?      @db.Decimal(15, 2)
+  raisedAmount        Decimal       @default(0) @db.Decimal(15, 2)
+  fundedAmount        Decimal?      @db.Decimal(15, 2)
+  sharePrice          Decimal       @db.Decimal(12, 2)
+  totalShares         Int
+  soldShares          Int           @default(0)
+  reservedShares      Int           @default(0)
+  availableShares      Int?
+  minSharesPerInvestor Int?
+  maxSharesPerInvestor Int?
+  shareCurrency        String        @default("EGP")
+  startDate           DateTime?
+  expectedEndDate     DateTime?
+  actualEndDate       DateTime?
+  riskDisclosure      String?
+  contractTemplateId  String?
+  createdBy           String?
+  updatedBy           String?
+  approvedBy          String?
+  approvedAt          DateTime?
+  publishedAt         DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  deletedAt           DateTime?
+
+  farm            Farm              @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  creator         User?             @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater         User?             @relation("ProjectUpdater", fields: [updatedBy], references: [id], onDelete: SetNull)
+  approver        User?             @relation("ProjectApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
+  animals         Animal[]
+  projectAnimals  ProjectAnimal[]
+  shares          ProjectShare[]
+  reservations    ShareReservation[]
+  investments     Investment[]
+  feedConsumptions FeedConsumption[]
+  tasks           Task[]
+  risks           RiskRegister[]
+  weightRecords   WeightRecord[]
+  ledgerEntries   LedgerEntry[]
+  expenses        Expense[]
+  sales           Sale[]
+  distributions   ProfitDistribution[]
+  insurancePolicies InsurancePolicy[]
+
+  @@index([farmId])
+  @@index([status])
+  @@index([animalType])
+  @@map("projects")
+}
+
+model ProjectAnimal {
+  id         String   @id @default(uuid())
+  projectId  String
+  animalId   String
+  shareCount Int      @default(1)
+  assignedAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  animal  Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, animalId])
+  @@map("project_animals")
+}
+
+model ProjectShare {
+  id                   String   @id @default(uuid())
+  projectId            String
+  shareNumber          String   @unique
+  reservedBy           String?
+  status               String   @default("AVAILABLE")
+  reservationExpiresAt DateTime?
+  reservedAt           DateTime?
+  priceAtSale          Decimal? @db.Decimal(12, 2)
+  soldTo               String?
+  soldAt               DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reservation ShareReservation[]
+
+  @@index([projectId])
+  @@index([status])
+  @@map("project_shares")
+}
+
+model ShareReservation {
+  id                   String           @id @default(uuid())
+  projectId            String
+  userId               String
+  shareCount           Int
+  unitPrice            Decimal          @db.Decimal(12, 2)
+  totalAmount          Decimal          @db.Decimal(15, 2)
+  status               ReservationStatus @default(PENDING)
+  expiresAt            DateTime
+  cancelledAt          DateTime?
+  confirmedAt          DateTime?
+  cancellationReason   String?
+  currency             String           @default("EGP")
+  convertedToInvestmentId String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  shareId String? @unique
+
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  share       ProjectShare?    @relation(fields: [shareId], references: [id], onDelete: SetNull)
+  investment  Investment?
+
+  @@index([projectId])
+  @@index([userId])
+  @@map("share_reservations")
+}
+
+model Investment {
+  id             String          @id @default(uuid())
+  contractNumber String          @unique
+  projectId      String
+  userId         String
+  reservationId  String?         @unique
+  shareCount     Int
+  unitPrice      Decimal         @db.Decimal(12, 2)
+  sharePrice     Decimal?        @db.Decimal(12, 2)
+  grossAmount    Decimal         @db.Decimal(15, 2)
+  fees           Decimal         @default(0) @db.Decimal(15, 2)
+  netAmount      Decimal         @db.Decimal(15, 2)
+  totalAmount    Decimal?        @db.Decimal(15, 2)
+  currency       String          @default("EGP")
+  contractSignedAt DateTime?
+  status         InvestmentStatus @default(RESERVED)
+  paymentId      String?
+  paidAt         DateTime?
+  confirmedAt    DateTime?
+  activatedAt    DateTime?
+  completedAt    DateTime?
+  cancelledAt    DateTime?
+  cancellationReason String?
+  totalDistributions Decimal     @default(0) @db.Decimal(15, 2)
+  realizedProfit Decimal         @default(0) @db.Decimal(15, 2)
+  unrealizedProfit Decimal       @default(0) @db.Decimal(15, 2)
+  currentValue     Decimal?      @db.Decimal(15, 2)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+
+  project      Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation  ShareReservation?       @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  walletTransactions WalletTransaction[]
+  payments     Payment[]
+  ledgerEntries LedgerEntry[]
+  distributionDetails ProfitDistributionDetail[]
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@map("investments")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  balance   Decimal  @default(0) @db.Decimal(15, 2)
+  locked    Decimal  @default(0) @db.Decimal(15, 2)
+  lockedBalance Decimal @default(0) @db.Decimal(15, 2)
+  currency  String   @default("EGP")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String          @id @default(uuid())
+  walletId    String
+  investmentId String?
+  type        TransactionType
+  status      TransactionStatus @default(COMPLETED)
+  currency    String          @default("EGP")
+  amount      Decimal         @db.Decimal(15, 2)
+  balanceBefore Decimal       @db.Decimal(15, 2)
+  balanceAfter Decimal        @db.Decimal(15, 2)
+  description String?
+  reference   String?
+  processedAt DateTime?
+  createdAt   DateTime        @default(now())
+
+  wallet     Wallet      @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  investment Investment? @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+
+  @@index([walletId])
+  @@map("wallet_transactions")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  investmentId  String
+  userId        String
+  amount        Decimal       @db.Decimal(15, 2)
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  reference     String?       @unique
+  providerRef   String?
+  provider      String?
+  currency      String        @default("EGP")
+  completedAt   DateTime?
+  webhookReceived Boolean?    @default(false)
+  paidAt        DateTime?
+  failedAt      DateTime?
+  webhookData   Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  investment Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([investmentId])
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ───────────────────────────── PROCUREMENT ─────────────────────────────
+
+model Quotation {
+  id          String          @id @default(uuid())
+  supplierId  String
+  reference   String          @unique
+  status      QuotationStatus @default(DRAFT)
+  totalAmount Decimal         @default(0) @db.Decimal(15, 2)
+  currency    String          @default("EGP")
+  validUntil  DateTime?
+  terms       String?
+  notes       String?
+  evaluatedBy String?
+  evaluatedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  supplier        Supplier         @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  items           QuotationItem[]
+  purchaseOrders  PurchaseOrder[]
+
+  @@index([supplierId])
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id          String  @id @default(uuid())
+  quotationId String
+  feedTypeId  String
+  quantity    Decimal @db.Decimal(12, 2)
+  unit        String  @default("KG")
+  unitPrice   Decimal @db.Decimal(12, 2)
+  totalPrice  Decimal @db.Decimal(15, 2)
+  description String?
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  feedType  FeedType  @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+
+  @@map("quotation_items")
+}
+
+model PurchaseOrder {
+  id              String      @id @default(uuid())
+  supplierId      String
+  quotationId     String?
+  reference       String      @unique
+  status          OrderStatus @default(DRAFT)
+  totalAmount     Decimal     @default(0) @db.Decimal(15, 2)
+  currency        String      @default("EGP")
+  expectedDelivery DateTime?
+  paymentTerms    String?
+  deliveryAddress String?
+  notes           String?
+  approvedBy      String?
+  approvedAt      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  supplier Supplier           @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  quotation Quotation?        @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+  items     PurchaseOrderItem[]
+  receipts  GoodsReceipt[]
+
+  @@index([supplierId])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id          String  @id @default(uuid())
+  orderId     String
+  feedTypeId  String
+  quantity    Decimal @db.Decimal(12, 2)
+  unit        String  @default("KG")
+  unitPrice   Decimal @db.Decimal(12, 2)
+  totalPrice  Decimal @db.Decimal(15, 2)
+  description String?
+
+  order     PurchaseOrder     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  feedType  FeedType          @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+  receipts  GoodsReceiptItem[]
+
+  @@map("purchase_order_items")
+}
+
+model GoodsReceipt {
+  id            String        @id @default(uuid())
+  orderId       String
+  receiverId    String
+  reference     String        @unique
+  status        ReceiptStatus @default(PENDING)
+  receivedAt    DateTime      @default(now())
+  deliveryNote  String?
+  invoiceNumber String?
+  invoiceUrl    String?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order    PurchaseOrder      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  receiver User               @relation(fields: [receiverId], references: [id], onDelete: Restrict)
+  items    GoodsReceiptItem[]
+
+  @@index([orderId])
+  @@map("goods_receipts")
+}
+
+model GoodsReceiptItem {
+  id          String  @id @default(uuid())
+  receiptId   String
+  orderItemId String
+  feedTypeId  String
+  quantity    Decimal @db.Decimal(12, 2)
+  unit        String  @default("KG")
+  batchNumber String?
+  rejectionReason String?
+  condition   String?
+
+  receipt   GoodsReceipt    @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  orderItem PurchaseOrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  feedType  FeedType        @relation(fields: [feedTypeId], references: [id], onDelete: Restrict)
+
+  @@map("goods_receipt_items")
+}
+
+// ───────────────────────────── FINANCE ─────────────────────────────
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationChannel {
+  IN_APP
+  PUSH
+  EMAIL
+  SMS
+}
+
+enum LedgerEntryType {
+  DEBIT
+  CREDIT
+}
+
+model LedgerAccount {
+  id          String      @id @default(uuid())
+  code        String      @unique
+  name        String
+  nameAr      String?
+  nameEn      String?
+  subType     String?
+  type        AccountType
+  level       Int      @default(1)
+  parentId    String?
+  description String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  parent   LedgerAccount? @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children LedgerAccount[] @relation("AccountHierarchy")
+  entries  LedgerEntry[]
+  expenses Expense[]
+
+  @@index([code])
+  @@index([type])
+  @@map("ledger_accounts")
+}
+
+model JournalEntry {
+  id            String            @id @default(uuid())
+  entryNumber   String            @unique
+  status        JournalEntryStatus @default(DRAFT)
+  entryDate     DateTime          @default(now())
+  date          DateTime          @default(now())
+  totalDebit    Decimal           @default(0) @db.Decimal(15, 2)
+  totalCredit   Decimal           @default(0) @db.Decimal(15, 2)
+  description   String
+  reference     String?
+  referenceType String?
+  referenceId   String?
+  postedBy      String?
+  postedAt      DateTime?
+  createdBy     String?
+  reversedBy    String?
+  reversedAt    DateTime?
+  reversalReason String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  entries LedgerEntry[]
+
+  @@index([entryDate])
+  @@index([status])
+  @@map("journal_entries")
+}
+
+model LedgerEntry {
+  id           String        @id @default(uuid())
+  journalEntryId String
+  accountId    String
+  projectId    String?
+  farmId       String?
+  animalId     String?
+  investmentId String?
+  userId       String?
+  debit        Decimal       @default(0) @db.Decimal(15, 2)
+  credit       Decimal       @default(0) @db.Decimal(15, 2)
+  type         LedgerEntryType?
+  amount       Decimal       @default(0) @db.Decimal(15, 2)
+  description  String?
+  createdAt    DateTime      @default(now())
+
+  journalEntry JournalEntry     @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account      LedgerAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  project      Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  farm         Farm?            @relation(fields: [farmId], references: [id], onDelete: SetNull)
+  animal       Animal?          @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  investment   Investment?      @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@map("ledger_entries")
+}
+
+model Expense {
+  id           String   @id @default(uuid())
+  projectId    String?
+  farmId       String?
+  animalId     String?
+  accountId    String
+  category     String?
+  subCategory  String?
+  amount        Decimal  @db.Decimal(15, 2)
+  totalAmount   Decimal? @db.Decimal(15, 2)
+  paymentStatus String   @default("PENDING")
+  currency      String   @default("EGP")
+  expenseDate  DateTime @default(now())
+  description  String?
+  vendorName   String?
+  vendorTaxId  String?
+  invoiceNumber String?
+  invoiceUrl   String?
+  receiptUrl   String?
+  vatAmount    Decimal?  @db.Decimal(12, 2)
+  createdBy    String?
+  status       String   @default("PENDING")
+  approvedBy   String?
+  approvedAt   DateTime?
+  rejectedBy   String?
+  rejectedAt   DateTime?
+  rejectionReason String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  farm    Farm?         @relation(fields: [farmId], references: [id], onDelete: SetNull)
+  animal  Animal?       @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  account LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([projectId])
+  @@index([farmId])
+  @@index([expenseDate])
+  @@map("expenses")
+}
+
+model Sale {
+  id             String     @id @default(uuid())
+  projectId      String?
+  animalId       String?
+  reference      String     @unique
+  status         SaleStatus @default(DRAFT)
+  buyerName      String
+  buyerContact   String?
+  quantity       Int?
+  weight         Decimal?   @db.Decimal(8, 2)
+  unitPrice      Decimal    @db.Decimal(12, 2)
+  totalAmount    Decimal    @db.Decimal(15, 2)
+  netPrice       Decimal?   @db.Decimal(15, 2)
+  currency       String     @default("EGP")
+  saleDate       DateTime   @default(now())
+  deliveryLocation String?
+  notes          String?
+  approvedBy     String?
+  approvedAt     DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  project Project?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  animal  Animal?     @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  offers  SaleOffer[]
+  documents SaleDocument[]
+
+  @@index([projectId])
+  @@map("sales")
+}
+
+model SaleOffer {
+  id           String     @id @default(uuid())
+  saleId       String
+  buyerName    String
+  buyerContact String?
+  amount       Decimal    @db.Decimal(15, 2)
+  status       OfferStatus @default(PENDING)
+  terms        String?
+  respondedAt  DateTime?
+  respondedBy  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@map("sale_offers")
+}
+
+model SaleDocument {
+  id        String   @id @default(uuid())
+  saleId    String
+  url       String
+  type      String   @default("CONTRACT")
+  createdAt DateTime @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@map("sale_documents")
+}
+
+model ProfitDistribution {
+  id            String   @id @default(uuid())
+  projectId     String
+  reference     String   @unique
+  distributionNumber String  @unique
+  totalAmount   Decimal  @db.Decimal(15, 2)
+  totalRevenue  Decimal? @db.Decimal(15, 2)
+  totalExpenses Decimal? @db.Decimal(15, 2)
+  netProfit     Decimal? @db.Decimal(15, 2)
+  companyShare  Decimal? @db.Decimal(15, 2)
+  investorPool  Decimal? @db.Decimal(15, 2)
+  distributionRate Decimal? @db.Decimal(8, 4)
+  calculatedAt  DateTime?
+  status        String   @default("DRAFT")
+  calculatedBy  String?
+  approvedBy    String?
+  approvedAt    DateTime?
+  distributedAt DateTime?
+  periodStart   DateTime?
+  periodEnd     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  details ProfitDistributionDetail[]
+
+  @@index([projectId])
+  @@map("profit_distributions")
+}
+
+model ProfitDistributionDetail {
+  id             String  @id @default(uuid())
+  distributionId String
+  investmentId   String
+  shareCount     Int
+  grossAmount    Decimal @db.Decimal(15, 2)
+  fees           Decimal @default(0) @db.Decimal(15, 2)
+  feeAmount      Decimal @default(0) @db.Decimal(15, 2)
+  taxAmount      Decimal @default(0) @db.Decimal(15, 2)
+  netAmount      Decimal @db.Decimal(15, 2)
+  status         String  @default("PENDING")
+  paidAt         DateTime?
+
+  distribution ProfitDistribution @relation(fields: [distributionId], references: [id], onDelete: Cascade)
+  investment   Investment         @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  @@unique([distributionId, investmentId])
+  @@map("profit_distribution_details")
+}
+
+// ───────────────────────────── RISK, INSURANCE, TASKS ─────────────────────────────
+
+model RiskRegister {
+  id             String    @id @default(uuid())
+  projectId      String?
+  farmId         String?
+  animalId       String?
+  category       String
+  description    String
+  likelihood     Int       @default(3)
+  impact         Int       @default(3)
+  riskLevel      RiskLevel @default(MEDIUM)
+  mitigationPlan String?
+  responsibleId  String?
+  status         String    @default("OPEN")
+  lastReviewedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  farm    Farm?   @relation(fields: [farmId], references: [id], onDelete: SetNull)
+  animal  Animal? @relation(fields: [animalId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@map("risk_register")
+}
+
+model InsurancePolicy {
+  id           String         @id @default(uuid())
+  projectId    String?
+  animalId     String?
+  provider     String
+  policyNumber String         @unique
+  status       InsuranceStatus @default(ACTIVE)
+  premium      Decimal        @db.Decimal(15, 2)
+  coverage     Decimal        @db.Decimal(15, 2)
+  startDate    DateTime
+  endDate      DateTime
+  terms        String?
+  documentUrl  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  project Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  animal  Animal?          @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  claims  InsuranceClaim[]
+
+  @@index([projectId])
+  @@map("insurance_policies")
+}
+
+model InsuranceClaim {
+  id          String      @id @default(uuid())
+  policyId    String
+  claimNumber String      @unique
+  status      ClaimStatus @default(FILED)
+  amount      Decimal     @db.Decimal(15, 2)
+  approvedAmount Decimal? @db.Decimal(15, 2)
+  reason      String?
+  filedAt     DateTime    @default(now())
+  paidAt      DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  policy InsurancePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@map("insurance_claims")
+}
+
+model Task {
+  id           String       @id @default(uuid())
+  farmId       String?
+  projectId    String?
+  animalId     String?
+  title        String
+  description  String?
+  status       TaskStatus   @default(TODO)
+  priority     TaskPriority @default(MEDIUM)
+  assigneeId   String?
+  creatorId    String?
+  startDate    DateTime?
+  dueDate      DateTime?
+  completedAt  DateTime?
+  parentTaskId String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  farm    Farm?    @relation(fields: [farmId], references: [id], onDelete: SetNull)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  animal  Animal?  @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  assignee User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator   User?  @relation("TaskCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+  parent    Task?  @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  subTasks  Task[] @relation("SubTasks")
+
+  @@index([farmId])
+  @@index([projectId])
+  @@index([assigneeId])
+  @@map("tasks")
+}
+
+model WorkOrder {
+  id            String   @id @default(uuid())
+  farmId        String
+  reference     String   @unique
+  title         String
+  description   String?
+  assignedTo    String?
+  status        String   @default("PENDING")
+  priority      String   @default("MEDIUM")
+  dueDate       DateTime?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  approvedBy    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  farm Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@index([farmId])
+  @@map("work_orders")
+}
+
+// ───────────────────────────── SUPPORT & NOTIFICATIONS ─────────────────────────────
+
+model SupportTicket {
+  id                 String        @id @default(uuid())
+  ticketNumber       String        @unique
+  userId             String
+  assigneeId         String?
+  subject            String
+  description        String?
+  source             String?  @default("WEB")
+  category           String?
+  priority           TicketPriority @default(MEDIUM)
+  status             TicketStatus   @default(OPEN)
+  tags               String[]
+  satisfactionRating Int?
+  satisfactionComment String?
+  resolvedAt         DateTime?
+  firstResponseAt    DateTime?
+  closedAt           DateTime?
+  escalatedAt        DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  user     User             @relation("UserTickets", fields: [userId], references: [id], onDelete: Cascade)
+  assignee User?            @relation("AssignedTickets", fields: [assigneeId], references: [id], onDelete: SetNull)
+  messages SupportMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  senderId  String
+  body      String
+  attachments String[]
+  isInternal Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  channel   NotificationChannel @default(IN_APP)
+  title     String
+  message   String
+  link      String?
+  data      Json?
+  channels  Json?
+  readAt    DateTime?
+  sentAt    DateTime         @default(now())
+  failedAt  DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String?
+  action     AuditAction
+  entity     String
+  entityId   String?
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entity])
+  @@map("audit_logs")
+}
+
+// ───────────────────────────── APPROVALS ─────────────────────────────
+
+model ApprovalWorkflow {
+  id          String   @id @default(uuid())
+  name        String
+  nameAr      String?
+  entity      String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  approvals Approval[]
+
+  @@map("approval_workflows")
+}
+
+model Approval {
+  id          String         @id @default(uuid())
+  workflowId  String
+  entity      String
+  entityId    String
+  status      ApprovalStatus @default(PENDING)
+  requestedBy String?
+  dueDate     DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  workflow ApprovalWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  steps    ApprovalStep[]
+
+  @@index([workflowId])
+  @@map("approvals")
+}
+
+model ApprovalStep {
+  id         String         @id @default(uuid())
+  approvalId String
+  approverId String
+  stepOrder  Int            @default(1)
+  status     ApprovalStatus @default(PENDING)
+  comment    String?
+  actedAt    DateTime?
+  dueDate    DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  approval Approval @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  approver User     @relation(fields: [approverId], references: [id], onDelete: Cascade)
+
+  @@unique([approvalId, approverId])
+  @@map("approval_steps")
+}
+
+// ───────────────────────────── SETTINGS ─────────────────────────────
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  category  String?
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("system_settings")
+}
