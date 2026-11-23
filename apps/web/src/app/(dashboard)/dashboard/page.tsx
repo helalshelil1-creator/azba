@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
@@ -128,7 +129,7 @@ export default function InvestorDashboardPage() {
     <div className="space-y-8">
       {/* Hero */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-primary-950 text-white shadow-sm">
-        <img src="/images/cattle.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-35" />
+        <Image src="/images/cattle.jpg" alt="" aria-hidden="true" fill sizes="(max-width: 1280px) 100vw, 1280px" className="object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-l from-primary-950 via-primary-950/80 to-primary-950/20" />
         <div className="relative flex flex-col justify-between gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
           <div>

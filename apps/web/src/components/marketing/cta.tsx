@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -8,7 +9,7 @@ import { TrendingUp, ArrowLeft, ShieldCheck, Sparkles } from 'lucide-react'
 export function CTA() {
   return (
     <section className="relative overflow-hidden bg-primary-950 py-16 text-ivory sm:py-24">
-      <img src="/images/horse.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+      <Image src="/images/horse.jpg" alt="" aria-hidden="true" fill sizes="100vw" className="object-cover opacity-20" />
       <div className="absolute inset-0 bg-gradient-to-t from-primary-950 via-primary-950/80 to-primary-950/60" />
       <div className="absolute inset-0 grid-pattern opacity-20" />
       <div className="absolute -top-20 right-1/4 h-72 w-72 rounded-full bg-gold/15 blur-3xl" />

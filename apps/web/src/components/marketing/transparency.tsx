@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ShieldAlert, Eye, FileText, Scale, AlertTriangle } from 'lucide-react'
@@ -66,10 +67,12 @@ export function Transparency() {
 
           <div className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-2xl">
-              <img
+              <Image
                 src="/images/livestock.jpg"
                 alt="شفافية البيانات"
-                className="h-full w-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 1100px"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary-950/70 to-transparent" />
               <div className="absolute bottom-6 right-6 left-6 grid grid-cols-2 gap-3">

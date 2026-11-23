@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -58,11 +59,12 @@ export function Farms() {
               className="card-hover group overflow-hidden p-0"
             >
               <div className="relative h-52 overflow-hidden">
-                <img
+                <Image
                   src={farm.cover}
                   alt={farm.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 640px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/85 via-transparent to-transparent" />
                 <div className="absolute bottom-4 right-4 left-4">

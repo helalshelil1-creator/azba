@@ -24,11 +24,11 @@
     --input: 226 220 208;
     --ring: 201 164 92;
     --radius: 0.75rem;
-    --font-tajawal: 'Tajawal', 'Cairo', sans-serif;
-    --font-cairo: 'Cairo', 'Tajawal', sans-serif;
-    --font-montserrat: 'Montserrat', sans-serif;
-    --font-inter: 'Montserrat', sans-serif;
-    --font-instrument: 'Instrument Serif', serif;
+    --font-tajawal: var(--nf-tajawal), 'Tajawal', 'Cairo', sans-serif;
+    --font-cairo: var(--nf-cairo), 'Cairo', 'Tajawal', sans-serif;
+    --font-montserrat: var(--nf-montserrat), 'Montserrat', sans-serif;
+    --font-inter: var(--nf-montserrat), 'Montserrat', sans-serif;
+    --font-instrument: var(--nf-instrument), 'Instrument Serif', serif;
     --success: 22 163 74;
     --warning: 217 119 6;
     --info: 37 99 235;

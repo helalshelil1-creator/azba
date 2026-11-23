@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ShieldCheck, TrendingUp, Stethoscope, Briefcase, Eye, Lock, BarChart3, FileCheck } from 'lucide-react'
@@ -103,7 +104,7 @@ export function Features() {
             { src: '/images/beef.jpg', label: 'عجول تسمين' },
           ].map((img) => (
             <div key={img.src} className="relative h-40 overflow-hidden rounded-2xl lg:h-52">
-              <img src={img.src} alt={img.label} loading="lazy" className="h-full w-full object-cover" />
+              <Image src={img.src} alt={img.label} fill sizes="(max-width: 1024px) 100vw, 640px" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-primary-950/70 to-transparent" />
               <span className="absolute bottom-3 right-3 text-sm font-bold text-white">{img.label}</span>
             </div>

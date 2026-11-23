@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -140,11 +141,12 @@ export function Opportunities() {
               className="card-hover group overflow-hidden p-0"
             >
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={p.cover}
                   alt={p.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 640px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 to-transparent" />
                 <div className="absolute right-4 top-4">

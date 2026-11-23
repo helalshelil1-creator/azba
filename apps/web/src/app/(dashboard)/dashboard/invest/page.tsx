@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, AlertTriangle, Search, MapPin, Users, Sparkles } from 'lucide-react'
@@ -115,7 +116,7 @@ export default function InvestPage() {
           return (
             <div key={p.id} className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
               <div className="relative -mx-5 -mt-5 mb-4 h-40 overflow-hidden">
-                <img src={animalImage(p.animalType)} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
+                <Image src={animalImage(p.animalType)} alt={p.name} fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 to-transparent" />
                 <span className={cn('badge absolute right-4 top-4', risk.cls)}>مخاطر {risk.ar}</span>
               </div>

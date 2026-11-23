@@ -4,6 +4,12 @@ import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/lib/auth-store'
 import { MarketingBottomNav } from '@/components/layout/marketing-bottom-nav'
 import { Toaster } from 'sonner'
+import {
+  Tajawal,
+  Cairo,
+  Montserrat,
+  Instrument_Serif,
+} from 'next/font/google'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://azba.com'),
@@ -63,21 +69,50 @@ export const viewport: Viewport = {
   ],
 }
 
+// خطوط ذاتية الاستضافة (تُبنى محلياً في وقت البناء — بلا طلبات خارجية)
+const fontTajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['300', '400', '500', '700', '800'],
+  display: 'swap',
+  variable: '--nf-tajawal',
+})
+const fontCairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
+  variable: '--nf-cairo',
+})
+const fontMontserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--nf-montserrat',
+})
+const fontInstrument = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+  variable: '--nf-instrument',
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@400;600;700&family=Montserrat:wght@400;500;600;700;800&family=Instrument+Serif&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="ar"
+      dir="rtl"
+      suppressHydrationWarning
+      className={cn(
+        fontTajawal.variable,
+        fontCairo.variable,
+        fontMontserrat.variable,
+        fontInstrument.variable
+      )}
+    >
+
       <body className="min-h-screen bg-background text-foreground">
         <AuthProvider>
           {children}

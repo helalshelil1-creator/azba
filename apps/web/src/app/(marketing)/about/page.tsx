@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
@@ -58,7 +59,7 @@ export default function Page() {
           ].map((img) => (
             <figure key={img.src} className="group overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm">
               <div className="relative h-44 overflow-hidden">
-                <img src={img.src} alt={img.label} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <Image src={img.src} alt={img.label} fill sizes="(max-width: 1024px) 100vw, 640px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
               </div>
               <figcaption className="px-4 py-3 text-center text-sm font-bold text-primary">{img.label}</figcaption>
             </figure>

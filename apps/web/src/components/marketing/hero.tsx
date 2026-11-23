@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from './framer'
@@ -40,14 +41,16 @@ export function HeroSection() {
       {/* خلفية متحركة: خمس صور تتبدل كل ٣ ثواني */}
       <div className="absolute inset-0">
         {HERO_IMAGES.map((img, i) => (
-          <img
+          <Image
             key={img.src}
             src={img.src}
             alt={img.alt}
             aria-hidden={i !== index}
-            loading={i === 0 ? 'eager' : 'lazy'}
+            fill
+            sizes="100vw"
+            priority={i === 0}
             className={cn(
-              'absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000',
+              'object-cover object-center transition-opacity duration-1000',
               i === index ? 'opacity-100' : 'opacity-0'
             )}
           />
@@ -76,9 +79,12 @@ export function HeroSection() {
               className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-950/75 blur-3xl sm:h-64 sm:w-64"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="AZBA | عزبة"
+              width={612}
+              height={408}
               draggable={false}
               className="relative mx-auto h-36 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.7)] sm:h-52 lg:h-60"
             />

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -151,10 +152,12 @@ export function ProjectDetailClient({ id }: { id: string }) {
       <Navbar />
 
       <section className="relative overflow-hidden bg-primary-950 py-12 text-white sm:py-16">
-        <img
+        <Image
           src={animalImage(project.animalType)}
           alt={project.name}
-          className="absolute inset-0 h-full w-full object-cover opacity-30"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-950 via-primary-950/70 to-primary-950/40" />
         <div className="absolute inset-0 grid-pattern opacity-20" />

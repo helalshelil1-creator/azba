@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -181,11 +182,12 @@ export function OpportunitiesClient() {
                     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
                       {/* Cover */}
                       <div className="relative h-40 overflow-hidden">
-                        <img
+                        <Image
                           src={animalImage(p.animalType)}
                           alt={p.name}
-                          loading="lazy"
-                          className="absolute inset-0 h-full w-full object-cover"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 640px"
+                          className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary-950/85 via-primary-950/25 to-transparent" />
                         <div className="absolute right-4 top-4 flex gap-2">
