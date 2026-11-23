@@ -130,7 +130,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="mt-6 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
           >
-            <Link href="/opportunities" className="btn-gold group px-8 py-4 text-base">
+            <Link href="/invest" className="btn-gold group px-8 py-4 text-base">
               اكتشف فرص الاستثمار
               <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
             </Link>

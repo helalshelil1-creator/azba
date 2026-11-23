@@ -9,7 +9,7 @@ import { MobileMenu } from './mobile-menu'
 
 const NAV_LINKS = [
   { href: '/', label: 'الرئيسية' },
-  { href: '/opportunities', label: 'فرص الاستثمار' },
+  { href: '/invest', label: 'فرص الاستثمار' },
   { href: '/farms', label: 'المزارع' },
   { href: '/how-it-works', label: 'كيف نعمل؟' },
   { href: '/about', label: 'من نحن' },
@@ -120,7 +120,7 @@ export function Navbar() {
                 إنشاء حساب
               </Link>
 
-              <Link href="/opportunities" className="btn-gold">
+              <Link href="/invest" className="btn-gold">
                 <TrendingUp className="h-4 w-4" />
                 ابدأ الاستثمار
               </Link>

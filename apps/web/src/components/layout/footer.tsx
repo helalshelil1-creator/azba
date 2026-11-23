@@ -14,7 +14,7 @@ const COLUMNS = [
     title: 'المنصة',
     links: [
       { href: '/', label: 'الرئيسية' },
-      { href: '/opportunities', label: 'فرص الاستثمار' },
+      { href: '/invest', label: 'فرص الاستثمار' },
       { href: '/how-it-works', label: 'كيف نعمل؟' },
       { href: '/farms', label: 'المزارع' },
       { href: '/about', label: 'من نحن' },

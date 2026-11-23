@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 const MENU_ITEMS = [
   { href: '/', label: 'الرئيسية', labelEn: 'Home' },
-  { href: '/opportunities', label: 'فرص الاستثمار', labelEn: 'Investment Opportunities' },
+  { href: '/invest', label: 'فرص الاستثمار', labelEn: 'Investment Opportunities' },
   { href: '/dashboard/portfolio', label: 'محفظتي', labelEn: 'My Portfolio' },
   { href: '/farms', label: 'المزارع', labelEn: 'Farms' },
   { href: '/how-it-works', label: 'كيف تعمل عزبة؟', labelEn: 'How AZBA Works' },
