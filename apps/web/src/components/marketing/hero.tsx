@@ -57,7 +57,7 @@ export function HeroSection() {
   }, [videoReady])
 
   return (
-    <section className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-primary-950">
+    <section className="relative w-full overflow-hidden bg-primary-950 min-h-[100svh]">
       {/* Video Background */}
       {!videoFailed && (
         <video
@@ -93,8 +93,8 @@ export function HeroSection() {
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col">
-        <div className="container-page flex flex-1 flex-col items-center justify-center pt-16 text-center lg:pt-24">
+      <div className="relative z-10 flex min-h-[100svh] flex-col">
+        <div className="container-page flex flex-1 flex-col items-center justify-center pt-12 text-center sm:pt-16 lg:pt-24">
 
           {/* Main heading */}
           <motion.h1
@@ -113,7 +113,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-6 max-w-2xl text-balance text-lg text-ivory/85 sm:text-xl lg:text-2xl"
+            className="mt-4 max-w-2xl text-balance text-base text-ivory/85 sm:text-xl lg:text-2xl"
           >
             من المزرعة إلى محفظتك الاستثمارية.
           </motion.p>
@@ -123,7 +123,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.65 }}
-            className="mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/60 sm:text-base"
+            className="mt-3 max-w-3xl text-balance text-sm leading-relaxed text-ivory/60 sm:text-base"
           >
             منصة متكاملة تتيح لك متابعة فرص الاستثمار في الثروة الحيوانية، ومراقبة
             مشروعاتك، والاطلاع على تفاصيل التشغيل والتكاليف والنتائج بكل شفافية.
@@ -134,7 +134,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
+            className="mt-6 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
           >
             <Link href="/opportunities" className="btn-gold group px-8 py-4 text-base">
               اكتشف فرص الاستثمار
@@ -154,7 +154,7 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1.0 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-ivory/50"
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-ivory/50 sm:mt-8 sm:gap-x-6"
           >
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-gold" />
@@ -186,10 +186,10 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + i * 0.15 }}
-                  className="group rounded-2xl border border-white/25 bg-white/[0.03] px-4 py-4 text-center backdrop-blur-sm transition-all duration-300 hover:border-gold/40 hover:bg-white/[0.07] sm:px-6 sm:py-5"
+                  className="group rounded-2xl border border-white/25 bg-white/[0.03] px-3 py-3 text-center backdrop-blur-sm transition-all duration-300 hover:border-gold/40 hover:bg-white/[0.07] sm:px-6 sm:py-5"
                 >
-                  <stat.icon className="mx-auto mb-2 h-6 w-6 text-gold" />
-                  <div className="text-3xl font-bold text-white sm:text-4xl">{stat.value}</div>
+                  <stat.icon className="mx-auto mb-1.5 h-5 w-5 text-gold sm:mb-2 sm:h-6 sm:w-6" />
+                  <div className="text-2xl font-bold text-white sm:text-4xl">{stat.value}</div>
                   <div className="mt-1 text-sm font-semibold text-ivory/90">{stat.label}</div>
                   <div className="text-xs text-ivory/50">{stat.sub}</div>
                 </motion.div>
