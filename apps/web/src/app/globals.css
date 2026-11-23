@@ -72,6 +72,12 @@
     touch-action: manipulation;
   }
 
+  /* منع أي عنصر وسائط من تجاوز عرض الشاشة */
+  img,
+  video {
+    max-width: 100%;
+  }
+
   /* مسافة تحت الهيدر الثابت عند الانتقال للأقسام */
   [id] {
     scroll-margin-top: 5.5rem;
@@ -212,9 +218,6 @@
   }
   .pt-safe {
     padding-top: env(safe-area-inset-top);
-  }
-  .pb-safe-top {
-    padding-bottom: env(safe-area-inset-bottom);
   }
   .px-safe {
     padding-right: env(safe-area-inset-right);

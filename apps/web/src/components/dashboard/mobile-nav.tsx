@@ -19,7 +19,7 @@ export function MobileNav({ onMore }: { onMore: () => void }) {
     item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-primary-950/75 px-safe pb-safe-top backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-primary-950/75 px-safe pb-safe backdrop-blur-xl lg:hidden">
       <div className="grid grid-cols-5 gap-2 px-3 pb-1.5 pt-2">
         {ITEMS.map((item) => {
           const active = isActive(item)
