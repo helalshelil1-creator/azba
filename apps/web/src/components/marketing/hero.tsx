@@ -186,7 +186,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + i * 0.15 }}
-                  className="glass-dark group rounded-2xl border border-white/10 px-6 py-5 text-center backdrop-blur-xl transition-all duration-300 hover:border-gold/40"
+                  className="group rounded-2xl border border-white/20 bg-white/5 px-4 py-4 text-center backdrop-blur-md transition-all duration-300 hover:border-gold/40 hover:bg-white/10 sm:px-6 sm:py-5"
                 >
                   <stat.icon className="mx-auto mb-2 h-6 w-6 text-gold" />
                   <div className="text-3xl font-bold text-white sm:text-4xl">{stat.value}</div>
