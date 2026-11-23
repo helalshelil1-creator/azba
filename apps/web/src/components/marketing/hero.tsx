@@ -36,7 +36,7 @@ export function HeroSection() {
   }, [prefersReducedMotion, count])
 
   return (
-    <section className="relative w-full overflow-hidden bg-primary-950 min-h-[108svh]">
+    <section className="relative w-full overflow-hidden bg-primary-950 min-h-svh">
       {/* خلفية متحركة: خمس صور تتبدل كل ٣ ثواني */}
       <div className="absolute inset-0">
         {HERO_IMAGES.map((img, i) => (
@@ -47,7 +47,7 @@ export function HeroSection() {
             aria-hidden={i !== index}
             loading={i === 0 ? 'eager' : 'lazy'}
             className={cn(
-              'absolute inset-0 h-full w-full object-contain transition-opacity duration-1000',
+              'absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000',
               i === index ? 'opacity-100' : 'opacity-0'
             )}
           />
@@ -60,7 +60,7 @@ export function HeroSection() {
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[108svh] flex-col">
+      <div className="relative z-10 flex min-h-svh flex-col">
         <div className="container-page flex flex-1 flex-col items-center justify-center pt-12 text-center sm:pt-16 lg:pt-24">
 
           {/* Brand mark */}
@@ -68,14 +68,19 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-5 sm:mb-7"
+            className="relative mb-6 sm:mb-8"
           >
+            {/* هالة داكنة خلف الشعار لضمان وضوحه فوق الصورة */}
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-950/75 blur-3xl sm:h-64 sm:w-64"
+            />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
               alt="AZBA | عزبة"
               draggable={false}
-              className="mx-auto h-28 w-auto sm:h-40"
+              className="relative mx-auto h-36 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.7)] sm:h-52 lg:h-60"
             />
           </motion.div>
 
