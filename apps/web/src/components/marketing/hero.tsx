@@ -22,7 +22,7 @@ const HERO_IMAGES = [
 ]
 
 /** مدة عرض كل صورة بالملي ثانية */
-const HERO_INTERVAL = 3000
+const HERO_INTERVAL = 7000
 
 export function HeroSection() {
   const [index, setIndex] = useState(0)
@@ -47,7 +47,7 @@ export function HeroSection() {
             aria-hidden={i !== index}
             loading={i === 0 ? 'eager' : 'lazy'}
             className={cn(
-              'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
+              'absolute inset-0 h-full w-full object-contain transition-opacity duration-1000',
               i === index ? 'opacity-100' : 'opacity-0'
             )}
           />
