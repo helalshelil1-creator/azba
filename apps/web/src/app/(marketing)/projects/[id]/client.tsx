@@ -177,18 +177,18 @@ export function ProjectDetailClient({ id }: { id: string }) {
                 <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-gold" />{project.farm?.name} — {project.farm?.governorate}</span>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur">
                 <div className="text-[11px] text-ivory/60">العائد المتوقع</div>
-                <div className="mt-1 text-2xl font-extrabold text-gold">{Number(project.expectedReturnRate ?? 0)}٪</div>
+                <div className="mt-1 text-lg font-extrabold text-gold sm:text-2xl">{Number(project.expectedReturnRate ?? 0)}٪</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur">
                 <div className="text-[11px] text-ivory/60">سعر السهم</div>
-                <div className="mt-1 text-2xl font-extrabold text-white">{formatEGP(price)}</div>
+                <div className="mt-1 text-lg font-extrabold text-white sm:text-2xl">{formatEGP(price)}</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur">
                 <div className="text-[11px] text-ivory/60">الأسهم المتاحة</div>
-                <div className="mt-1 text-2xl font-extrabold text-white">{available}</div>
+                <div className="mt-1 text-lg font-extrabold text-white sm:text-2xl">{available}</div>
               </div>
             </div>
           </div>

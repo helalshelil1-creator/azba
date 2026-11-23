@@ -96,7 +96,7 @@ export function DashboardSidebar({ open, onClose }: { open: boolean; onClose: ()
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <nav className="flex-1 overflow-y-auto px-3 py-4" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="space-y-1">
             {items.map((item) => (
               <Link

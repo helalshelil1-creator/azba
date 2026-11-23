@@ -181,15 +181,15 @@ export function Opportunities() {
 
                 <div className="mt-5 grid grid-cols-3 gap-3 border-t border-border/60 pt-5 text-center">
                   <div>
-                    <div className="text-base font-bold text-primary">{formatPercent(p.expectedReturn)}</div>
+                    <div className="text-sm font-bold text-primary sm:text-base">{formatPercent(p.expectedReturn)}</div>
                     <div className="text-[10px] text-muted-foreground">عائد سنوي تقديري</div>
                   </div>
                   <div>
-                    <div className="text-base font-bold text-primary">{p.duration || '—'} شهر</div>
+                    <div className="text-sm font-bold text-primary sm:text-base">{p.duration || '—'} شهر</div>
                     <div className="text-[10px] text-muted-foreground">مدة المشروع</div>
                   </div>
                   <div>
-                    <div className="text-base font-bold text-primary">{formatEGP(p.sharePrice)}</div>
+                    <div className="text-sm font-bold text-primary sm:text-base">{formatEGP(p.sharePrice)}</div>
                     <div className="text-[10px] text-muted-foreground">سعر السهم</div>
                   </div>
                 </div>

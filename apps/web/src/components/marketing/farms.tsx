@@ -73,17 +73,17 @@ export function Farms() {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-border/60 p-5 text-center">
+              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-border/60 p-4 text-center sm:p-5">
                 <div>
-                  <div className="text-xl font-bold text-primary">{farm.area}</div>
+                  <div className="text-base font-bold text-primary sm:text-xl">{farm.area}</div>
                   <div className="text-[10px] text-muted-foreground">المساحة</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-primary">{farm.animals}</div>
+                  <div className="text-base font-bold text-primary sm:text-xl">{farm.animals}</div>
                   <div className="text-[10px] text-muted-foreground">رأس حيوان</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-primary">{farm.pens}</div>
+                  <div className="text-base font-bold text-primary sm:text-xl">{farm.pens}</div>
                   <div className="text-[10px] text-muted-foreground">حظيرة</div>
                 </div>
               </div>

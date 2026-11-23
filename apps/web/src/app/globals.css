@@ -68,6 +68,13 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* مسافة تحت الهيدر الثابت عند الانتقال للأقسام */
+  [id] {
+    scroll-margin-top: 5.5rem;
   }
 
   [dir='rtl'] body {
@@ -167,7 +174,7 @@
   }
 
   .input-field {
-    @apply w-full rounded-xl border border-input bg-white px-4 py-3 text-sm text-foreground
+    @apply w-full rounded-xl border border-input bg-white px-4 py-3 text-base sm:text-sm text-foreground
       placeholder:text-muted-foreground transition-all duration-200
       focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20
       disabled:opacity-50 disabled:cursor-not-allowed;
@@ -198,6 +205,21 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* مساحة آمنة لأجهزة الشق والبار السفلي */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe-top {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .px-safe {
+    padding-right: env(safe-area-inset-right);
+    padding-left: env(safe-area-inset-left);
+  }
   .animate-delay-100 { animation-delay: 100ms; }
   .animate-delay-200 { animation-delay: 200ms; }
   .animate-delay-300 { animation-delay: 300ms; }
@@ -222,7 +244,7 @@
 
 @layer components {
   .input-dark {
-    @apply rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-ivory/30 transition-all duration-200 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50;
+    @apply rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-base sm:text-sm text-white placeholder:text-ivory/30 transition-all duration-200 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50;
   }
 }
 

@@ -7,7 +7,7 @@ import { TrendingUp, ArrowLeft, ShieldCheck, Sparkles } from 'lucide-react'
 
 export function CTA() {
   return (
-    <section className="relative overflow-hidden bg-primary-950 py-24 text-ivory">
+    <section className="relative overflow-hidden bg-primary-950 py-16 text-ivory sm:py-24">
       <img src="/images/horse.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-20" />
       <div className="absolute inset-0 bg-gradient-to-t from-primary-950 via-primary-950/80 to-primary-950/60" />
       <div className="absolute inset-0 grid-pattern opacity-20" />
