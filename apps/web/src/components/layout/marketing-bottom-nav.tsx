@@ -27,7 +27,7 @@ export function MarketingBottomNav() {
   const openMore = () => window.dispatchEvent(new CustomEvent('azba:open-menu'))
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-white/80 px-safe pb-safe-top backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-primary-950/75 px-safe pb-safe-top backdrop-blur-xl lg:hidden">
       <div className="grid grid-cols-5 gap-2 px-3 pb-1.5 pt-2">
         {ITEMS.map((item) => {
           const active = isActive(item)
@@ -38,8 +38,8 @@ export function MarketingBottomNav() {
               className={cn(
                 'flex flex-col items-center gap-1 rounded-2xl border px-1 py-2 text-[10px] leading-tight backdrop-blur-md transition-all',
                 active
-                  ? 'border-gold/50 bg-gold/10 font-bold text-primary shadow-sm'
-                  : 'border-border/60 bg-white/60 text-muted-foreground hover:border-gold/30 hover:text-primary'
+                  ? 'border-gold/40 bg-gold/15 font-bold text-gold shadow-sm'
+                  : 'border-white/15 bg-white/5 text-ivory/70 hover:border-gold/30 hover:text-white'
               )}
             >
               <item.icon className={cn('h-[18px] w-[18px] sm:h-5 sm:w-5', active && 'text-gold')} />
@@ -50,7 +50,7 @@ export function MarketingBottomNav() {
         <button
           type="button"
           onClick={openMore}
-          className="flex flex-col items-center gap-1 rounded-2xl border border-border/60 bg-white/60 px-1 py-2 text-[10px] leading-tight text-muted-foreground backdrop-blur-md transition-all hover:border-gold/30 hover:text-primary"
+          className="flex flex-col items-center gap-1 rounded-2xl border border-white/15 bg-white/5 px-1 py-2 text-[10px] leading-tight text-ivory/70 backdrop-blur-md transition-all hover:border-gold/30 hover:text-white"
         >
           <Menu className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
           المزيد

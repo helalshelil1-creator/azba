@@ -49,7 +49,7 @@ export function HeroSection() {
   }, [videoReady])
 
   return (
-    <section className="relative w-full overflow-hidden bg-primary-950 min-h-[100svh]">
+    <section className="relative w-full overflow-hidden bg-primary-950 min-h-[108svh]">
       {/* Video Background */}
       {!videoFailed && (
         <video
@@ -85,7 +85,7 @@ export function HeroSection() {
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[100svh] flex-col">
+      <div className="relative z-10 flex min-h-[108svh] flex-col">
         <div className="container-page flex flex-1 flex-col items-center justify-center pt-12 text-center sm:pt-16 lg:pt-24">
 
           {/* Brand mark */}
@@ -100,7 +100,7 @@ export function HeroSection() {
               src="/logo.png"
               alt="AZBA | عزبة"
               draggable={false}
-              className="mx-auto h-24 w-auto sm:h-32"
+              className="mx-auto h-28 w-auto sm:h-40"
             />
           </motion.div>
 
@@ -164,15 +164,15 @@ export function HeroSection() {
             transition={{ duration: 1, delay: 1.0 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-ivory/50 sm:mt-8 sm:gap-x-6"
           >
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <ShieldCheck className="h-4 w-4 text-gold" />
               شفافية كاملة
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <BadgeCheck className="h-4 w-4 text-gold" />
               إدارة محترفة
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <Leaf className="h-4 w-4 text-gold" />
               رعاية بيطرية
             </span>
