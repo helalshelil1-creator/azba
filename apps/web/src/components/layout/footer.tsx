@@ -62,7 +62,7 @@ const SOCIAL = [
 export function Footer() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   return (
-    <footer className="border-t border-white/10 bg-primary-950 text-ivory">
+    <footer className="border-t border-white/10 bg-primary-950 pb-24 text-ivory lg:pb-0">
       {/* Newsletter */}
       <div className="border-b border-white/10">
         <div className="container-page flex flex-col items-center justify-between gap-6 py-12 lg:flex-row">

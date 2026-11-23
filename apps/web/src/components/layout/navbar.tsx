@@ -40,6 +40,12 @@ export function Navbar() {
   }, [mobileOpen])
 
   useEffect(() => {
+    const onOpen = () => setMobileOpen(true)
+    window.addEventListener('azba:open-menu', onOpen)
+    return () => window.removeEventListener('azba:open-menu', onOpen)
+  }, [])
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMobileOpen(false)
     }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/lib/auth-store'
+import { MarketingBottomNav } from '@/components/layout/marketing-bottom-nav'
 import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
@@ -80,6 +81,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground">
         <AuthProvider>
           {children}
+          <MarketingBottomNav />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </body>
