@@ -63,7 +63,7 @@ export function HeroSection() {
         <video
           ref={videoRef}
           className={cn(
-            'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
+            'absolute inset-0 h-full w-full object-contain sm:object-cover transition-opacity duration-1000',
             videoReady ? 'opacity-100' : 'opacity-0'
           )}
           src={HERO_VIDEO}
@@ -82,7 +82,7 @@ export function HeroSection() {
           <img
             src="/images/cattle.jpg"
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain sm:object-cover"
           />
         </div>
       )}
