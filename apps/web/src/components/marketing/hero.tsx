@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion, AnimatePresence } from './framer'
+import { motion, useReducedMotion } from './framer'
 import {
   ArrowLeft,
   ShieldCheck,
@@ -13,71 +13,46 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const HERO_VIDEO =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260622_204103_f607742e-09da-4cf5-bb06-4e67b0a531de.mp4'
+const HERO_IMAGES = [
+  { src: '/images/cattle.jpg', alt: 'بقرة' },
+  { src: '/images/horse.jpg', alt: 'حصان' },
+  { src: '/images/sheep.jpg', alt: 'أغنام وخرفان' },
+  { src: '/images/goat.jpg', alt: 'ماعز' },
+  { src: '/images/buffalo.jpg', alt: 'جاموس' },
+]
+
+/** مدة عرض كل صورة بالملي ثانية */
+const HERO_INTERVAL = 3000
 
 export function HeroSection() {
-  const [videoReady, setVideoReady] = useState(false)
-  const [videoFailed, setVideoFailed] = useState(false)
-  const [showFallback, setShowFallback] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const [index, setIndex] = useState(0)
   const prefersReducedMotion = useReducedMotion()
+  const count = HERO_IMAGES.length
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    const onCanPlay = () => setVideoReady(true)
-    const onError = () => {
-      setVideoFailed(true)
-      setShowFallback(true)
-    }
-
-    video.addEventListener('canplay', onCanPlay)
-    video.addEventListener('error', onError)
-
-    // Safety: if video hasn't loaded in 8s, show fallback
-    const timer = setTimeout(() => {
-      if (!videoReady) setShowFallback(true)
-    }, 8000)
-
-    return () => {
-      video.removeEventListener('canplay', onCanPlay)
-      video.removeEventListener('error', onError)
-      clearTimeout(timer)
-    }
-  }, [videoReady])
+    if (prefersReducedMotion) return
+    const id = setInterval(() => setIndex((i) => (i + 1) % count), HERO_INTERVAL)
+    return () => clearInterval(id)
+  }, [prefersReducedMotion, count])
 
   return (
     <section className="relative w-full overflow-hidden bg-primary-950 min-h-[108svh]">
-      {/* Video Background */}
-      {!videoFailed && (
-        <video
-          ref={videoRef}
-          className={cn(
-            'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
-            videoReady ? 'opacity-100' : 'opacity-0'
-          )}
-          src={HERO_VIDEO}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Fallback image / gradient */}
-      {showFallback && (
-        <div className="absolute inset-0">
+      {/* خلفية متحركة: خمس صور تتبدل كل ٣ ثواني */}
+      <div className="absolute inset-0">
+        {HERO_IMAGES.map((img, i) => (
           <img
-            src="/images/cattle.jpg"
-            alt=""
-            className="h-full w-full object-cover"
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            aria-hidden={i !== index}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            className={cn(
+              'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
+              i === index ? 'opacity-100' : 'opacity-0'
+            )}
           />
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Cinematic overlays */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary-950/70 via-primary-950/40 to-primary-950/90" />
