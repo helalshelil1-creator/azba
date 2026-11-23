@@ -14,6 +14,7 @@ import { http } from '@/lib/api'
 import { useAuth } from '@/lib/auth-store'
 import { cn, formatEGP } from '@/lib/utils'
 import { animalImage } from '@/lib/animals'
+import { findShowcaseProject } from '@/lib/showcase'
 import { toast } from 'sonner'
 
 interface Project {
@@ -74,8 +75,11 @@ export function ProjectDetailClient({ id }: { id: string }) {
     try {
       const res = await http.get<Project>(`/projects/${id}`)
       setProject(res)
-    } catch (e: any) {
-      setError(e?.message || 'تعذر تحميل المشروع')
+    } catch {
+      // الـ API غير متاح: عرض مشروع العرض المطابق لبيانات الـ seed
+      const fallback = findShowcaseProject(id)
+      if (fallback) setProject(fallback as unknown as Project)
+      else setError('تعذر تحميل المشروع')
     } finally { setLoading(false) }
   }
 

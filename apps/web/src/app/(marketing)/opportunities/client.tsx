@@ -14,6 +14,7 @@ import { Footer } from '@/components/layout/footer'
 import { http } from '@/lib/api'
 import { cn, formatEGP, formatPercent } from '@/lib/utils'
 import { animalImage, animalLabel } from '@/lib/animals'
+import { SHOWCASE_PROJECTS } from '@/lib/showcase'
 
 interface Project {
   id: string
@@ -79,8 +80,9 @@ export function OpportunitiesClient() {
         params: { page: 1, limit: 50, status: 'FUNDING,ACTIVE,IN_PROGRESS,APPROVED' },
       })
       setProjects(res.items ?? [])
-    } catch (e: any) {
-      setError(e?.message || 'تعذر تحميل الفرص')
+    } catch {
+      // الـ API غير متاح: عرض مشاريع العرض من نفس بيانات الـ seed
+      setProjects(SHOWCASE_PROJECTS as unknown as Project[])
     } finally {
       setLoading(false)
     }

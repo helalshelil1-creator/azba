@@ -8,6 +8,7 @@ import { MapPin, Clock, ShieldAlert, ArrowLeft, ChevronLeft, Loader2 } from 'luc
 import { cn, formatEGP, formatPercent } from '@/lib/utils'
 import { http, getToken } from '@/lib/api'
 import { animalImage, animalLabel } from '@/lib/animals'
+import { SHOWCASE_PROJECTS } from '@/lib/showcase'
 
 type Project = {
   id: string
@@ -80,7 +81,8 @@ export function Opportunities() {
         const data = Array.isArray(res?.data) ? res.data : []
         if (alive) setProjects(data.map(mapProject))
       } catch {
-        if (alive) setProjects([])
+        // الـ API غير متاح: عرض مشاريع العرض من نفس بيانات الـ seed
+        if (alive) setProjects(SHOWCASE_PROJECTS.map(mapProject))
       } finally {
         if (alive) setLoading(false)
       }

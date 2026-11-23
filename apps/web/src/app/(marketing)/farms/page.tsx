@@ -5,6 +5,7 @@ import { Loader2, AlertTriangle, MapPin, Building2, PawPrint, Search } from 'luc
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { http, getToken } from '@/lib/api'
+import { SHOWCASE_FARMS } from '@/lib/showcase'
 
 interface Farm {
   id: string; name: string; nameEn?: string; code: string; address?: string
@@ -25,8 +26,12 @@ export default function FarmsPage() {
       if (search) params.set('search', search)
       const res = await http.get<any>(`/farms?${params.toString()}`, {}, getToken)
       setFarms(res?.data ?? [])
-    } catch (e: any) {
-      setError(e?.message || 'تعذر تحميل المزارع')
+    } catch {
+      // الـ API غير متاح: عرض مزارع العرض من نفس بيانات الـ seed
+      setFarms(SHOWCASE_FARMS.map((f) => ({
+        ...f,
+        _count: { animals: f.animals, pens: f.pens },
+      })) as Farm[])
     } finally { setLoading(false) }
   }
 
