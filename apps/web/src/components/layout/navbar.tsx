@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, Globe, LogIn, UserPlus, TrendingUp } from 'lucide-react'
-import { Logo } from '@azba/ui/logo'
 import { cn } from '@/lib/utils'
 import { MobileMenu } from './mobile-menu'
 
@@ -62,15 +61,6 @@ export function Navbar() {
       >
         <div className="container-page">
           <div className="flex items-center justify-between gap-6">
-            {/* Logo - right in RTL */}
-            <Link href="/" className="shrink-0" aria-label="AZBA">
-              <Logo
-                size={44}
-                variant={isTransparent ? 'light' : 'color'}
-                lang={lang}
-              />
-            </Link>
-
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1">
               {NAV_LINKS.map((link) => (

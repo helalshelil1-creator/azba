@@ -96,6 +96,22 @@ export function HeroSection() {
       <div className="relative z-10 flex min-h-[100svh] flex-col">
         <div className="container-page flex flex-1 flex-col items-center justify-center pt-12 text-center sm:pt-16 lg:pt-24">
 
+          {/* Brand mark */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-5 sm:mb-7"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="AZBA | عزبة"
+              draggable={false}
+              className="mx-auto h-24 w-auto sm:h-32"
+            />
+          </motion.div>
+
           {/* Main heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
