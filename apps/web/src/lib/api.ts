@@ -1,6 +1,23 @@
 // AZBA API client
-/** عنوان الخادم: من متغير البيئة NEXT_PUBLIC_API_URL (فارغ = نفس النطاق). */
-const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
+/**
+ * عنوان الخادم: من متغير البيئة NEXT_PUBLIC_API_URL (فارغ = نفس النطاق).
+ * حماية من mixed content: صفحة HTTPS لا تستطيع طلب API بعنوان HTTP،
+ * فنرجع تلقائيًا لنفس النطاق (/api) بدل ما يفشل الطلب.
+ */
+function resolveApiBase(): string {
+  const raw = (process.env.NEXT_PUBLIC_API_URL || '').trim()
+  if (!raw) return ''
+  if (
+    typeof window !== 'undefined' &&
+    window.location.protocol === 'https:' &&
+    /^http:/i.test(raw)
+  ) {
+    return ''
+  }
+  return raw.replace(/\/+$/, '')
+}
+
+const API_URL = resolveApiBase()
 
 export class ApiError extends Error {
   code: string
@@ -43,18 +60,22 @@ export async function api<T = unknown>(
   const { body, params, headers, ...rest } = options
   const token = getToken?.()
 
-  const res = await fetch(buildUrl(path, params), {
-    ...rest,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...headers,
-    },
-    credentials: 'include',
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
-
+  let res: Response
+  try {
+    res = await fetch(buildUrl(path, params), {
+      ...rest,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...headers,
+      },
+      credentials: 'include',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    })
+  } catch {
+    throw new ApiError('تعذر الاتصال بالخادم — تحقّق من اتصالك بالإنترنت', 0, 'NETWORK_ERROR')
+  }
   const text = await res.text()
   let data: any = null
   try {

@@ -36,7 +36,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-primary-950">
+    <div className="relative min-h-screen overflow-hidden bg-primary-950">
       {/* Background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
       <div className="absolute -top-40 left-1/3 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
@@ -51,7 +51,7 @@ export default function LoginPage() {
         </header>
 
         {/* Form */}
-        <div className="flex flex-1 items-center justify-center px-4 pb-16">
+        <div className="flex flex-1 items-center justify-center px-4 pb-28">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

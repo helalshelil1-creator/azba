@@ -100,7 +100,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {}
       setState({ user, token, loading: false, error: null })
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'تعذر تسجيل الدخول'
+      // نفرّق بين كلمة سر خاطئة وفشل الاتصال وخطأ الخادم
+      const message =
+        err instanceof ApiError
+          ? err.code === 'NETWORK_ERROR'
+            ? 'تعذر الاتصال بالخادم — تحقّق من اتصالك بالإنترنت'
+            : err.message || 'بيانات الدخول غير صحيحة'
+          : 'تعذر تسجيل الدخول'
       setState((s) => ({ ...s, loading: false, error: message }))
       throw err
     }
@@ -118,7 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {}
       setState({ user, token, loading: false, error: null })
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'تعذر إنشاء الحساب'
+      const message =
+        err instanceof ApiError
+          ? err.code === 'NETWORK_ERROR'
+            ? 'تعذر الاتصال بالخادم — تحقّق من اتصالك بالإنترنت'
+            : err.message || 'تعذر إنشاء الحساب'
+          : 'تعذر إنشاء الحساب'
       setState((s) => ({ ...s, loading: false, error: message }))
       throw err
     }

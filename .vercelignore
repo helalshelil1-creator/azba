@@ -1,0 +1,10 @@
+# لا ترفع ملفات البيئة أو الأسرار إلى Vercel
+.env
+.env.*
+apps/web/.env
+apps/api/.env
+packages/database/.env
+
+# مخرجات البناء المحلية
+apps/web/.next
+apps/api/dist

@@ -30,13 +30,13 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-primary-950">
+    <div className="relative min-h-screen overflow-hidden bg-primary-950">
       <div className="absolute inset-0 grid-pattern opacity-20" />
       <div className="relative flex min-h-screen flex-col">
         <header className="container-page py-6">
           <Link href="/" aria-label="AZBA"><Logo size={44} variant="light" /></Link>
         </header>
-        <div className="flex flex-1 items-center justify-center px-4 pb-16">
+        <div className="flex flex-1 items-center justify-center px-4 pb-28">
           <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl">
             <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold text-white">استعادة كلمة المرور</h1>
