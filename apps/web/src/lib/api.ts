@@ -85,7 +85,16 @@ export async function api<T = unknown>(
   }
 
   if (!res.ok) {
-    const message = data?.message || data?.error?.message || `HTTP ${res.status}`
+    // رسائل واضحة بدل «HTTP 404» عندما الرد مش JSON (مثلاً صفحة 404 من نفس النطاق)
+    const fallbackMessage =
+      res.status === 401
+        ? 'بيانات الدخول غير صحيحة'
+        : res.status === 404
+          ? 'الخدمة غير متاحة حاليًا — حاول لاحقًا'
+          : res.status >= 500
+            ? 'خطأ في الخادم — حاول لاحقًا'
+            : `HTTP ${res.status}`
+    const message = data?.message || data?.error?.message || fallbackMessage
     throw new ApiError(
       Array.isArray(message) ? message[0] : message,
       res.status,
