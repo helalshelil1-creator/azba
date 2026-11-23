@@ -6,7 +6,7 @@ exports.AppIcon = AppIcon;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const utils_1 = require("./utils");
 function Logo({ className, size = 48, showText = true }) {
-    const src = showText ? '/logo.png' : '/icon.png';
+    const src = showText ? '/logo.webp' : '/icon.png';
     return (
     // eslint-disable-next-line @next/next/no-img-element
     (0, jsx_runtime_1.jsx)("img", { src: src, alt: "AZBA | \u0639\u0632\u0628\u0629", width: size, height: size, style: { height: size, width: 'auto' }, className: (0, utils_1.cn)('inline-block select-none', className), draggable: false }));

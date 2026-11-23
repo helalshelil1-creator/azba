@@ -3,7 +3,7 @@ import { cn } from './utils'
 
 /**
  * شعار AZBA | عزبة الرسمي.
- * الأصل مرسوم من ملف الهوية الرسمي: `public/logo.png` (رمز + AZBA + عزبة)
+ * الأصل مرسوم من ملف الهوية الرسمي: `public/logo.webp` (رمز + AZBA + عزبة)
  * و`public/icon.png` (الرمز وحده للأيقونة وال favicon).
  * الخلفية شفافة، لذا يظهر الذهب على أي خلفية.
  */
@@ -16,7 +16,7 @@ export interface LogoProps {
 }
 
 export function Logo({ className, size = 48, showText = true }: LogoProps) {
-  const src = showText ? '/logo.png' : '/icon.png'
+  const src = showText ? '/logo.webp' : '/icon.png'
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img

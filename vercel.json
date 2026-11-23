@@ -1,23 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "web": {
-      "root": ".",
-      "framework": "nextjs",
-      "buildCommand": "cd apps/web && npm run build",
-      "installCommand": "npm install",
-      "devCommand": "cd apps/web && npm run dev",
-      "outputDirectory": "apps/web/.next"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "web"
-      }
-    }
-  ],
+  "framework": "nextjs",
+  "buildCommand": "cd apps/web && npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "apps/web/.next",
   "headers": [
     {
       "source": "/(.*).(webp|avif|png|jpe?g|svg|ico)",
