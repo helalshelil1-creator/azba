@@ -19,26 +19,31 @@ export function MobileNav({ onMore }: { onMore: () => void }) {
     item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-white/95 px-safe pb-safe-top backdrop-blur-xl lg:hidden">
-      <div className="grid grid-cols-5">
-        {ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors',
-              isActive(item) ? 'text-primary' : 'text-muted-foreground'
-            )}
-          >
-            <item.icon className={cn('h-5 w-5', isActive(item) && 'text-gold')} />
-            {item.label}
-          </Link>
-        ))}
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-white/80 px-safe pb-safe-top backdrop-blur-xl lg:hidden">
+      <div className="grid grid-cols-5 gap-2 px-3 pb-1.5 pt-2">
+        {ITEMS.map((item) => {
+          const active = isActive(item)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex flex-col items-center gap-1 rounded-2xl border px-1 py-2 text-[10px] leading-tight backdrop-blur-md transition-all',
+                active
+                  ? 'border-gold/50 bg-gold/10 font-bold text-primary shadow-sm'
+                  : 'border-border/60 bg-white/60 text-muted-foreground hover:border-gold/30 hover:text-primary'
+              )}
+            >
+              <item.icon className={cn('h-[18px] w-[18px] sm:h-5 sm:w-5', active && 'text-gold')} />
+              {item.label}
+            </Link>
+          )
+        })}
         <button
           onClick={onMore}
-          className="flex flex-col items-center gap-1 py-2.5 text-[11px] text-muted-foreground transition-colors"
+          className="flex flex-col items-center gap-1 rounded-2xl border border-border/60 bg-white/60 px-1 py-2 text-[10px] leading-tight text-muted-foreground backdrop-blur-md transition-all hover:border-gold/30 hover:text-primary"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
           المزيد
         </button>
       </div>

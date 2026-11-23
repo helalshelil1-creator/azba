@@ -5,9 +5,7 @@ import Link from 'next/link'
 import { motion, useReducedMotion, AnimatePresence } from './framer'
 import {
   ArrowLeft,
-  TrendingUp,
   ShieldCheck,
-  Sparkles,
   Play,
   ChevronDown,
   Leaf,
@@ -17,12 +15,6 @@ import { cn } from '@/lib/utils'
 
 const HERO_VIDEO =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260622_204103_f607742e-09da-4cf5-bb06-4e67b0a531de.mp4'
-
-const STATS = [
-  { value: '+18%', label: 'أرباح محققة', sub: 'عائد سنوي تقديري', icon: TrendingUp },
-  { value: '25,000', label: 'ج.م استثمارات', sub: 'إجمالي متراكم', icon: Sparkles },
-  { value: '3', label: 'مشاريع نشطة', sub: 'متاحة للاستثمار', icon: Leaf },
-]
 
 export function HeroSection() {
   const [videoReady, setVideoReady] = useState(false)
@@ -187,32 +179,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.1 }}
-          className="relative z-10 mt-auto pb-8"
-        >
-          <div className="container-page">
-            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
-              {STATS.map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 1.2 + i * 0.15 }}
-                  className="group rounded-2xl border border-white/25 bg-white/[0.03] px-3 py-3 text-center backdrop-blur-sm transition-all duration-300 hover:border-gold/40 hover:bg-white/[0.07] sm:px-6 sm:py-5"
-                >
-                  <stat.icon className="mx-auto mb-1.5 h-5 w-5 text-gold sm:mb-2 sm:h-6 sm:w-6" />
-                  <div className="text-2xl font-bold text-white sm:text-4xl">{stat.value}</div>
-                  <div className="mt-1 text-sm font-semibold text-ivory/90">{stat.label}</div>
-                  <div className="text-xs text-ivory/50">{stat.sub}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
       </div>
 
       {/* Scroll indicator */}
