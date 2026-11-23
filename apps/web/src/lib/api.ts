@@ -39,7 +39,8 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 function buildUrl(path: string, params?: RequestOptions['params']): string {
-  const full = path.startsWith('http') ? path : `${API_URL}${path}`
+  // بلا عنوان مخصص = نفس النطاق مع بادئة /api الافتراضية
+  const full = path.startsWith('http') ? path : `${API_URL || '/api'}${path}`
   const base = typeof window !== 'undefined' ? window.location.origin : undefined
   const url = new URL(full, base)
   if (params) {

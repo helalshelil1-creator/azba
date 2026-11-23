@@ -58,6 +58,11 @@
     @apply border-border;
   }
 
+  /* خلفية موحّدة لـ html و body حتى لا يظهر أي شريط بلون مختلف */
+  html {
+    background-color: rgb(var(--background));
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
