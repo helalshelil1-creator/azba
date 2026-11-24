@@ -35,11 +35,11 @@ export default function Page() {
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Users className="h-5 w-5 text-gold" />قيمنا</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>الشفافية في كل رقم وتقرير.</p><p>الالتزام بمعايير الحوكمة وحماية أموال المستثمرين في حسابات منفصلة.</p><p>الاستدامة في التشغيل والاحترام الكامل لصحة الحيوان.</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>الشفافية في كل رقم وتقرير.</p><p>الالتزام بمعايير الحوكمة والتوجّه المقصود حماية أموال المستثمرين في حسابات منفصلة (تصور وليس تشغيلًا فعليًا حاليًا).</p><p>الاستدامة في التشغيل والاحترام الكامل لصحة الحيوان.</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><ShieldCheck className="h-5 w-5 text-gold" />حوكمة الاستثمار</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>تُودع أموال المستثمرين في حسابات منفصلة عن حسابات التشغيل.</p><p>تُراجع كل مصروف من مسؤول مالي مستقل قبل الصرف.</p><p>تُرحّل جميع الحركات المالية بنظام القيد المزدوج.</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>التصميم المقصود إيداع أموال المستثمرين في حسابات منفصلة عن حسابات التشغيل (تصور وليس تشغيلًا فعليًا حاليًا).</p><p>تُراجع كل مصروف من مسؤول مالي مستقل قبل الصرف.</p><p>تُرحّل جميع الحركات المالية بنظام القيد المزدوج.</p></div>
           </div>
         </div>
       </div>
