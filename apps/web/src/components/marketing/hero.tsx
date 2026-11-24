@@ -101,7 +101,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.35 }}
-            className="max-w-4xl text-balance text-4xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
+            className="max-w-4xl text-balance text-4xl font-bold leading-[1.3] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             style={{ fontFamily: 'var(--font-tajawal)' }}
           >
             استثمر في{' '}

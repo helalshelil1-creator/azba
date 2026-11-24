@@ -140,6 +140,9 @@
 
   .text-gradient-gold {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600;
+    padding: 0.18em 0.1em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
   .text-gradient-emerald {

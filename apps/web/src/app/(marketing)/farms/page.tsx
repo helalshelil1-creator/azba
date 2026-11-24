@@ -6,6 +6,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { http, getToken } from '@/lib/api'
 import { SHOWCASE_FARMS } from '@/lib/showcase'
+import { PageLogo } from '@/components/layout/page-logo'
 
 interface Farm {
   id: string; name: string; nameEn?: string; code: string; address?: string
@@ -43,6 +44,7 @@ export default function FarmsPage() {
       <section className="relative overflow-hidden bg-primary-950 py-14 text-white">
         <div className="absolute inset-0 grid-pattern opacity-20" />
         <div className="container-page relative">
+          <PageLogo className="mb-6" />
           <span className="badge border border-gold/40 bg-gold/15 text-gold">المزارع</span>
           <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">مزارع عزبة</h1>
           <p className="mt-3 max-w-2xl text-ivory/70">

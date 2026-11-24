@@ -17,6 +17,7 @@ import { cn, formatEGP } from '@/lib/utils'
 import { animalImage } from '@/lib/animals'
 import { findShowcaseProject } from '@/lib/showcase'
 import { toast } from 'sonner'
+import { PageLogo } from '@/components/layout/page-logo'
 
 interface Project {
   id: string
@@ -169,6 +170,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
         <div className="absolute inset-0 grid-pattern opacity-20" />
         <div className="absolute -left-16 top-0 h-64 w-64 rounded-full bg-gold/10 blur-3xl" />
         <div className="container-page relative">
+          <PageLogo className="mb-6" />
           <button onClick={() => router.back()} className="mb-6 inline-flex items-center gap-2 text-sm text-ivory/70 transition-colors hover:text-gold">
             <ArrowRight className="h-4 w-4" />
             رجوع

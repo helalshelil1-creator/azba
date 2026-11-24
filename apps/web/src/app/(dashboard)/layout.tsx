@@ -7,11 +7,14 @@ import { DashboardHeader } from '@/components/dashboard/sidebar'
 import { MobileNav } from '@/components/dashboard/mobile-nav'
 import { useAuth } from '@/lib/auth-store'
 import { Loader2 } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { PageLogo } from '@/components/layout/page-logo'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const { user, loading } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!loading && !user) {
@@ -37,7 +40,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <DashboardSidebar open={open} onClose={() => setOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader onMenuClick={() => setOpen(true)} title="لوحة التحكم" />
-        <main className="min-w-0 flex-1 px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:py-8">
+          {pathname !== '/dashboard' && <PageLogo className="mb-6" />}
+          {children}
+        </main>
         <MobileNav onMore={() => setOpen(true)} />
       </div>
     </div>

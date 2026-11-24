@@ -11,6 +11,7 @@ import { http } from '@/lib/api'
 import { useAuth } from '@/lib/auth-store'
 import { cn, formatEGP, formatPercent } from '@/lib/utils'
 import { Card } from '@azba/ui/card'
+import { PageLogo } from '@/components/layout/page-logo'
 
 interface Stats {
   totalInvested: number
@@ -131,9 +132,9 @@ export default function InvestorDashboardPage() {
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-primary-950 text-white shadow-sm">
         <Image src="/images/cattle.jpg" alt="" aria-hidden="true" fill sizes="(max-width: 1280px) 100vw, 1280px" className="object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-l from-primary-950 via-primary-950/80 to-primary-950/20" />
+        <PageLogo className="relative pt-6" />
         <div className="relative flex flex-col justify-between gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
           <div>
-            <span className="badge border border-gold/40 bg-gold/15 text-gold">AZBA | عزبة</span>
             <h2 className="mt-3 text-2xl font-extrabold leading-snug sm:text-3xl">
               استثمر في مستقبل <span className="text-gradient-gold">أكثر ازدهارًا</span>
             </h2>
