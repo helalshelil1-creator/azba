@@ -78,9 +78,9 @@ export default function RegisterPage() {
       <div className="absolute -top-40 right-1/3 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
 
       <div className="relative flex min-h-screen flex-col">
-        <header className="container-page py-6">
+        <header className="container-page flex justify-center pb-2 pt-8 sm:pt-10">
           <Link href="/" aria-label="AZBA">
-            <Logo size={44} variant="light" />
+            <Logo size={112} variant="light" className="max-h-28 sm:max-h-32" />
           </Link>
         </header>
 

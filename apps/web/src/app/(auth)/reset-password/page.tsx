@@ -42,8 +42,10 @@ export default function ResetPasswordPage() {
     <div className="relative min-h-screen overflow-hidden bg-primary-950">
       <div className="absolute inset-0 grid-pattern opacity-20" />
       <div className="relative flex min-h-screen flex-col">
-        <header className="container-page py-6">
-          <Link href="/" aria-label="AZBA"><Logo size={44} variant="light" /></Link>
+        <header className="container-page flex justify-center pb-2 pt-8 sm:pt-10">
+          <Link href="/" aria-label="AZBA">
+            <Logo size={112} variant="light" className="max-h-28 sm:max-h-32" />
+          </Link>
         </header>
         <div className="flex flex-1 items-center justify-center px-4 pb-28">
           <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl">
