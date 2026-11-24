@@ -20,7 +20,16 @@ const ST_CLS: Record<string, string> = { ACTIVE: 'badge-success', IN_PROGRESS: '
 export default function ProjectsPage() {
   const [items, setItems] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const load = async () => { setLoading(true); try { const r = await http.get<{ items: Project[] }>('/projects/mine'); setItems(r.items ?? []) } catch {} finally { setLoading(false) } }
+  const load = async () => { setLoading(true); try { const r = await http.get<{ items?: any[]; data?: any[] }>('/investments')
+      const byProject = new Map<string, Project>()
+      for (const inv of r.items ?? r.data ?? []) {
+        const pr = inv.project; if (!pr?.id) continue
+        const cur = byProject.get(pr.id)
+        const shares = Number(inv.shareCount ?? 0); const amount = Number(inv.netAmount ?? 0)
+        if (cur) { cur.myShares = (cur.myShares ?? 0) + shares; cur.myAmount = (cur.myAmount ?? 0) + amount }
+        else byProject.set(pr.id, { ...pr, myShares: shares, myAmount: amount })
+      }
+      setItems([...byProject.values()]) } catch {} finally { setLoading(false) } }
   useEffect(() => { load() }, [])
 
   return (
@@ -40,10 +49,8 @@ export default function ProjectsPage() {
       ) : (
         <div className="grid gap-5 md:grid-cols-2">
           {items.map((p) => {
-            const raised = Number(p.raisedAmount); const target = Number(p.targetAmount)
-            const pct = target > 0 ? Math.round((raised / target) * 100) : 0
             return (
-              <Link key={p.id} href={`/dashboard/projects/${p.id}`} className="group">
+              <Link key={p.id} href={`/projects/${p.id}`} className="group">
                 <Card className="group h-full transition-all group-hover:-translate-y-0.5 group-hover:shadow-lg">
                   <div className="flex items-start justify-between">
                     <div>
@@ -53,10 +60,9 @@ export default function ProjectsPage() {
                     </div>
                     <span className={cn('badge', ST_CLS[p.status] ?? 'badge-default')}>{STATUS_AR[p.status] ?? p.status}</span>
                   </div>
-                  <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-lg bg-ivory p-2"><div className="text-[10px] text-muted-foreground">العائد</div><div className="text-sm font-bold text-emerald-600">{formatPercent(Number(p.expectedReturn))}</div></div>
-                    <div className="rounded-lg bg-ivory p-2"><div className="text-[10px] text-muted-foreground">حصتي</div><div className="text-sm font-bold text-primary">{p.myShares ?? '—'}</div></div>
-                    <div className="rounded-lg bg-ivory p-2"><div className="text-[10px] text-muted-foreground">التمويل</div><div className="text-sm font-bold text-gold-600">{pct}%</div></div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+                    <div className="rounded-lg bg-ivory p-2"><div className="text-[10px] text-muted-foreground">حصصي</div><div className="text-sm font-bold text-primary">{p.myShares ?? '—'}</div></div>
+                    <div className="rounded-lg bg-ivory p-2"><div className="text-[10px] text-muted-foreground">مبلغ استثماري</div><div className="text-sm font-bold text-gold-600">{formatEGP(Number(p.myAmount ?? 0))}</div></div>
                   </div>
                 </Card>
               </Link>

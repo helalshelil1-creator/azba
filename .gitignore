@@ -49,3 +49,4 @@ packages/database/node_modules
 
 .vercel
 .env*
+apps/web/.netlify

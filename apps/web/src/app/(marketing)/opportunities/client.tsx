@@ -76,10 +76,9 @@ export function OpportunitiesClient() {
     setLoading(true)
     setError(null)
     try {
-      const res = await http.get<{ items: Project[]; total: number }>('/opportunities', {
-        params: { page: 1, limit: 50, status: 'FUNDING,ACTIVE,IN_PROGRESS,APPROVED' },
-      })
-      setProjects(res.items ?? [])
+      // GET /projects is public and already limited to FUNDING/FUNDED/ACTIVE/COMPLETED projects
+      const res = await http.get<{ data?: Project[]; items?: Project[] }>('/projects?page=1&limit=50')
+      setProjects(res.data ?? res.items ?? [])
     } catch {
       // الـ API غير متاح: عرض مشاريع العرض من نفس بيانات الـ seed
       setProjects(SHOWCASE_PROJECTS as unknown as Project[])
