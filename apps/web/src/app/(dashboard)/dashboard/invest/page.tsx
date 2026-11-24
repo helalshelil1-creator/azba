@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { DemoNotice } from '@/components/layout/demo-banner'
+import { DemoNotice, DEMO_MODE } from '@/components/layout/demo-banner'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, AlertTriangle, Search, MapPin, Users, Sparkles } from 'lucide-react'
@@ -163,7 +163,7 @@ export default function InvestPage() {
                   available > 0 ? 'btn-gold' : 'bg-ivory text-muted-foreground'
                 )}
               >
-                {available > 0 ? <><Sparkles className="h-4 w-4" /> استثمر الآن</> : 'اكتمل التمويل'}
+                {DEMO_MODE ? 'عرض التفاصيل' : available > 0 ? <><Sparkles className="h-4 w-4" /> استثمر الآن</> : 'اكتمل التمويل'}
               </Link>
             </div>
           )

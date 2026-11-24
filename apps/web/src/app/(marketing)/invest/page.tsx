@@ -323,13 +323,13 @@ export default function InvestPage() {
         {/* دعوة للاستثمار */}
         <div className="mt-12 overflow-hidden rounded-3xl bg-primary-950 px-6 py-10 text-center text-white sm:px-12">
           <h2 className="text-2xl font-extrabold sm:text-3xl">
-            جاهز تبدأ؟ <span className="text-gradient-gold">سجّل حسابك</span> واحجز أسهمك
+            تصفّح <span className="text-gradient-gold">المشاريع المعروضة</span> بنفسك
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-ivory/70">
-            العملية تستغرق دقائق: إنشاء حساب، اختيار الفرصة، ثم تأكيد الحجز إلكترونيًا.
+            عرض شخصي غير تجاري: لا يوجد حجز أو دفع فعلي. يمكنك إنشاء حساب لتجربة لوحة المتابعة.
           </p>
           <Link href="/register" className="btn-gold mt-6 px-8 py-3.5">
-            إنشاء حساب مستثمر
+            إنشاء حساب للتجربة
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </div>

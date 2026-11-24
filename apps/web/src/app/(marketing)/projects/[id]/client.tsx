@@ -269,6 +269,9 @@ export function ProjectDetailClient({ id }: { id: string }) {
             </div>
 
             <div className="mt-5 border-t border-border/60 pt-5">
+              {DEMO_MODE && (
+                <p className="mb-3 rounded-lg border border-gold/40 bg-gold/10 p-3 text-xs leading-relaxed text-primary">هذه حاسبة للاستعراض فقط. لا يوجد حجز أو دفع في هذا العرض الشخصي غير التجاري.</p>
+              )}
               <label className="mb-2 block text-xs font-semibold text-primary">عدد الأسهم</label>
               <div className="flex items-center gap-2">
                 <button onClick={() => setShares((s) => Math.max(minShares, s - 1))} className="h-11 w-11 rounded-xl border border-border text-lg font-bold text-primary hover:bg-primary/5">−</button>
