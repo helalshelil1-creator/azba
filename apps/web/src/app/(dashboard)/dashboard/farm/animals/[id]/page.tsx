@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 import { AnimalDetailClient } from './client'
 
-export default function AnimalDetailPage({ params }: { params: { id: string } }) {
-  return <AnimalDetailClient id={params.id} />
+export default function AnimalDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  return <AnimalDetailClient id={id} />
 }

@@ -270,8 +270,8 @@ export class FinancialService {
         where: { id },
         data:
           dto.action === 'APPROVED'
-            ? { approvedBy: userId, approvedAt: new Date() }
-            : { rejectedBy: userId, rejectedAt: new Date(), rejectionReason: dto.comment },
+            ? { status: 'APPROVED', approvedBy: userId, approvedAt: new Date() }
+            : { status: 'REJECTED', rejectedBy: userId, rejectedAt: new Date(), rejectionReason: dto.comment },
       })
 
       if (dto.action === 'APPROVED') {
@@ -331,7 +331,8 @@ export class FinancialService {
   }
 
   async getProfitLoss(query: { from?: string; to?: string; projectId?: string }) {
-    const where: Prisma.ExpenseWhereInput = {}
+    // المصروفات المرفوضة لا تدخل في النتيجة
+    const where: Prisma.ExpenseWhereInput = { rejectedAt: null }
     if (query.projectId) where.projectId = query.projectId
     if (query.from || query.to) {
       where.expenseDate = {
@@ -384,12 +385,12 @@ export class FinancialService {
         _sum: { netPrice: true },
       })
       const expenses = await tx.expense.aggregate({
-        where: { projectId: dto.projectId },
+        where: { projectId: dto.projectId, rejectedAt: null },
         _sum: { totalAmount: true },
       })
       const totalRevenue = revenue._sum.netPrice?.toNumber() || 0
       const totalExpenses = expenses._sum.totalAmount?.toNumber() || 0
-      const netProfit = totalRevenue - totalExpenses
+      const netProfit = Math.round((totalRevenue - totalExpenses) * 100) / 100
 
       if (netProfit <= 0) {
         throw new BadRequestException('لا يمكن توزيع أرباح — صافي النتيجة غير موجب')

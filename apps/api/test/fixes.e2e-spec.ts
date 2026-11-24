@@ -9,6 +9,7 @@ describe('azba fixes (real DB)', () => {
   let call: ReturnType<typeof client>
   let projectId: string
 
+  const created: string[] = []
   async function newProject(shares = 5) {
     const farm = await prisma.farm.create({
       data: { name: 'F', code: `F-${randomBytes(3).toString('hex')}`, address: 'a', city: 'c', governorate: 'g' } as any,
@@ -23,6 +24,7 @@ describe('azba fixes (real DB)', () => {
     await prisma.projectShare.createMany({
       data: Array.from({ length: shares }, (_, i) => ({ projectId: p.id, shareNumber: `${p.code}-${i + 1}` })) as any,
     })
+    created.push(p.id)
     return p.id
   }
   const avail = async (id: string) => (await prisma.project.findUniqueOrThrow({ where: { id } })).availableShares
@@ -33,7 +35,7 @@ describe('azba fixes (real DB)', () => {
     call = client(b.base)
     projectId = await newProject(5)
   })
-  afterAll(async () => { await app.close(); await prisma.$disconnect() })
+  afterAll(async () => { await prisma.project.deleteMany({ where: { id: { in: created } } }); await app.close(); await prisma.$disconnect() })
 
   describe('roles (explicit membership, no hierarchy leak)', () => {
     it('INVESTMENT_MANAGER cannot use finance-only endpoint, FINANCE_MANAGER can reach it', async () => {
@@ -238,6 +240,48 @@ describe('azba fixes (real DB)', () => {
       const rv = await Promise.all([1, 2].map(() => call('POST', `/financial/journal-entries/${je.json.id}/reverse`, { token: t, body: { reason: 'oops' } })))
       expect(rv.map((r) => r.status).sort()).toEqual([201, 400])
       expect(await prisma.journalEntry.count({ where: { referenceType: 'REVERSAL', referenceId: je.json.id } })).toBe(1)
+    })
+  })
+
+  describe('distributions', () => {
+    it('execute pays each investor once even when called concurrently; P&L ignores rejected expenses', async () => {
+      const fm = await makeUser(prisma, 'FINANCE_MANAGER', 'dist')
+      const t = (await loginAs(call, fm.email)).accessToken
+      const pid = await newProject(4)
+      const u = await makeUser(prisma, 'INVESTOR', 'dist-inv')
+      const inv = await prisma.investment.create({ data: {
+        contractNumber: `C-${randomBytes(4).toString('hex')}`, projectId: pid, userId: u.id, shareCount: 2, unitPrice: 1000,
+        grossAmount: 2000, netAmount: 1970, totalAmount: 2000, fees: 30, sharePrice: 1000, currency: 'EGP', status: 'ACTIVE',
+      } as any })
+      const num = `DST-${randomBytes(4).toString('hex')}`
+      const dist = await prisma.profitDistribution.create({ data: {
+        projectId: pid, reference: num, distributionNumber: num, totalAmount: 100, status: 'APPROVED',
+        details: { create: [{ investmentId: inv.id, shareCount: 2, grossAmount: 100, netAmount: 93 }] },
+      } as any })
+      const rs = await Promise.all([1, 2, 3].map(() => call('POST', `/financial/distributions/${dist.id}/execute`, { token: t })))
+      expect(rs.filter((r) => r.status === 201).length).toBe(1)
+      const w = await prisma.wallet.findUniqueOrThrow({ where: { userId: u.id } })
+      expect(w.balance.toNumber()).toBe(93)
+      expect(await prisma.walletTransaction.count({ where: { walletId: w.id, type: 'DIVIDEND' } })).toBe(1)
+      expect((await prisma.investment.findUniqueOrThrow({ where: { id: inv.id } })).totalDistributions.toNumber()).toBe(93)
+      expect((await prisma.profitDistribution.findUniqueOrThrow({ where: { id: dist.id } })).status).toBe('COMPLETED')
+      // approve twice concurrently
+      const dist2 = await prisma.profitDistribution.create({ data: {
+        projectId: pid, reference: num + 'b', distributionNumber: num + 'b', totalAmount: 1, status: 'CALCULATED',
+      } as any })
+      const ap = await Promise.all([1, 2].map(() => call('POST', `/financial/distributions/${dist2.id}/approve`, { token: t })))
+      expect(ap.map((r) => r.status).sort()).toEqual([201, 400])
+    })
+    it('rejected expenses are excluded from profit & loss', async () => {
+      const fm = await makeUser(prisma, 'FINANCE_MANAGER', 'pl')
+      const t = (await loginAs(call, fm.email)).accessToken
+      const pid = await newProject(1)
+      const acct = await prisma.ledgerAccount.create({ data: { code: `6${randomBytes(3).toString('hex')}`, name: 'e', type: 'EXPENSE' as any } as any })
+      await prisma.expense.create({ data: { accountId: acct.id, amount: 100, totalAmount: 100, category: 'FEED', projectId: pid, expenseDate: new Date(), createdBy: fm.id } as any })
+      await prisma.expense.create({ data: { accountId: acct.id, amount: 900, totalAmount: 900, category: 'FEED', projectId: pid, expenseDate: new Date(), createdBy: fm.id, rejectedAt: new Date(), status: 'REJECTED' } as any })
+      const r = await call('GET', `/financial/reports/profit-loss?projectId=${pid}`, { token: t })
+      expect(r.status).toBe(200)
+      expect(r.json.totalExpenses).toBe(100)
     })
   })
 })

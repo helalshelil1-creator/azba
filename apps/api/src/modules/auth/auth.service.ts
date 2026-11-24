@@ -295,13 +295,13 @@ export class AuthService {
     const payload = { sub: userId, email, role }
     const accessToken = await this.jwt.signAsync(payload, {
       secret: getAccessSecret(this.config),
-      expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES') || '15m',
+      expiresIn: (this.config.get<string>('JWT_ACCESS_EXPIRES') || '15m') as any,
     })
     const refreshToken = await this.jwt.signAsync(
       { sub: userId, type: 'refresh', jti: randomBytes(16).toString('hex') },
       {
         secret: getRefreshSecret(this.config),
-        expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRES') || '7d',
+        expiresIn: (this.config.get<string>('JWT_REFRESH_EXPIRES') || '7d') as any,
       },
     )
     await this.prisma.session.create({
