@@ -9,7 +9,7 @@ export function DemoBanner() {
       role="status"
       className="border-t border-amber-300 bg-amber-100 px-4 py-2 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] text-center text-xs font-bold leading-6 text-amber-900 lg:pb-2"
     >
-      نسخة تجريبية: بيانات وهمية، لا استثمار ولا دفع ولا سحب حقيقي
+      نسخة تجريبية للعرض الشخصي (غير تجارية): بيانات وهمية، لا استثمار ولا دفع ولا سحب حقيقي
     </div>
   )
 }
@@ -18,7 +18,7 @@ export function DemoNotice({ className = '' }: { className?: string }) {
   if (!DEMO_MODE) return null
   return (
     <div className={`rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm leading-7 text-amber-900 ${className}`}>
-      <strong>نسخة تجريبية.</strong> المشاريع والأرقام والعوائد المعروضة هنا بيانات وهمية للتجربة فقط، وليست عروضًا
+      <strong>نسخة تجريبية للعرض الشخصي (غير تجارية).</strong> المشاريع والأرقام والعوائد المعروضة هنا بيانات وهمية للتجربة فقط، وليست عروضًا
       استثمارية حقيقية ولا وعدًا بأي عائد. لا يتم أي استثمار أو دفع أو سحب فعلي في هذه النسخة.
     </div>
   )
