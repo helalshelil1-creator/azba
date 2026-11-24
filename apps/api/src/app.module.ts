@@ -26,15 +26,11 @@ import { RolesGuard } from './common/guards/roles.guard'
       envFilePath: ['.env', '../.env', '../../.env'],
     }),
     ThrottlerModule.forRoot([
+      // حد عام واحد؛ المسارات الحساسة (دخول/تسجيل/استعادة) تحدد حدها بـ @Throttle
       {
         name: 'default',
         ttl: 60000,
         limit: 100,
-      },
-      {
-        name: 'auth',
-        ttl: 60000,
-        limit: 10,
       },
     ]),
     ScheduleModule.forRoot(),

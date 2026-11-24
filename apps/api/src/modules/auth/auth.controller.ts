@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
 import { Request, Response } from 'express'
+import { Throttle } from '@nestjs/throttler'
 import { AuthService } from './auth.service'
 import {
   RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto,
@@ -14,12 +15,15 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator'
 import { AuthUser } from './jwt.strategy'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
 
+const AUTH_LIMIT = { default: { limit: 10, ttl: 60000 } }
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Public()
+  @Throttle(AUTH_LIMIT)
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'إنشاء حساب جديد' })
@@ -28,6 +32,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_LIMIT)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'تسجيل الدخول' })
@@ -49,6 +54,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_LIMIT)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'تجديد رمز الوصول' })
@@ -95,6 +101,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_LIMIT)
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'طلب استعادة كلمة المرور' })
@@ -103,6 +110,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_LIMIT)
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'تعيين كلمة مرور جديدة' })
