@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Briefcase, Wallet, FolderKanban, Building2, User,
   LogOut, Menu, X, Bell, ChevronLeft, Settings, HelpCircle, ShieldCheck,
-  Stethoscope, Coins, PawPrint, ClipboardList,
+  Stethoscope, Coins, PawPrint, ClipboardList, Home,
 } from 'lucide-react'
 import { Logo } from '@azba/ui/logo'
 import { useAuth } from '@/lib/auth-store'
@@ -21,7 +21,8 @@ type NavItem = {
 }
 
 const NAV: NavItem[] = [
-  { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
+  { href: '/', label: 'الرئيسية', icon: Home, exact: true },
+  { href: '/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/invest', label: 'الاستثمار', icon: Briefcase },
   { href: '/dashboard/portfolio', label: 'محفظتي', icon: Wallet },
   { href: '/dashboard/projects', label: 'مشاريعي', icon: FolderKanban },
@@ -45,7 +46,7 @@ export function DashboardSidebar({ open, onClose }: { open: boolean; onClose: ()
   const { user, logout } = useAuth()
 
   const isActive = (item: NavItem) =>
-    item.exact ? pathname === item.href : pathname.startsWith(item.href)
+    item.href === '/' ? false : item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   const items = NAV.filter((item) => !item.roles || (user?.role != null && item.roles.includes(user.role)))
 

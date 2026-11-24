@@ -7,7 +7,7 @@ import { LayoutDashboard, Wallet, FolderKanban, BarChart3, Menu } from 'lucide-r
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
-  { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
+  { href: '/', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/portfolio', label: 'محفظتي', icon: Wallet },
   { href: '/dashboard/projects', label: 'المشاريع', icon: FolderKanban },
   { href: '/dashboard/finance/reports', label: 'التقارير', icon: BarChart3 },
@@ -16,7 +16,7 @@ const ITEMS = [
 export function MobileNav({ onMore }: { onMore: () => void }) {
   const pathname = usePathname()
   const isActive = (item: typeof ITEMS[number]) =>
-    item.exact ? pathname === item.href : pathname.startsWith(item.href)
+    item.href === '/' ? false : item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-primary-950/75 px-safe pb-safe backdrop-blur-xl lg:hidden">
