@@ -3,6 +3,7 @@ import './globals.css'
 import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/lib/auth-store'
 import { MarketingBottomNav } from '@/components/layout/marketing-bottom-nav'
+import { DemoBanner } from '@/components/layout/demo-banner'
 import { Toaster } from 'sonner'
 import {
   Tajawal,
@@ -117,6 +118,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <MarketingBottomNav />
+          <DemoBanner />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </body>

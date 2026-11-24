@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { DemoNotice } from '@/components/layout/demo-banner'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -154,6 +155,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
   return (
     <div className="min-h-screen bg-ivory">
       <Navbar />
+      <div className="container-page pt-24"><DemoNotice /></div>
 
       <section className="relative overflow-hidden bg-primary-950 py-12 text-white sm:py-16">
         <Image

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
+import { DemoModeGuard } from './common/guards/demo-mode.guard'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { ScheduleModule } from '@nestjs/schedule'
 import { PrismaModule } from './prisma/prisma.module'
@@ -54,6 +55,10 @@ import { RolesGuard } from './common/guards/roles.guard'
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: DemoModeGuard,
     },
     {
       provide: APP_GUARD,

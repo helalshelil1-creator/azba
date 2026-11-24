@@ -60,7 +60,7 @@ export function Navbar() {
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-all duration-500',
-          scrolled
+          scrolled || pathname !== '/'
             ? 'bg-white/85 backdrop-blur-xl shadow-lg shadow-primary/5 py-3'
             : 'bg-transparent py-5'
         )}

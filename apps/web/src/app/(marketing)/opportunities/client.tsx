@@ -12,6 +12,7 @@ import { Logo } from '@azba/ui/logo'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { http } from '@/lib/api'
+import { DemoNotice, isDemoProject } from '@/components/layout/demo-banner'
 import { cn, formatEGP, formatPercent } from '@/lib/utils'
 import { animalImage, animalLabel } from '@/lib/animals'
 import { SHOWCASE_PROJECTS } from '@/lib/showcase'
@@ -125,6 +126,7 @@ export function OpportunitiesClient() {
 
       {/* Filters */}
       <div className="container-page py-8">
+        <DemoNotice className="mb-6" />
         <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-border/60 bg-white p-4 shadow-sm lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -196,7 +198,7 @@ export function OpportunitiesClient() {
                           <span className={cn('badge', riskInfo.cls)}>{riskInfo.ar}</span>
                         </div>
                         <div className="absolute bottom-4 right-4 left-4">
-                          <div className="text-xs text-ivory/70">{p.code}</div>
+                          <div className="text-xs text-ivory/70">{p.code}{isDemoProject(p.code) && <span className="mr-2 rounded bg-amber-300 px-1.5 py-0.5 font-bold text-amber-950">عرض تجريبي</span>}</div>
                           <h3 className="mt-0.5 text-lg font-bold text-white">{p.name}</h3>
                         </div>
                       </div>

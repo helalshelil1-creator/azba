@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { DemoNotice } from '@/components/layout/demo-banner'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, AlertTriangle, Search, MapPin, Users, Sparkles } from 'lucide-react'
@@ -55,6 +56,7 @@ export default function InvestPage() {
 
   return (
     <div className="space-y-6">
+      <DemoNotice />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-primary">فرص الاستثمار</h1>
