@@ -41,10 +41,10 @@ export function Farms() {
         <div className="mx-auto max-w-3xl text-center">
           <span className="eyebrow">مزارعنا</span>
           <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-            أصول حقيقية <span className="text-gradient-gold">على أرض الواقع</span>
+            نموذج لمزارع <span className="text-gradient-gold">المنصة</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            كل مشروع مرتبط بمزرعة قائمة بعنابرها وحظائرها ومخزونها وعمالها.
+            بيانات توضيحية لعرض شكل المنصة، والمزارع والأرقام المذكورة ليست مزارع قائمة بعد. كل مشروع في المنصة يُربط ببيانات مزرعته: العنابر والحظائر والمخزون.
           </p>
         </div>
 
@@ -67,6 +67,7 @@ export function Farms() {
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/85 via-transparent to-transparent" />
+                <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-medium text-white">بيانات توضيحية</span>
                 <div className="absolute bottom-4 right-4 left-4">
                   <h3 className="text-lg font-bold text-white">{farm.name}</h3>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-ivory/80">
