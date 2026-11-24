@@ -83,7 +83,7 @@ export class SupportController {
 
   @Post('tickets/:id/close')
   @ApiOperation({ summary: 'إغلاق تذكرة مع تقييم' })
-  close(@Param('id', ParseUUIDPipe) id: string, @Body() dto: FeedbackDto) {
-    return this.support.close(id, dto)
+  close(@Param('id', ParseUUIDPipe) id: string, @Body() dto: FeedbackDto, @CurrentUser('id') userId: string, @CurrentUser('role') role: string) {
+    return this.support.close(id, userId, role, dto)
   }
 }

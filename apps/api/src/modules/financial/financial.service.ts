@@ -59,10 +59,12 @@ export class FinancialService {
 
   // ---------- Journal Entries ----------
   async createJournalEntry(dto: CreateJournalEntryDto, userId: string) {
-    const totalDebit = dto.entries.filter((e) => e.type === 'DEBIT').reduce((s, e) => s + e.amount, 0)
-    const totalCredit = dto.entries.filter((e) => e.type === 'CREDIT').reduce((s, e) => s + e.amount, 0)
+    // الجمع بالقروش لتفادي أخطاء الفاصلة العائمة (0.1 + 0.2)
+    const cents = (t: string) => dto.entries.filter((e) => e.type === t).reduce((s, e) => s + Math.round(e.amount * 100), 0)
+    const totalDebit = cents('DEBIT') / 100
+    const totalCredit = cents('CREDIT') / 100
 
-    if (Math.abs(totalDebit - totalCredit) > 0.001) {
+    if (cents('DEBIT') !== cents('CREDIT')) {
       throw new BadRequestException('القيد غير متوازن: إجمالي المدين يجب أن يساوي إجمالي الدائن')
     }
     if (totalDebit === 0) throw new BadRequestException('مبلغ القيد يجب أن يكون أكبر من صفر')
@@ -72,6 +74,9 @@ export class FinancialService {
     const accounts = await this.prisma.ledgerAccount.findMany({ where: { id: { in: accountIds } } })
     if (accounts.length !== accountIds.length) {
       throw new BadRequestException('أحد الحسابات غير موجود')
+    }
+    if (accounts.some((a) => a.isActive === false)) {
+      throw new BadRequestException('لا يمكن الترحيل على حساب غير نشط')
     }
 
     const entryNumber = `JE-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`

@@ -57,4 +57,12 @@ describe('animals (real DB)', () => {
     expect(rs.filter((r) => r.status === 200).length).toBe(1)
     expect(await prisma.veterinaryReport.count({ where: { previousVersionId: rep.id } })).toBe(1)
   })
+
+  it('malformed death/feeding payloads give 400, not 500', async () => {
+    const a2 = await prisma.animal.create({ data: { farmId, animalId: `AN-${hex()}`, type: 'BEEF_CATTLE', breed: 'b' } as any })
+    expect((await call('POST', `/animals/${a2.id}/death`, { token: admin, body: { date: 'not-a-date', cause: 'x' } })).status).toBe(400)
+    expect((await prisma.animal.findUniqueOrThrow({ where: { id: a2.id } })).status).not.toBe('DECEASED')
+    expect((await call('POST', '/animals/feeding', { token: admin, body: {} })).status).toBe(400)
+    expect((await call('POST', '/animals/feeding', { token: admin, body: { animalId: a2.id, feedTypeId: a2.id, quantity: -3 } })).status).toBe(400)
+  })
 })

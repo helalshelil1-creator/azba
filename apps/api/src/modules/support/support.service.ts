@@ -10,6 +10,11 @@ export class SupportService {
   private readonly logger = new Logger(SupportService.name)
   constructor(private readonly prisma: PrismaService) {}
 
+  private static readonly STAFF = ['SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT', 'SUPPORT_AGENT', 'SUPPORT_MANAGER']
+  private isStaff(role: string) {
+    return SupportService.STAFF.includes(role)
+  }
+
   private ticketNumber() {
     return `TKT-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`
   }
@@ -101,14 +106,18 @@ export class SupportService {
       },
     })
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
-    if (role === 'INVESTOR' && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
+    if (!this.isStaff(role) && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
+    if (!this.isStaff(role)) {
+      // الملاحظات الداخلية للموظفين فقط
+      return { ...ticket, messages: ticket.messages.filter((m) => !m.isInternal) }
+    }
     return ticket
   }
 
   async update(id: string, userId: string, role: string, dto: UpdateTicketDto) {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id } })
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
-    if (ticket.userId !== userId && role === 'INVESTOR') throw new ForbiddenException('غير مصرح')
+    if (!this.isStaff(role) && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
     return this.prisma.supportTicket.update({ where: { id }, data: dto })
   }
 
@@ -127,19 +136,22 @@ export class SupportService {
   async reply(id: string, userId: string, role: string, dto: ReplyTicketDto) {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id } })
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
-    if (role === 'INVESTOR' && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
+    if (!this.isStaff(role) && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
 
     return this.prisma.$transaction(async (tx) => {
       const message = await tx.supportMessage.create({
-        data: { ticketId: id, senderId: userId, body: dto.message, isInternal: dto.isInternal || false },
+        data: { ticketId: id, senderId: userId, body: dto.message, isInternal: this.isStaff(role) ? dto.isInternal || false : false },
       })
       const update: any = {}
-      if (ticket.status === 'OPEN') {
+      // WAITING_USER لم يكن موجودًا في TicketStatus (كان كل رد من صاحب التذكرة يفشل بخطأ 500).
+      // رد صاحب التذكرة يعيدها للمعالجة، ورد الموظف العلني ينقلها إلى PENDING_USER (بانتظار المستخدم).
+      if (!this.isStaff(role)) {
         update.status = 'IN_PROGRESS'
-        update.firstResponseAt = new Date()
+      } else {
+        update.status = dto.isInternal ? 'IN_PROGRESS' : 'PENDING_USER'
+        // أول رد علني من الموظفين فقط يُحسب في زمن الاستجابة
+        if (!ticket.firstResponseAt && !dto.isInternal) update.firstResponseAt = new Date()
       }
-      if (role === 'INVESTOR') update.status = 'WAITING_USER'
-      else update.status = 'IN_PROGRESS'
       await tx.supportTicket.update({ where: { id }, data: update })
       return message
     })
@@ -148,16 +160,17 @@ export class SupportService {
   async resolve(id: string, userId: string, role: string) {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id } })
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
-    if (role === 'INVESTOR' && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
+    if (!this.isStaff(role) && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
     return this.prisma.supportTicket.update({
       where: { id },
       data: { status: 'RESOLVED', resolvedAt: new Date() },
     })
   }
 
-  async close(id: string, dto: FeedbackDto) {
+  async close(id: string, userId: string, role: string, dto: FeedbackDto) {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id } })
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
+    if (!this.isStaff(role) && ticket.userId !== userId) throw new ForbiddenException('غير مصرح')
     return this.prisma.supportTicket.update({
       where: { id },
       data: { status: 'CLOSED', closedAt: new Date(), satisfactionRating: dto.rating, satisfactionComment: dto.comment },

@@ -121,6 +121,10 @@ export class FarmsService {
   async updateBuilding(id: string, dto: any) {
     const building = await this.prisma.farmBuilding.findUnique({ where: { id } })
     if (!building) throw new NotFoundException('المبنى غير موجود')
+    if (dto.code && dto.code !== building.code) {
+      const dup = await this.prisma.farmBuilding.findFirst({ where: { farmId: building.farmId, code: dto.code, id: { not: id } } })
+      if (dup) throw new BadRequestException('رمز المبنى مستخدم في هذه المزرعة')
+    }
     return this.prisma.farmBuilding.update({ where: { id }, data: dto })
   }
 
@@ -136,6 +140,13 @@ export class FarmsService {
   async updatePen(id: string, dto: any) {
     const pen = await this.prisma.pen.findUnique({ where: { id } })
     if (!pen) throw new NotFoundException('الحظيرة غير موجودة')
+    if (dto.code && dto.code !== pen.code) {
+      const dup = await this.prisma.pen.findFirst({ where: { farmId: pen.farmId, code: dto.code, id: { not: id } } })
+      if (dup) throw new BadRequestException('رمز الحظيرة مستخدم في هذه المزرعة')
+    }
+    if (dto.capacity != null && dto.capacity < pen.currentCount) {
+      throw new BadRequestException('السعة أقل من عدد الحيوانات الموجودة حاليًا')
+    }
     return this.prisma.pen.update({ where: { id }, data: dto })
   }
 
@@ -150,6 +161,8 @@ export class FarmsService {
   async addEmployee(farmId: string, dto: CreateEmployeeDto) {
     const farm = await this.prisma.farm.findUnique({ where: { id: farmId } })
     if (!farm) throw new NotFoundException('المزرعة غير موجودة')
+    const user = await this.prisma.user.findUnique({ where: { id: dto.userId } })
+    if (!user || user.deletedAt) throw new NotFoundException('المستخدم غير موجود')
     const existing = await this.prisma.farmEmployee.findFirst({
       where: { farmId, userId: dto.userId, status: 'ACTIVE' },
     })

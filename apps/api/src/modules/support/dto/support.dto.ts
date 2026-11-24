@@ -1,5 +1,5 @@
 import {
-  IsString, IsOptional, IsEnum, IsUUID, MinLength, MaxLength, IsArray, IsInt, IsBoolean,
+  IsString, IsOptional, IsEnum, IsUUID, MinLength, MaxLength, IsArray, IsInt, IsBoolean, Min, Max,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger'
 
@@ -57,6 +57,8 @@ export class ReplyTicketDto {
 export class FeedbackDto {
   @ApiProperty({ minimum: 1, maximum: 5 })
   @IsInt()
+  @Min(1)
+  @Max(5)
   rating: number
 
   @ApiPropertyOptional()

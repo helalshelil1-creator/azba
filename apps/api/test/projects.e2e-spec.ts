@@ -66,3 +66,26 @@ describe('projects/farms (real DB)', () => {
     expect(r.json.manager.phone).toBeUndefined()
   })
 })
+
+describe('farm sub-resources (real DB)', () => {
+  const prisma = new PrismaClient()
+  let app: any, call: ReturnType<typeof client>, farmId: string, token: string
+  beforeAll(async () => {
+    const b = await bootApp(); app = b.app; call = client(b.base)
+    farmId = (await prisma.farm.create({ data: { name: 'F2', code: `F-${randomBytes(3).toString('hex')}`, address: 'a', city: 'c', governorate: 'g' } as any })).id
+    token = (await loginAs(call, (await makeUser(prisma, 'FARM_MANAGER')).email)).accessToken
+  })
+  afterAll(async () => { await prisma.farm.deleteMany({ where: { id: farmId } }); await app.close(); await prisma.$disconnect() })
+
+  it('pen code clash and capacity below current count give 400, unknown employee user gives 404', async () => {
+    const a = await call('POST', `/farms/${farmId}/pens`, { token, body: { name: 'Pen A', code: 'A1', type: 'FATTENING', capacity: 5 } })
+    const b = await call('POST', `/farms/${farmId}/pens`, { token, body: { name: 'Pen B', code: 'B1', type: 'FATTENING', capacity: 5 } })
+    expect([a.status, b.status]).toEqual([201, 201])
+    expect((await call('PATCH', `/farms/pens/${b.json.id}`, { token, body: { code: 'A1' } })).status).toBe(400)
+    await prisma.pen.update({ where: { id: a.json.id }, data: { currentCount: 3 } })
+    expect((await call('PATCH', `/farms/pens/${a.json.id}`, { token, body: { capacity: 2 } })).status).toBe(400)
+    expect((await call('PATCH', `/farms/pens/${a.json.id}`, { token, body: { capacity: 4 } })).status).toBe(200)
+    const e = await call('POST', `/farms/${farmId}/employees`, { token, body: { userId: '11111111-1111-4111-8111-111111111111', role: 'WORKER' } })
+    expect(e.status).toBe(404)
+  })
+})
