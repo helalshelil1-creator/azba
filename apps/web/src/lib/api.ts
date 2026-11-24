@@ -1,4 +1,9 @@
 // AZBA API client
+const TOKEN_KEY = 'azba_access_token'
+function readStoredToken(): string | null {
+  if (typeof window === 'undefined') return null
+  try { return localStorage.getItem(TOKEN_KEY) } catch { return null }
+}
 /**
  * عنوان الخادم: من متغير البيئة NEXT_PUBLIC_API_URL (فارغ = نفس النطاق).
  * حماية من mixed content: صفحة HTTPS لا تستطيع طلب API بعنوان HTTP،
@@ -67,10 +72,43 @@ function buildUrl(
   return url.toString()
 }
 
+// تجديد صامت لرمز الدخول (الـ refresh token في كوكي httpOnly)، مرة واحدة لكل موجة طلبات
+let refreshing: Promise<boolean> | null = null
+function silentRefresh(): Promise<boolean> {
+  if (!refreshing) {
+    refreshing = (async () => {
+      try {
+        const fixed = FIXED_ENDPOINT && !!API_URL
+        const res = await fetch(buildUrl('/auth/refresh', undefined, fixed ? API_URL : undefined), {
+          method: 'POST',
+          headers: {
+            ...(fixed && { 'x-azba-route': '/auth/refresh' }),
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: '{}',
+        })
+        if (!res.ok) return false
+        const data = await res.json().catch(() => null)
+        if (data?.accessToken) setToken(data.accessToken)
+        return !!data?.accessToken
+      } catch {
+        return false
+      } finally {
+        setTimeout(() => { refreshing = null }, 0)
+      }
+    })()
+  }
+  return refreshing
+}
+
+const NO_REFRESH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/forgot-password', '/auth/reset-password']
+
 export async function api<T = unknown>(
   path: string,
   options: RequestOptions = {},
   getToken?: () => string | null,
+  _retried = false,
 ): Promise<T> {
   const { body, params, headers, ...rest } = options
   const token = getToken?.()
@@ -99,6 +137,13 @@ export async function api<T = unknown>(
     data = text ? JSON.parse(text) : null
   } catch {
     data = null
+  }
+
+  if (res.status === 401 && !_retried && !NO_REFRESH_PATHS.includes(path) && !path.startsWith('http')) {
+    if (await silentRefresh()) {
+      // نستخدم الرمز الجديد المخزن بدل الرمز القديم الذي مرره المستدعي
+      return api<T>(path, options, () => readStoredToken(), true)
+    }
   }
 
   if (!res.ok) {
@@ -137,7 +182,6 @@ export const http = {
 }
 
 // ---------- Auth storage ----------
-const TOKEN_KEY = 'azba_access_token'
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null

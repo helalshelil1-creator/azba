@@ -8,9 +8,13 @@ import {
 } from './dto/investment.dto'
 import { Prisma, InvestmentStatus, TransactionStatus, TransactionType, PaymentMethod } from '@prisma/client'
 import { randomBytes } from 'crypto'
+import { Cron, CronExpression } from '@nestjs/schedule'
 import { addMinutes } from 'date-fns'
 
 const RESERVATION_TTL_MINUTES = 30
+
+// الدفع الحقيقي غير مربوط ببوابة دفع بعد: لا يُقبل إلا الدفع التجريبي.
+const SUPPORTED_PAYMENT_METHODS: PaymentMethod[] = ['SANDBOX']
 
 @Injectable()
 export class InvestmentsService {
@@ -136,31 +140,24 @@ export class InvestmentsService {
     if (project.maxSharesPerInvestor && dto.shareCount > project.maxSharesPerInvestor) {
       throw new BadRequestException(`الحد الأقصى ${project.maxSharesPerInvestor} أسهم`)
     }
-    if ((project.availableShares ?? 0) < dto.shareCount) {
-      throw new BadRequestException('لا توجد أسهم كافية متاحة')
-    }
 
     return this.prisma.$transaction(async (tx) => {
       // Lock the project row to prevent overselling
       const locked = await tx.$queryRaw<Array<{ availableShares: number }>>`
         SELECT "availableShares" FROM projects WHERE id = ${dto.projectId} FOR UPDATE
       `
-      if (!locked[0] || locked[0].availableShares < dto.shareCount) {
+      if (!locked[0]) throw new NotFoundException('المشروع غير موجود')
+
+      // حرّر الحجوزات المنتهية لهذا المشروع (يعيد الأسهم والعداد معًا)
+      await this.releaseExpiredReservations(tx, dto.projectId)
+
+      const current = await tx.project.findUnique({
+        where: { id: dto.projectId },
+        select: { availableShares: true },
+      })
+      if (!current || (current.availableShares ?? 0) < dto.shareCount) {
         throw new BadRequestException('لا توجد أسهم كافية متاحة')
       }
-
-      // Expire old pending reservations for this user/project
-      await tx.shareReservation.updateMany({
-        where: { userId, projectId: dto.projectId, status: 'PENDING', expiresAt: { lt: new Date() } },
-        data: { status: 'CANCELLED', cancelledAt: new Date(), cancellationReason: 'EXPIRED' },
-      })
-
-      // Restore shares from expired reservations
-      await tx.$executeRaw`
-        UPDATE project_shares SET status = 'AVAILABLE', "reservedBy" = NULL, "reservedAt" = NULL,
-          "reservationExpiresAt" = NULL
-        WHERE status = 'RESERVED' AND "reservationExpiresAt" < NOW()
-      `
 
       // Reserve shares
       const shares = await tx.projectShare.findMany({
@@ -168,6 +165,9 @@ export class InvestmentsService {
         orderBy: { shareNumber: 'asc' },
         take: dto.shareCount,
       })
+      if (shares.length < dto.shareCount) {
+        throw new BadRequestException('لا توجد أسهم كافية متاحة')
+      }
 
       const reservation = await tx.shareReservation.create({
         data: {
@@ -175,7 +175,7 @@ export class InvestmentsService {
           userId,
           shareCount: dto.shareCount,
           unitPrice: project.sharePrice,
-          totalAmount: project.sharePrice.toNumber() * dto.shareCount,
+          totalAmount: Math.round(project.sharePrice.toNumber() * dto.shareCount * 100) / 100,
           currency: project.shareCurrency,
           expiresAt: addMinutes(new Date(), RESERVATION_TTL_MINUTES),
         },
@@ -211,23 +211,36 @@ export class InvestmentsService {
       if (!reservation || reservation.userId !== userId) throw new NotFoundException('الحجز غير موجود')
       if (reservation.status !== 'PENDING') throw new BadRequestException('لا يمكن إلغاء هذا الحجز')
 
-      await tx.projectShare.updateMany({
-        where: { reservedBy: userId, reservationExpiresAt: reservation.expiresAt },
-        data: { status: 'AVAILABLE', reservedBy: null, reservedAt: null, reservationExpiresAt: null },
-      })
-      await tx.project.update({
-        where: { id: reservation.projectId },
-        data: { availableShares: { increment: reservation.shareCount } },
-      })
-      return tx.shareReservation.update({
-        where: { id: reservationId },
+      const claimed = await tx.shareReservation.updateMany({
+        where: { id: reservationId, userId, status: 'PENDING' },
         data: { status: 'CANCELLED', cancelledAt: new Date(), cancellationReason: 'USER_CANCELLED' },
       })
+      if (claimed.count !== 1) throw new BadRequestException('لا يمكن إلغاء هذا الحجز')
+
+      const freed = await tx.projectShare.updateMany({
+        where: { projectId: reservation.projectId, status: 'RESERVED', reservedBy: userId, reservationExpiresAt: reservation.expiresAt },
+        data: { status: 'AVAILABLE', reservedBy: null, reservedAt: null, reservationExpiresAt: null },
+      })
+      if (freed.count > 0) {
+        await tx.project.update({
+          where: { id: reservation.projectId },
+          data: { availableShares: { increment: freed.count } },
+        })
+      }
+      return tx.shareReservation.findUnique({ where: { id: reservationId } })
     })
   }
 
   // ---------- Confirm investment (sandbox payment) ----------
   async confirmInvestment(userId: string, dto: ConfirmInvestmentDto) {
+    if (!SUPPORTED_PAYMENT_METHODS.includes(dto.paymentMethod)) {
+      throw new BadRequestException('طريقة الدفع هذه غير مفعّلة بعد')
+    }
+    if (process.env.PAYMENTS_SANDBOX_ENABLED === 'false') {
+      throw new BadRequestException('الدفع التجريبي معطّل في هذه البيئة')
+    }
+    if (!dto.acceptContract) throw new BadRequestException('يجب الموافقة على العقد')
+
     return this.prisma.$transaction(async (tx) => {
       const reservation = await tx.shareReservation.findUnique({ where: { id: dto.reservationId } })
       if (!reservation || reservation.userId !== userId) throw new NotFoundException('الحجز غير موجود')
@@ -235,14 +248,20 @@ export class InvestmentsService {
       if (reservation.expiresAt < new Date()) {
         throw new BadRequestException('انتهت صلاحية الحجز')
       }
-      if (!dto.acceptContract) throw new BadRequestException('يجب الموافقة على العقد')
+
+      // نستهلك الحجز ذريًا: أي تأكيد متزامن ثانٍ يفشل
+      const claimed = await tx.shareReservation.updateMany({
+        where: { id: reservation.id, userId, status: 'PENDING', expiresAt: { gt: new Date() } },
+        data: { status: 'CONVERTED', confirmedAt: new Date() },
+      })
+      if (claimed.count !== 1) throw new BadRequestException('الحجز غير صالح')
 
       const project = await tx.project.findUnique({ where: { id: reservation.projectId } })
       if (!project) throw new NotFoundException('المشروع غير موجود')
 
       const totalAmount = reservation.totalAmount.toNumber()
       const fee = Math.round(totalAmount * 0.015 * 100) / 100 // 1.5% platform fee
-      const netAmount = totalAmount - fee
+      const netAmount = Math.round((totalAmount - fee) * 100) / 100
 
       const contractNumber = `CNT-${Date.now()}-${randomBytes(3).toString('hex').toUpperCase()}`
 
@@ -276,59 +295,37 @@ export class InvestmentsService {
           amount: totalAmount,
           currency: reservation.currency,
           method: dto.paymentMethod,
-          provider: dto.paymentMethod === 'SANDBOX' ? 'SANDBOX' : dto.providerRef,
-          providerRef: dto.providerRef || `SANDBOX-${randomBytes(6).toString('hex').toUpperCase()}`,
+          provider: 'SANDBOX',
+          providerRef: `SANDBOX-${randomBytes(6).toString('hex').toUpperCase()}`,
           status: 'COMPLETED',
           completedAt: new Date(),
-          webhookReceived: true,
+          webhookReceived: false,
         },
       })
 
       // Mark shares as sold
       await tx.projectShare.updateMany({
-        where: { reservedBy: userId, reservationExpiresAt: reservation.expiresAt },
+        where: { projectId: reservation.projectId, status: 'RESERVED', reservedBy: userId, reservationExpiresAt: reservation.expiresAt },
         data: { status: 'SOLD', soldTo: userId, soldAt: new Date(), priceAtSale: project.sharePrice },
       })
 
-      // Update project funding
+      // Update project funding. العداد خُصم وقت الحجز؛ يصبح المشروع ممولًا عندما
+      // لا تبقى أسهم متاحة ولا حجوزات معلقة لمستثمرين آخرين.
+      const pending = await tx.shareReservation.count({
+        where: { projectId: project.id, status: 'PENDING', id: { not: reservation.id } },
+      })
       await tx.project.update({
         where: { id: project.id },
         data: {
           fundedAmount: { increment: totalAmount },
-          ...(((project.availableShares ?? 0) <= reservation.shareCount) ? { status: 'FUNDED' } : {}),
+          ...((project.availableShares ?? 0) <= 0 && pending === 0 ? { status: 'FUNDED' } : {}),
         },
       })
 
-      // Reservation converted
       await tx.shareReservation.update({
         where: { id: reservation.id },
-        data: { status: 'CONVERTED', confirmedAt: new Date(), convertedToInvestmentId: investment.id },
+        data: { convertedToInvestmentId: investment.id },
       })
-
-      // Wallet transaction
-      const wallet = await tx.wallet.findUnique({ where: { userId } })
-      if (wallet) {
-        const balanceBefore = wallet.balance.toNumber()
-        await tx.walletTransaction.create({
-          data: {
-            walletId: wallet.id,
-            investmentId: investment.id,
-            type: 'INVESTMENT',
-            amount: -netAmount,
-            balanceBefore,
-            balanceAfter: balanceBefore - netAmount,
-            currency: 'EGP',
-            status: 'COMPLETED',
-            reference: contractNumber,
-            description: `استثمار في ${project.name}`,
-            processedAt: new Date(),
-          },
-        })
-        await tx.wallet.update({
-          where: { id: wallet.id },
-          data: { balance: { decrement: netAmount } },
-        })
-      }
 
       // Notification
       await tx.notification.create({
@@ -393,28 +390,32 @@ export class InvestmentsService {
   }
 
   async requestWithdrawal(userId: string, dto: WithdrawalDto) {
-    const wallet = await this.prisma.wallet.findUnique({ where: { userId } })
-    if (!wallet) throw new NotFoundException('المحفظة غير موجودة')
-    const balance = wallet.balance.toNumber()
-    if (dto.amount > balance) throw new BadRequestException('الرصيد غير كافٍ')
     if (dto.amount < 100) throw new BadRequestException('الحد الأدنى للسحب 100 ج.م')
 
     return this.prisma.$transaction(async (tx) => {
+      const wallet = await tx.wallet.findUnique({ where: { userId } })
+      if (!wallet) throw new NotFoundException('المحفظة غير موجودة')
+
+      // خصم مشروط ذري: لا يمر إلا لو الرصيد كافٍ لحظة التنفيذ
+      const debited = await tx.wallet.updateMany({
+        where: { id: wallet.id, balance: { gte: dto.amount } },
+        data: { balance: { decrement: dto.amount }, lockedBalance: { increment: dto.amount } },
+      })
+      if (debited.count !== 1) throw new BadRequestException('الرصيد غير كافٍ')
+
+      const after = await tx.wallet.findUniqueOrThrow({ where: { id: wallet.id } })
+      const balanceAfter = after.balance.toNumber()
       const txRecord = await tx.walletTransaction.create({
         data: {
           walletId: wallet.id,
           type: 'WITHDRAWAL',
           amount: -dto.amount,
-          balanceBefore: balance,
-          balanceAfter: balance - dto.amount,
+          balanceBefore: balanceAfter + dto.amount,
+          balanceAfter,
           currency: 'EGP',
           status: 'PENDING',
           description: 'طلب سحب',
         },
-      })
-      await tx.wallet.update({
-        where: { id: wallet.id },
-        data: { balance: { decrement: dto.amount }, lockedBalance: { increment: dto.amount } },
       })
       await tx.notification.create({
         data: {
@@ -452,30 +453,42 @@ export class InvestmentsService {
     }
   }
 
-  async expireOldReservations() {
-    const expired = await this.prisma.shareReservation.findMany({
-      where: { status: 'PENDING', expiresAt: { lt: new Date() } },
-      select: { id: true, userId: true, projectId: true, shareCount: true, expiresAt: true },
+  /**
+   * يحرر الحجوزات المنتهية (PENDING وانتهت مدتها): يعيد الأسهم للمتاح ويزيد
+   * عداد availableShares بعدد الأسهم المفرج عنها فعليًا. يعمل داخل معاملة.
+   */
+  private async releaseExpiredReservations(tx: Prisma.TransactionClient, projectId?: string) {
+    const expired = await tx.shareReservation.findMany({
+      where: { status: 'PENDING', expiresAt: { lt: new Date() }, ...(projectId ? { projectId } : {}) },
+      select: { id: true, userId: true, projectId: true, expiresAt: true },
     })
-    if (expired.length === 0) return 0
-
-    await this.prisma.$transaction(async (tx) => {
-      for (const r of expired) {
-        await tx.projectShare.updateMany({
-          where: { reservedBy: r.userId, reservationExpiresAt: r.expiresAt },
-          data: { status: 'AVAILABLE', reservedBy: null, reservedAt: null, reservationExpiresAt: null },
-        })
+    let released = 0
+    for (const r of expired) {
+      // نحجز الحجز نفسه أولًا حتى لا يُفرج عنه مرتين عند التنفيذ المتزامن
+      const claimed = await tx.shareReservation.updateMany({
+        where: { id: r.id, status: 'PENDING' },
+        data: { status: 'EXPIRED', cancelledAt: new Date(), cancellationReason: 'EXPIRED' },
+      })
+      if (claimed.count !== 1) continue
+      const freed = await tx.projectShare.updateMany({
+        where: { projectId: r.projectId, status: 'RESERVED', reservedBy: r.userId, reservationExpiresAt: r.expiresAt },
+        data: { status: 'AVAILABLE', reservedBy: null, reservedAt: null, reservationExpiresAt: null },
+      })
+      if (freed.count > 0) {
         await tx.project.update({
           where: { id: r.projectId },
-          data: { availableShares: { increment: r.shareCount } },
-        })
-        await tx.shareReservation.update({
-          where: { id: r.id },
-          data: { status: 'EXPIRED', cancelledAt: new Date(), cancellationReason: 'EXPIRED' },
+          data: { availableShares: { increment: freed.count } },
         })
       }
-    })
-    this.logger.log(`Expired ${expired.length} reservations`)
-    return expired.length
+      released++
+    }
+    return released
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async expireOldReservations() {
+    const released = await this.prisma.$transaction((tx) => this.releaseExpiredReservations(tx))
+    if (released > 0) this.logger.log(`Expired ${released} reservations`)
+    return released
   }
 }

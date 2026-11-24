@@ -1,6 +1,27 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common'
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common'
 import { UserRole, UserStatus } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
+
+const PRIVILEGED_ROLES: UserRole[] = ['SUPER_ADMIN', 'ADMIN']
+
+/** قواعد منع تصعيد الصلاحيات: الأدمن لا يلمس الأدمن/المدير العام ولا يعدّل نفسه. */
+export function assertCanManage(
+  actor: { id: string; role: string },
+  target: { id: string; role: UserRole },
+  newRole?: UserRole,
+) {
+  if (actor.id === target.id) {
+    throw new ForbiddenException('لا يمكنك تعديل حسابك بنفسك')
+  }
+  if (actor.role !== 'SUPER_ADMIN') {
+    if (PRIVILEGED_ROLES.includes(target.role)) {
+      throw new ForbiddenException('فقط المدير العام يستطيع تعديل المدراء')
+    }
+    if (newRole && PRIVILEGED_ROLES.includes(newRole)) {
+      throw new ForbiddenException('فقط المدير العام يستطيع منح صلاحيات إدارية')
+    }
+  }
+}
 
 @Injectable()
 export class UsersService {
@@ -68,9 +89,10 @@ export class UsersService {
     return user
   }
 
-  async updateRole(id: string, role: UserRole) {
+  async updateRole(id: string, role: UserRole, actor: { id: string; role: string }) {
     const user = await this.prisma.user.findUnique({ where: { id } })
     if (!user) throw new NotFoundException('المستخدم غير موجود')
+    assertCanManage(actor, user, role)
     return this.prisma.user.update({
       where: { id },
       data: { role },
@@ -78,11 +100,15 @@ export class UsersService {
     })
   }
 
-  async updateStatus(id: string, status: UserStatus) {
+  async updateStatus(id: string, status: UserStatus, actor: { id: string; role: string }) {
     const user = await this.prisma.user.findUnique({ where: { id } })
     if (!user) throw new NotFoundException('المستخدم غير موجود')
+    assertCanManage(actor, user)
     if (user.role === 'SUPER_ADMIN' && status !== 'ACTIVE') {
       throw new ConflictException('لا يمكن تغيير حالة المدير العام')
+    }
+    if (status === 'SUSPENDED' || status === 'BLOCKED' || status === 'INACTIVE') {
+      await this.prisma.session.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } })
     }
     return this.prisma.user.update({
       where: { id },
@@ -91,9 +117,11 @@ export class UsersService {
     })
   }
 
-  async remove(id: string) {
+  async remove(id: string, actor: { id: string; role: string }) {
     const user = await this.prisma.user.findUnique({ where: { id } })
     if (!user) throw new NotFoundException('المستخدم غير موجود')
+    assertCanManage(actor, user)
+    await this.prisma.session.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } })
     // Soft delete
     return this.prisma.user.update({
       where: { id },

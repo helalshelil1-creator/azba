@@ -8,7 +8,11 @@ import * as bcrypt from 'bcryptjs'
 import { PrismaService } from '../../prisma/prisma.service'
 import { RegisterDto, LoginDto, ChangePasswordDto, ResetPasswordDto, UpdateProfileDto, ForgotPasswordDto } from './dto/auth.dto'
 import { AuthUser } from './jwt.strategy'
-import { randomBytes } from 'crypto'
+import { randomBytes, createHash, timingSafeEqual } from 'crypto'
+import { MailerService } from './mailer.service'
+import { getAccessSecret, getRefreshSecret } from '../../common/config/secrets'
+
+const sha256 = (v: string) => createHash('sha256').update(v).digest('hex')
 
 @Injectable()
 export class AuthService {
@@ -18,6 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly mailer: MailerService,
   ) {}
 
   private hash(password: string) {
@@ -127,21 +132,49 @@ export class AuthService {
 
   async logout(userId: string, refreshToken?: string) {
     if (refreshToken) {
-      await this.prisma.session.deleteMany({ where: { userId, token: refreshToken } })
+      await this.prisma.session.deleteMany({ where: { userId, token: sha256(refreshToken) } })
     }
     this.logger.log(`User logged out: ${userId}`)
     return { success: true }
   }
 
   async refresh(refreshToken: string) {
+    const invalid = () => new UnauthorizedException('جلسة غير صالحة')
+    try {
+      const payload = await this.jwt.verifyAsync<{ sub: string; type?: string }>(refreshToken, {
+        secret: getRefreshSecret(this.config),
+      })
+      if (payload.type !== 'refresh') throw invalid()
+    } catch {
+      throw invalid()
+    }
+
     const session = await this.prisma.session.findUnique({
-      where: { token: refreshToken },
+      where: { token: sha256(refreshToken) },
       include: { user: true },
     })
-    if (!session || session.expiresAt < new Date() || session.revokedAt) {
-      throw new UnauthorizedException('جلسة غير صالحة')
+    if (!session) throw invalid()
+    if (session.revokedAt) {
+      // رمز قديم أُعيد استخدامه: نفترض احتمال سرقته ونُنهي كل جلسات المستخدم
+      await this.prisma.session.updateMany({
+        where: { userId: session.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      })
+      throw invalid()
     }
-    return this.generateTokens(session.user.id, session.user.email, session.user.role)
+    if (session.expiresAt < new Date()) throw invalid()
+    const u = session.user
+    if (u.deletedAt || u.status === 'SUSPENDED' || u.status === 'BLOCKED' || u.status === 'INACTIVE') {
+      throw invalid()
+    }
+
+    // تدوير: نُبطل الرمز الحالي مرة واحدة فقط (يمنع الاستخدام المتزامن المزدوج)
+    const claimed = await this.prisma.session.updateMany({
+      where: { id: session.id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    })
+    if (claimed.count !== 1) throw invalid()
+    return this.generateTokens(u.id, u.email, u.role)
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
@@ -162,43 +195,75 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
+    const generic = { success: true, message: 'إذا كان البريد مسجلًا، ستصلك رسالة استعادة' }
     const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase() } })
-    if (!user) {
-      // Don't reveal whether email exists
-      return { success: true, message: 'إذا كان البريد مسجلًا، ستصلك رسالة استعادة' }
-    }
-    const token = randomBytes(32).toString('hex')
-    // Store token in system settings with expiry (simplified)
+    if (!user || user.deletedAt) return generic
+
+    const secret = randomBytes(32).toString('hex')
+    const expiresAt = Date.now() + 3600000
+    // نخزن بصمة الرمز فقط، والرمز نفسه يصل المستخدم بالبريد
     await this.prisma.systemSetting.upsert({
       where: { key: `reset:${user.id}` },
-      create: { key: `reset:${user.id}`, value: { token, expiresAt: Date.now() + 3600000 }, category: 'SECURITY' },
-      update: { value: { token, expiresAt: Date.now() + 3600000 } },
+      create: { key: `reset:${user.id}`, value: { tokenHash: sha256(secret), expiresAt }, category: 'SECURITY' },
+      update: { value: { tokenHash: sha256(secret), expiresAt } },
     })
-    // TODO: send email via notification service
-    this.logger.log(`Password reset requested for ${user.email}`)
-    return { success: true, message: 'إذا كان البريد مسجلًا، ستصلك رسالة استعادة' }
+
+    const base = (
+      this.config.get<string>('APP_URL') ||
+      (this.config.get<string>('CORS_ORIGINS') || 'http://localhost:3000').split(',')[0]
+    ).replace(/\/+$/, '')
+    const link = `${base}/reset-password?token=${user.id}.${secret}`
+    const sent = await this.mailer.send(
+      user.email,
+      'استعادة كلمة المرور - عزبة',
+      `لإعادة تعيين كلمة المرور افتح الرابط التالي (صالح لمدة ساعة):\n${link}\n\nإذا لم تطلب ذلك تجاهل هذه الرسالة.`,
+    )
+    this.logger.log(`Password reset requested for ${user.id} (email ${sent ? 'sent' : 'not sent'})`)
+    return generic
   }
 
   async resetPassword(dto: ResetPasswordDto) {
-    // Find the setting with matching token
-    const settings = await this.prisma.systemSetting.findMany({
-      where: { key: { startsWith: 'reset:' }, category: 'SECURITY' },
-    })
-    const match = settings.find((s) => {
-      const v = s.value as { token: string; expiresAt: number }
-      return v.token === dto.token && v.expiresAt > Date.now()
-    })
-    if (!match) throw new BadRequestException('رابط الاستعادة غير صالح أو منتهي')
-    const userId = match.key.replace('reset:', '')
+    const bad = () => new BadRequestException('رابط الاستعادة غير صالح أو منتهي')
+    const dot = dto.token.indexOf('.')
+    if (dot < 1) throw bad()
+    const userId = dto.token.slice(0, dot)
+    const secret = dto.token.slice(dot + 1)
+
+    const setting = await this.prisma.systemSetting.findUnique({ where: { key: `reset:${userId}` } })
+    if (!setting) throw bad()
+    const v = setting.value as { tokenHash?: string; expiresAt?: number }
+    if (!v?.tokenHash || !v.expiresAt || v.expiresAt < Date.now()) throw bad()
+    const a = Buffer.from(sha256(secret), 'hex')
+    const b = Buffer.from(v.tokenHash, 'hex')
+    if (a.length !== b.length || !timingSafeEqual(a, b)) throw bad()
+
+    // استهلاك الرمز مرة واحدة
+    const consumed = await this.prisma.systemSetting.deleteMany({ where: { key: setting.key } })
+    if (consumed.count !== 1) throw bad()
+
     await this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: await this.hash(dto.newPassword) },
+      data: { passwordHash: await this.hash(dto.newPassword), failedLoginAttempts: 0, lockedUntil: null },
     })
-    await this.prisma.systemSetting.delete({ where: { key: match.key } })
+    await this.prisma.session.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    })
     return { success: true }
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const email = dto.email?.toLowerCase()
+    if (email || dto.phone) {
+      const clash = await this.prisma.user.findFirst({
+        where: {
+          id: { not: userId },
+          OR: [...(email ? [{ email }] : []), ...(dto.phone ? [{ phone: dto.phone }] : [])],
+        },
+        select: { id: true },
+      })
+      if (clash) throw new ConflictException('البريد الإلكتروني أو رقم الهاتف مسجل بالفعل')
+    }
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -229,20 +294,20 @@ export class AuthService {
   private async generateTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role }
     const accessToken = await this.jwt.signAsync(payload, {
-      secret: this.config.get<string>('JWT_SECRET') || 'dev-secret-change-me',
+      secret: getAccessSecret(this.config),
       expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES') || '15m',
     })
     const refreshToken = await this.jwt.signAsync(
-      { sub: userId, type: 'refresh' },
+      { sub: userId, type: 'refresh', jti: randomBytes(16).toString('hex') },
       {
-        secret: this.config.get<string>('JWT_REFRESH_SECRET') || 'dev-refresh-secret',
+        secret: getRefreshSecret(this.config),
         expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRES') || '7d',
       },
     )
     await this.prisma.session.create({
       data: {
         userId,
-        token: refreshToken,
+        token: sha256(refreshToken),
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     })

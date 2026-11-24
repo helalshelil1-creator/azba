@@ -6,6 +6,8 @@ import { UserRole, UserStatus } from '@prisma/client'
 import { UsersService } from './users.service'
 import { Roles } from '../../common/decorators/roles.decorator'
 import { IsEnum } from 'class-validator'
+import { CurrentUser } from '../../common/decorators/current-user.decorator'
+import { AuthUser } from '../auth/jwt.strategy'
 
 class UpdateRoleDto {
   @IsEnum(UserRole)
@@ -51,21 +53,21 @@ export class UsersController {
   @Patch(':id/role')
   @Roles('SUPER_ADMIN', 'ADMIN')
   @ApiOperation({ summary: 'تغيير دور مستخدم' })
-  updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateRoleDto) {
-    return this.users.updateRole(id, dto.role)
+  updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateRoleDto, @CurrentUser() actor: AuthUser) {
+    return this.users.updateRole(id, dto.role, actor)
   }
 
   @Patch(':id/status')
   @Roles('SUPER_ADMIN', 'ADMIN')
   @ApiOperation({ summary: 'تغيير حالة مستخدم' })
-  updateStatus(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateStatusDto) {
-    return this.users.updateStatus(id, dto.status)
+  updateStatus(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateStatusDto, @CurrentUser() actor: AuthUser) {
+    return this.users.updateStatus(id, dto.status, actor)
   }
 
   @Delete(':id')
   @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'حذف مستخدم ( soft delete )' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.users.remove(id)
+  remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() actor: AuthUser) {
+    return this.users.remove(id, actor)
   }
 }

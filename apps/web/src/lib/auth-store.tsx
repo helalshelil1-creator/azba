@@ -145,9 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await http.post<any>('/auth/refresh', {
-        refreshToken: typeof window !== 'undefined' ? localStorage.getItem('azba_refresh') : null,
-      })
+      // الـ refresh token في كوكي httpOnly ويُرسل تلقائيًا
+      const res = await http.post<any>('/auth/refresh', {})
       if (res.accessToken) setToken(res.accessToken)
       setState((s) => ({ ...s, token: res.accessToken }))
     } catch {
