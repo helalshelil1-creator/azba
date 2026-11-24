@@ -60,7 +60,12 @@ export class FinancialService {
   // ---------- Journal Entries ----------
   async createJournalEntry(dto: CreateJournalEntryDto, userId: string) {
     // الجمع بالقروش لتفادي أخطاء الفاصلة العائمة (0.1 + 0.2)
-    const cents = (t: string) => dto.entries.filter((e) => e.type === t).reduce((s, e) => s + Math.round(e.amount * 100), 0)
+    // الأعمدة بدقة قرشين (15,2): نرفض أي مبلغ بأكثر من خانتين عشريتين بدل تقريبه، وإلا قد يختلف تقريب الخادم عن تقريب قاعدة البيانات فيُحفظ قيد غير متوازن
+    const toCents = (n: number) => Math.round(n * 100)
+    if (dto.entries.some((e) => !Number.isFinite(e.amount) || Math.abs(e.amount * 100 - toCents(e.amount)) > 1e-6)) {
+      throw new BadRequestException('المبلغ يجب ألا يزيد عن خانتين عشريتين')
+    }
+    const cents = (t: string) => dto.entries.filter((e) => e.type === t).reduce((s, e) => s + toCents(e.amount), 0)
     const totalDebit = cents('DEBIT') / 100
     const totalCredit = cents('CREDIT') / 100
 
@@ -100,7 +105,7 @@ export class FinancialService {
             create: dto.entries.map((e) => ({
               accountId: e.accountId,
               type: e.type as LedgerEntryType,
-              amount: e.amount,
+              amount: toCents(e.amount) / 100,
               description: e.description,
               projectId: e.projectId,
               farmId: e.farmId,
