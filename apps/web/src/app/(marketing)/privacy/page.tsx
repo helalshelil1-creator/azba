@@ -26,7 +26,7 @@ export default function Page() {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Database className="h-5 w-5 text-gold" />البيانات التي نجمعها</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>بيانات الحساب: الاسم، البريد، الهاتف، كلمة المرور المشفرة.</p><p>بيانات الاستثمار: العقود، الأسهم، المدفوعات، العوائد.</p><p>بيانات الاستخدام: سجل الدخول، الجهاز، عنوان IP.</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>بيانات الحساب: الاسم، البريد، الهاتف، كلمة المرور بعد تجزئتها (hash) وليس نصها.</p><p>بيانات الاستثمار: العقود، الأسهم، المدفوعات، العوائد.</p><p>بيانات الاستخدام: سجل الدخول، الجهاز، عنوان IP.</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Lock className="h-5 w-5 text-gold" />حماية البيانات</h2>
