@@ -1,5 +1,5 @@
 import {
-  Injectable, NotFoundException, BadRequestException, Logger,
+  Injectable, NotFoundException, BadRequestException, ConflictException, Logger,
 } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import {
@@ -37,6 +37,12 @@ export class AnimalsService {
         throw new BadRequestException('الحظيرة ممتلئة')
       }
     }
+
+    if (dto.dateOfBirth && new Date(dto.dateOfBirth).getTime() > Date.now()) {
+      throw new BadRequestException('تاريخ الميلاد لا يمكن أن يكون في المستقبل')
+    }
+    const dupTag = await this.prisma.animal.findFirst({ where: { tagNumber: dto.tagNumber }, select: { id: true } })
+    if (dupTag) throw new ConflictException('رقم التاج مستخدم من قبل')
 
     const animalId = await this.generateAnimalId(dto.farmId)
     const qrCode = this.generateQR(animalId)
@@ -117,8 +123,8 @@ export class AnimalsService {
   }
 
   async findAll(query: AnimalQueryDto) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: Prisma.AnimalWhereInput = { deletedAt: null }
     if (query.farmId) where.farmId = query.farmId
     if (query.penId) where.penId = query.penId
@@ -212,6 +218,8 @@ export class AnimalsService {
     return this.prisma.$transaction(async (tx) => {
       const animal = await tx.animal.findUnique({ where: { id } })
       if (!animal) throw new NotFoundException('الحيوان غير موجود')
+      if (animal.status === 'DECEASED') throw new BadRequestException('لا يمكن نقل حيوان نافق')
+      if (animal.penId === penId) throw new BadRequestException('الحيوان موجود بالفعل في هذه الحظيرة')
       const pen = await tx.pen.findUnique({ where: { id: penId } })
       if (!pen) throw new NotFoundException('الحظيرة غير موجودة')
       if (pen.capacity != null && pen.currentCount >= pen.capacity) throw new BadRequestException('الحظيرة المقصودة ممتلئة')
@@ -242,12 +250,14 @@ export class AnimalsService {
     return this.prisma.$transaction(async (tx) => {
       const animal = await tx.animal.findUnique({ where: { id }, include: { pen: true } })
       if (!animal) throw new NotFoundException('الحيوان غير موجود')
+      if (animal.status === 'DECEASED') throw new BadRequestException('تم تسجيل نفوق هذا الحيوان من قبل')
       if (animal.penId && animal.pen) {
         await tx.pen.update({ where: { id: animal.penId }, data: { currentCount: { decrement: 1 } } })
       }
       return tx.animal.update({
         where: { id },
         data: {
+          penId: null,
           status: 'DECEASED',
           healthStatus: 'CRITICAL',
           deathDate: new Date(data.date),
@@ -262,6 +272,10 @@ export class AnimalsService {
   async recordWeight(dto: RecordWeightDto, userId: string) {
     const animal = await this.prisma.animal.findUnique({ where: { id: dto.animalId } })
     if (!animal) throw new NotFoundException('الحيوان غير موجود')
+    if (animal.status === 'DECEASED') throw new BadRequestException('لا يمكن تسجيل وزن لحيوان نافق')
+    if (dto.recordedAt && new Date(dto.recordedAt).getTime() > Date.now() + 86400000) {
+      throw new BadRequestException('تاريخ الوزن لا يمكن أن يكون في المستقبل')
+    }
     return this.prisma.$transaction(async (tx) => {
       const record = await tx.weightRecord.create({
         data: {
@@ -308,6 +322,9 @@ export class AnimalsService {
   async createVaccination(dto: CreateVaccinationDto, userId: string) {
     const animal = await this.prisma.animal.findUnique({ where: { id: dto.animalId } })
     if (!animal) throw new NotFoundException('الحيوان غير موجود')
+    if (dto.administeredAt && dto.nextDueDate && new Date(dto.nextDueDate) < new Date(dto.administeredAt)) {
+      throw new BadRequestException('موعد الجرعة القادمة قبل تاريخ الجرعة الحالية')
+    }
     return this.prisma.vaccination.create({
       data: {
         animalId: dto.animalId,
@@ -359,6 +376,12 @@ export class AnimalsService {
     if (report.isApproved) throw new BadRequestException('التقرير معتمد بالفعل')
     // Version control
     return this.prisma.$transaction(async (tx) => {
+      // حجز ذري: اعتماد واحد فقط ينجح عند تزامن طلبين
+      const claim = await tx.veterinaryReport.updateMany({
+        where: { id: report.id, isApproved: false },
+        data: { isApproved: true, approvedBy: userId, approvedAt: new Date() },
+      })
+      if (claim.count !== 1) throw new BadRequestException('التقرير معتمد بالفعل')
       const newReport = await tx.veterinaryReport.create({
         data: {
           animalId: report.animalId,
@@ -377,7 +400,6 @@ export class AnimalsService {
           previousVersionId: report.id,
         },
       })
-      await tx.veterinaryReport.update({ where: { id: report.id }, data: { isApproved: true, approvedBy: userId, approvedAt: new Date() } })
       return newReport
     })
   }

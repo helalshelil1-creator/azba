@@ -1,6 +1,6 @@
 import {
   IsString, IsOptional, IsNumber, IsUUID, IsEnum, IsDateString,
-  IsInt, Min, MaxLength, MinLength, IsArray,
+  IsInt, Min, IsPositive, MaxLength, MinLength, IsArray,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger'
 import { AnimalType, HealthStatus, AnimalStatus } from '@prisma/client'
@@ -294,4 +294,72 @@ export class AnimalQueryDto {
   @IsOptional()
   @IsString()
   search?: string
+}
+
+
+export class RecordDeathDto {
+  @ApiProperty()
+  @IsDateString()
+  date: string
+
+  @ApiProperty()
+  @IsString()
+  @MinLength(1)
+  cause: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  notes?: string
+}
+
+export class RecordFeedDto {
+  @ApiProperty()
+  @IsUUID()
+  animalId: string
+
+  @ApiProperty()
+  @IsUUID()
+  feedTypeId: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  inventoryId?: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  recipeId?: string
+
+  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  quantity: number
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  unit?: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  cost?: number
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  fedAt?: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  feedingTime?: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  notes?: string
 }

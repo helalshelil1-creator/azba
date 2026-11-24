@@ -5,7 +5,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger'
 import { AnimalsService } from './animals.service'
 import {
   CreateAnimalDto, UpdateAnimalDto, RecordWeightDto, CreateHealthRecordDto,
-  CreateVaccinationDto, CreateVetReportDto, AnimalQueryDto,
+  CreateVaccinationDto, CreateVetReportDto, AnimalQueryDto, RecordDeathDto, RecordFeedDto,
 } from './dto/animal.dto'
 import { Public } from '../../common/decorators/public.decorator'
 import { Roles } from '../../common/decorators/roles.decorator'
@@ -34,6 +34,7 @@ export class AnimalsController {
 
   @Get('qr/:qr')
   @ApiBearerAuth()
+  @Roles('SUPER_ADMIN', 'ADMIN', 'FARM_MANAGER', 'FARM_EMPLOYEE', 'VETERINARIAN', 'INVESTMENT_MANAGER', 'FINANCE_MANAGER')
   @ApiOperation({ summary: 'البحث بالكود QR' })
   findByQR(@Param('qr') qr: string) {
     return this.animals.findByQR(qr)
@@ -41,6 +42,7 @@ export class AnimalsController {
 
   @Get(':id')
   @ApiBearerAuth()
+  @Roles('SUPER_ADMIN', 'ADMIN', 'FARM_MANAGER', 'FARM_EMPLOYEE', 'VETERINARIAN', 'INVESTMENT_MANAGER', 'FINANCE_MANAGER')
   @ApiOperation({ summary: 'ملف حيوان' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.animals.findOne(id)
@@ -85,7 +87,7 @@ export class AnimalsController {
   @ApiOperation({ summary: 'تسجيل وفاة' })
   recordDeath(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() data: { date: string; cause: string; notes?: string },
+    @Body() data: RecordDeathDto,
     @CurrentUser('id') userId: string,
   ) {
     return this.animals.recordDeath(id, data, userId)
@@ -147,7 +149,7 @@ export class AnimalsController {
   @ApiBearerAuth()
   @Roles('SUPER_ADMIN', 'ADMIN', 'FARM_MANAGER', 'FARM_EMPLOYEE')
   @ApiOperation({ summary: 'تسجيل تغذية' })
-  recordFeed(@Body() dto: any, @CurrentUser('id') userId: string) {
+  recordFeed(@Body() dto: RecordFeedDto, @CurrentUser('id') userId: string) {
     return this.animals.recordFeed(dto, userId)
   }
 }

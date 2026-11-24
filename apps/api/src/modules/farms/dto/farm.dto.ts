@@ -91,11 +91,13 @@ export class CreateBuildingDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(0)
   area?: number
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(0)
   capacity?: number
 }
 
@@ -128,11 +130,13 @@ export class CreatePenDto {
 
   @ApiProperty()
   @IsNumber()
+  @Min(0)
   capacity: number
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(0)
   area?: number
 }
 

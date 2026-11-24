@@ -86,8 +86,8 @@ export class InvestmentsService {
   }
 
   async getInvestments(userId: string, query: InvestmentQueryDto) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: Prisma.InvestmentWhereInput = { userId, deletedAt: null }
     if (query.status) where.status = query.status as InvestmentStatus
 
@@ -372,8 +372,8 @@ export class InvestmentsService {
   async getWalletTransactions(userId: string, query: InvestmentQueryDto) {
     const wallet = await this.prisma.wallet.findUnique({ where: { userId } })
     if (!wallet) throw new NotFoundException('المحفظة غير موجودة')
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const [data, total] = await Promise.all([
       this.prisma.walletTransaction.findMany({
         where: { walletId: wallet.id },
@@ -433,8 +433,8 @@ export class InvestmentsService {
 
   // ---------- Admin: all investments ----------
   async findAll(query: InvestmentQueryDto) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const [data, total] = await Promise.all([
       this.prisma.investment.findMany({
         skip: (page - 1) * limit,

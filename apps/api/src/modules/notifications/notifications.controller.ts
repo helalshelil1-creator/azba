@@ -6,10 +6,14 @@ import { NotificationsService } from './notifications.service'
 import { CurrentUser } from '../../common/decorators/current-user.decorator'
 import { Public } from '../../common/decorators/public.decorator'
 import { Roles } from '../../common/decorators/roles.decorator'
-import { IsEnum, IsOptional, IsString, IsNotEmpty } from 'class-validator'
+import { IsEnum, IsOptional, IsString, IsNotEmpty, IsUUID } from 'class-validator'
 import { NotificationType, NotificationChannel } from '@prisma/client'
 
 class CreateNotificationDto {
+  @IsOptional()
+  @IsUUID()
+  userId?: string
+
   @IsEnum(NotificationType)
   type: NotificationType
 
@@ -66,6 +70,6 @@ export class NotificationsController {
   @Roles('SUPER_ADMIN', 'ADMIN')
   @ApiOperation({ summary: 'إرسال إشعار' })
   send(@Body() dto: CreateNotificationDto, @CurrentUser('id') userId: string) {
-    return this.notifications.create({ ...dto, userId })
+    return this.notifications.create({ ...dto, userId: dto.userId || userId })
   }
 }

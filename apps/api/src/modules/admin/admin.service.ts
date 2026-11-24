@@ -100,8 +100,8 @@ export class AdminService {
   }
 
   async getAuditLogs(query: { page?: number; limit?: number; userId?: string; action?: string; entityType?: string }) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: any = {}
     if (query.userId) where.userId = query.userId
     if (query.action) where.action = query.action

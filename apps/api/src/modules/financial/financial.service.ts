@@ -9,6 +9,12 @@ import {
 import { Prisma, LedgerEntryType } from '@prisma/client'
 import { randomBytes } from 'crypto'
 
+function parseQueryDate(v: string): Date {
+  const d = new Date(v)
+  if (Number.isNaN(d.getTime())) throw new BadRequestException('تاريخ غير صالح')
+  return d
+}
+
 @Injectable()
 export class FinancialService {
   private readonly logger = new Logger(FinancialService.name)
@@ -121,13 +127,13 @@ export class FinancialService {
   }
 
   async findAllJournalEntries(query: { page?: number; limit?: number; from?: string; to?: string; accountId?: string }) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: Prisma.JournalEntryWhereInput = {}
     if (query.from || query.to) {
       where.date = {
-        ...(query.from && { gte: new Date(query.from) }),
-        ...(query.to && { lte: new Date(query.to) }),
+        ...(query.from && { gte: parseQueryDate(query.from) }),
+        ...(query.to && { lte: parseQueryDate(query.to) }),
       }
     }
     if (query.accountId) {
@@ -223,8 +229,8 @@ export class FinancialService {
   }
 
   async findAllExpenses(query: { page?: number; limit?: number; projectId?: string; category?: string; status?: string }) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: Prisma.ExpenseWhereInput = {}
     if (query.projectId) where.projectId = query.projectId
     if (query.category) where.category = query.category
@@ -346,8 +352,8 @@ export class FinancialService {
     if (query.projectId) where.projectId = query.projectId
     if (query.from || query.to) {
       where.expenseDate = {
-        ...(query.from && { gte: new Date(query.from) }),
-        ...(query.to && { lte: new Date(query.to) }),
+        ...(query.from && { gte: parseQueryDate(query.from) }),
+        ...(query.to && { lte: parseQueryDate(query.to) }),
       }
     }
     const [revenue, expenses, byCategory] = await Promise.all([
@@ -355,7 +361,7 @@ export class FinancialService {
         where: {
           ...(query.projectId && { projectId: query.projectId }),
           ...(query.from || query.to
-            ? { saleDate: { ...(query.from && { gte: new Date(query.from) }), ...(query.to && { lte: new Date(query.to) }) } }
+            ? { saleDate: { ...(query.from && { gte: parseQueryDate(query.from) }), ...(query.to && { lte: parseQueryDate(query.to) }) } }
             : {}),
           status: { in: ['COMPLETED', 'DELIVERED'] },
         },

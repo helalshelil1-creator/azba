@@ -21,14 +21,14 @@ export class SupportController {
   }
 
   @Get('tickets/all')
-  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT')
+  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT', 'SUPPORT_AGENT', 'SUPPORT_MANAGER')
   @ApiOperation({ summary: 'كل التذاكر' })
   findAll(@Query() query: TicketQueryDto) {
     return this.support.findAll(query)
   }
 
   @Get('tickets/stats')
-  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT')
+  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT', 'SUPPORT_AGENT', 'SUPPORT_MANAGER')
   @ApiOperation({ summary: 'إحصائيات الدعم' })
   getStats() {
     return this.support.getStats()
@@ -58,7 +58,7 @@ export class SupportController {
   }
 
   @Post('tickets/:id/assign')
-  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT')
+  @Roles('SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT', 'SUPPORT_AGENT', 'SUPPORT_MANAGER')
   @ApiOperation({ summary: 'إسناد تذكرة' })
   assign(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AssignTicketDto) {
     return this.support.assign(id, dto)
@@ -83,7 +83,7 @@ export class SupportController {
 
   @Post('tickets/:id/close')
   @ApiOperation({ summary: 'إغلاق تذكرة مع تقييم' })
-  close(@Param('id', ParseUUIDPipe) id: string, @Body() dto: FeedbackDto) {
-    return this.support.close(id, dto)
+  close(@Param('id', ParseUUIDPipe) id: string, @Body() dto: FeedbackDto, @CurrentUser('id') userId: string, @CurrentUser('role') role: string) {
+    return this.support.close(id, userId, role, dto)
   }
 }

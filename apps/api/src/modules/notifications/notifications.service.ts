@@ -8,8 +8,8 @@ export class NotificationsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getMine(userId: string, query: { page?: number; limit?: number; unreadOnly?: boolean }) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const where: any = { userId }
     if (query.unreadOnly) where.readAt = null
     const [data, total, unread] = await Promise.all([

@@ -68,8 +68,8 @@ export class ProjectsService {
   }
 
   async findAll(query: ProjectQueryDto, isPublic = false) {
-    const page = query.page || 1
-    const limit = Math.min(query.limit || 20, 100)
+    const page = Math.max(1, Math.floor(Number(query.page)) || 1)
+    const limit = Math.min(Math.max(1, Math.floor(Number(query.limit)) || 20), 100)
     const skip = (page - 1) * limit
 
     const where: Prisma.ProjectWhereInput = { deletedAt: null }
