@@ -99,7 +99,7 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-2.5">
               <Mail className="h-4 w-4 text-gold" />
-              <span>info@azba.com</span>
+              <span>بريد توضيحي للعرض فقط</span>
             </div>
             <div className="flex items-center gap-2.5">
               <MapPin className="h-4 w-4 text-gold" />

@@ -27,7 +27,7 @@ export default function Page() {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Mail className="h-5 w-5 text-gold" />البريد الإلكتروني</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>الدعم العام: support@azba.com</p><p>الاستفسارات الاستثمارية: invest@azba.com</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>عناوين البريد المعروضة سابقًا للعرض فقط ولم يتم تأكيد ملكيتها، لذلك أُزيلت. استخدم الهاتف المعروض للتواصل.</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Phone className="h-5 w-5 text-gold" />الهاتف واتساب</h2>

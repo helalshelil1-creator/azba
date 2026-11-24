@@ -117,7 +117,7 @@ export function MobileMenu({
             </div>
             <div className="flex items-center gap-3 text-sm text-ivory/80">
               <Mail className="h-4 w-4 text-gold" />
-              <span>info@azba.com</span>
+              <span>بريد توضيحي للعرض فقط</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-ivory/80">
               <MapPin className="h-4 w-4 text-gold" />
