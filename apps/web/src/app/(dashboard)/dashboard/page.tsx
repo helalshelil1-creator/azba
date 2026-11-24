@@ -274,7 +274,7 @@ export default function InvestorDashboardPage() {
                   return (
                     <tr key={inv.id} className="border-b border-border/40 transition-colors hover:bg-ivory/40">
                       <td className="px-6 py-4">
-                        <Link href={`/dashboard/projects/${inv.project.id}`} className="font-semibold text-primary hover:text-gold-600">
+                        <Link href={`/projects/${inv.project.id}`} className="font-semibold text-primary hover:text-gold-600">
                           {inv.project.name}
                         </Link>
                         {inv.contractNumber && (
