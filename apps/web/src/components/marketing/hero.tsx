@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 
 const HERO_IMAGES = [
   { src: '/images/cattle.jpg', alt: 'بقرة' },
+  { src: '/images/gallery/buffalo-feeding.jpg', alt: 'جاموس عند المعلف في حظيرة مفتوحة وقت الغروب' },
   { src: '/images/horse.jpg', alt: 'حصان' },
   { src: '/images/sheep.jpg', alt: 'أغنام وخرفان' },
   { src: '/images/goat.jpg', alt: 'ماعز' },
