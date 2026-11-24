@@ -159,7 +159,7 @@ export default function InvestPage() {
       <section className="relative overflow-hidden bg-primary-950 py-16 text-white sm:py-20">
         <div className="absolute inset-0 grid-pattern opacity-20" />
         <div className="container-page relative">
-          <PageLogo className="mb-6" />
+          <PageLogo className="mb-6 mt-6" />
           <span className="badge border border-gold/40 bg-gold/15 text-gold">فرص الاستثمار</span>
           <h1 className="mt-4 max-w-3xl text-3xl font-extrabold leading-snug sm:text-4xl lg:text-5xl">
             قارن الفرص <span className="text-gradient-gold">واختر الأنسب</span> لمحفظتك

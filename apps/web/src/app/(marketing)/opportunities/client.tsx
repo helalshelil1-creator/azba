@@ -110,7 +110,7 @@ export function OpportunitiesClient() {
         <div className="absolute inset-0 grid-pattern opacity-20" />
         <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
         <div className="container-page relative">
-          <PageLogo className="mb-6" />
+          <PageLogo className="mb-6 mt-6" />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold text-gold">
               <Sparkles className="h-3.5 w-3.5" />
