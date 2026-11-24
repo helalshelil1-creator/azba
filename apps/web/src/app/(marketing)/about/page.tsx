@@ -16,10 +16,10 @@ export default function Page() {
         <div className="container-page relative">
           <Reveal>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold text-gold">
-              <Info className="h-3.5 w-3.5" />استثمر في الثروة الحقيقية
+              <Info className="h-3.5 w-3.5" />نموذج عرض شخصي
             </div>
             <h1 className="text-3xl font-extrabold sm:text-4xl">عن عزبة</h1>
-            <p className="mt-3 max-w-2xl text-ivory/70">عزبة منصة مصرية رائدة تربط الاستثمار المنظم بالثروة الحيوانية والإدارة الزراعية والتكنولوجيا المالية.</p>
+            <p className="mt-3 max-w-2xl text-ivory/70">عزبة نموذج شخصي لمنصة تربط عرض مشاريع الثروة الحيوانية بالإدارة الزراعية والتتبع المالي، للعرض فقط وبدون نشاط تجاري.</p>
           </Reveal>
         </div>
       </section>

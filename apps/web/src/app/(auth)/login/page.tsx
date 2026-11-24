@@ -137,7 +137,7 @@ export default function LoginPage() {
 
               <div className="mt-6 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-ivory/50">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-gold" />
-                اتصال آمن ومشفر — لا نخزن كلمة مرورك أبدًا
+                اتصال آمن ومشفر. كلمات المرور تُحفظ مجزّأة (hash) ولا تُحفظ كنص
               </div>
             </div>
 

@@ -60,7 +60,7 @@ export default function InvestPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-primary">فرص الاستثمار</h1>
-          <p className="mt-1 text-sm text-muted-foreground">تصفح المشاريع المتاحة وقارن بينها ثم استثمر في دقائق.</p>
+          <p className="mt-1 text-sm text-muted-foreground">تصفّح المشاريع المعروضة وقارن بينها.</p>
         </div>
         <Link href="/opportunities" className="btn-outline text-sm">المقارنة والتفاصيل</Link>
       </div>

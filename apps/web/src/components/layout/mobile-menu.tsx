@@ -134,7 +134,7 @@ export function MobileMenu({
             className="btn-gold w-full text-center"
           >
             <TrendingUp className="h-5 w-5" />
-            ابدأ الاستثمار
+            تصفّح المشاريع
           </Link>
           <div className="mt-4 flex items-center justify-center gap-4 text-xs text-ivory/50">
             <Link href="/login" onClick={onClose} className="hover:text-gold transition-colors">

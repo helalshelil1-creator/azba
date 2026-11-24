@@ -98,8 +98,8 @@ export function HeroSection() {
             className="max-w-4xl text-balance text-4xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             style={{ fontFamily: 'var(--font-tajawal)' }}
           >
-            استثمر في{' '}
-            <span className="text-gradient-gold">الثروة الحقيقية</span>
+            عزبة{' '}
+            <span className="text-gradient-gold">عرض لمنصة الثروة الحيوانية</span>
           </motion.h1>
 
           {/* Subheading */}
@@ -109,7 +109,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-4 max-w-2xl text-balance text-base text-ivory/85 sm:text-xl lg:text-2xl"
           >
-            من المزرعة إلى محفظتك الاستثمارية.
+            نموذج شخصي غير تجاري لتصميم المنصة وتجربة استخدامها.
           </motion.p>
 
           {/* Description */}
@@ -119,8 +119,8 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.65 }}
             className="mt-3 max-w-3xl text-balance text-sm leading-relaxed text-ivory/60 sm:text-base"
           >
-            منصة متكاملة تتيح لك متابعة فرص الاستثمار في الثروة الحيوانية، ومراقبة
-            مشروعاتك، والاطلاع على تفاصيل التشغيل والتكاليف والنتائج بكل شفافية.
+            تصفّح مشاريع معروضة للاطلاع على شكل المنصة وطريقة عرض التشغيل والتكاليف
+            والنتائج. المشاريع والأرقام للعرض فقط.
           </motion.p>
 
           {/* CTAs */}
@@ -131,7 +131,7 @@ export function HeroSection() {
             className="mt-6 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
           >
             <Link href="/invest" className="btn-gold group px-8 py-4 text-base">
-              اكتشف فرص الاستثمار
+              تصفّح المشاريع المعروضة
               <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
             </Link>
             <Link
