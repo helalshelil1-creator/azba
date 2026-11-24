@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Loader2, AlertTriangle } from 'lucide-react'
 import { http, getToken } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -20,6 +20,8 @@ interface StaffTicket {
   _count?: { messages: number }
 }
 
+interface Msg { id: string; body: string; isInternal: boolean; createdAt: string; sender?: { firstName?: string; lastName?: string; role?: string } }
+
 export function StaffConsole({ staffId }: { staffId: string }) {
   const [tickets, setTickets] = useState<StaffTicket[]>([])
   const [stats, setStats] = useState<any>(null)
@@ -31,37 +33,68 @@ export function StaffConsole({ staffId }: { staffId: string }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [text, setText] = useState('')
   const [internal, setInternal] = useState(false)
+  const [busy, setBusy] = useState<string | null>(null)
+  const [thread, setThread] = useState<Msg[] | null>(null)
+  const [threadErr, setThreadErr] = useState<string | null>(null)
+  const [debounced, setDebounced] = useState('')
+  const reqId = useRef(0)
+  const lock = useRef(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search), 350)
+    return () => clearTimeout(t)
+  }, [search])
+
+  const loadThread = useCallback(async (id: string) => {
+    setThread(null); setThreadErr(null)
+    try {
+      const t = await http.get<any>(`/support/tickets/${id}`, {}, getToken)
+      setThread(t?.messages ?? [])
+    } catch (e: any) {
+      setThreadErr(e?.message || 'تعذر تحميل المحادثة')
+    }
+  }, [])
 
   const load = useCallback(async () => {
+    const my = ++reqId.current
     setLoading(true); setError(null)
     try {
       const q = new URLSearchParams({ page: '1', limit: '50' })
       if (status) q.set('status', status)
       if (priority) q.set('priority', priority)
-      if (search.trim()) q.set('search', search.trim())
+      if (debounced.trim()) q.set('search', debounced.trim())
       const [res, st] = await Promise.all([
         http.get<any>(`/support/tickets/all?${q.toString()}`, {}, getToken),
         http.get<any>('/support/tickets/stats', {}, getToken),
       ])
+      if (my !== reqId.current) return
       setTickets(res?.data ?? []); setStats(st)
     } catch (e: any) {
+      if (my !== reqId.current) return
       setError(e?.message || 'تعذر تحميل التذاكر')
-    } finally { setLoading(false) }
-  }, [status, priority, search])
+    } finally { if (my === reqId.current) setLoading(false) }
+  }, [status, priority, debounced])
 
   useEffect(() => { load() }, [load])
 
-  const act = async (fn: () => Promise<any>, ok: string) => {
-    try { await fn(); toast.success(ok); load() } catch (e: any) { toast.error(e?.message || 'تعذر تنفيذ الإجراء') }
+  const act = async (key: string, fn: () => Promise<any>, ok: string, id?: string) => {
+    if (lock.current) return
+    lock.current = true
+    setBusy(key)
+    try {
+      await fn(); toast.success(ok)
+      await load()
+      if (id && openId === id) await loadThread(id)
+    } catch (e: any) { toast.error(e?.message || 'تعذر تنفيذ الإجراء') } finally { lock.current = false; setBusy(null) }
   }
-  const assignMe = (id: string) => act(() => http.post(`/support/tickets/${id}/assign`, { assigneeId: staffId }, {}, getToken), 'تم إسناد التذكرة لك')
-  const resolve = (id: string) => act(() => http.post(`/support/tickets/${id}/resolve`, {}, {}, getToken), 'تم تحديد التذكرة كمحلولة')
+  const assignMe = (id: string) => act('assign:' + id, () => http.post(`/support/tickets/${id}/assign`, { assigneeId: staffId }, {}, getToken), 'تم إسناد التذكرة لك', id)
+  const resolve = (id: string) => act('resolve:' + id, () => http.post(`/support/tickets/${id}/resolve`, {}, {}, getToken), 'تم تحديد التذكرة كمحلولة', id)
   const send = (id: string) => {
     if (!text.trim()) return
-    return act(async () => {
+    return act('send:' + id, async () => {
       await http.post(`/support/tickets/${id}/reply`, { message: text, isInternal: internal }, {}, getToken)
       setText(''); setInternal(false)
-    }, internal ? 'تم حفظ الملاحظة الداخلية' : 'تم إرسال الرد للعميل')
+    }, internal ? 'تم حفظ الملاحظة الداخلية' : 'تم إرسال الرد للعميل', id)
   }
 
   return (
@@ -114,17 +147,29 @@ export function StaffConsole({ staffId }: { staffId: string }) {
               {' · '}المسؤول: {t.assignee ? [t.assignee.firstName, t.assignee.lastName].filter(Boolean).join(' ') : 'غير مسند'}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={() => setOpenId(openId === t.id ? null : t.id)} className="btn-outline text-xs">رد / ملاحظة</button>
-              {!closed && <button onClick={() => assignMe(t.id)} className="btn-outline text-xs">إسناد لي</button>}
-              {!closed && <button onClick={() => resolve(t.id)} className="btn-outline text-xs">تم الحل</button>}
+              <button onClick={() => { if (openId === t.id) { setOpenId(null) } else { setOpenId(t.id); setText(''); setInternal(false); loadThread(t.id) } }} className="btn-outline text-xs">المحادثة / رد</button>
+              {!closed && <button disabled={!!busy} onClick={() => assignMe(t.id)} className="btn-outline text-xs disabled:opacity-50">إسناد لي</button>}
+              {!closed && <button disabled={!!busy} onClick={() => resolve(t.id)} className="btn-outline text-xs disabled:opacity-50">تم الحل</button>}
             </div>
             {openId === t.id && (
               <div className="mt-3 space-y-2">
+                {threadErr && <p className="text-xs text-red-600">{threadErr}</p>}
+                {!thread && !threadErr && <div className="flex justify-center py-3"><Loader2 className="h-4 w-4 animate-spin text-gold" /></div>}
+                {thread && thread.length === 0 && <p className="text-xs text-muted-foreground">لا توجد ردود بعد.</p>}
+                {thread && thread.map((m) => (
+                  <div key={m.id} className={cn('rounded-xl p-3 text-sm break-words', m.isInternal ? 'border border-amber-300 bg-amber-50' : 'bg-muted/40')}>
+                    <div className="mb-1 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                      <span>{[m.sender?.firstName, m.sender?.lastName].filter(Boolean).join(' ') || '—'}{m.sender?.role ? ` · ${m.sender.role}` : ''}</span>
+                      {m.isInternal && <span className="font-semibold text-amber-700">ملاحظة داخلية</span>}
+                    </div>
+                    {m.body}
+                  </div>
+                ))}
                 <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder="اكتب الرد..." className="input-field" />
                 <label className="flex items-center gap-2 text-xs">
                   <input type="checkbox" checked={internal} onChange={(e) => setInternal(e.target.checked)} /> ملاحظة داخلية (لا تظهر للعميل)
                 </label>
-                <button onClick={() => send(t.id)} className="btn-gold w-full text-sm">{internal ? 'حفظ الملاحظة' : 'إرسال للعميل'}</button>
+                <button disabled={!!busy || !text.trim()} onClick={() => send(t.id)} className="btn-gold w-full text-sm disabled:opacity-60">{internal ? 'حفظ الملاحظة' : 'إرسال للعميل'}</button>
               </div>
             )}
           </div>
