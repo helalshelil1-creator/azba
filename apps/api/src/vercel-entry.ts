@@ -9,6 +9,8 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { ExpressAdapter } from '@nestjs/platform-express'
 import express from 'express'
+import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
 
 let cached: express.Express | null = null
@@ -16,9 +18,15 @@ let pending: Promise<express.Express> | null = null
 
 async function bootstrap(): Promise<express.Express> {
   const httpAdapter = express()
+  // خلف بروكسي Vercel: بدونها يرى الـ throttler عنوان البروكسي لكل الزوار
+  httpAdapter.set('trust proxy', 1)
   const app = await NestFactory.create(AppModule, new ExpressAdapter(httpAdapter), {
     logger: ['error', 'warn'],
   })
+
+  // Security + cookies — نفس main.ts (refresh يقرأ الكوكي، فبدون cookieParser يفشل)
+  app.use(helmet())
+  app.use(cookieParser())
 
   // CORS — نفس إعداد main.ts
   const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',')

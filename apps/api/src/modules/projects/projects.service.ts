@@ -22,12 +22,13 @@ export class ProjectsService {
     const farm = await this.prisma.farm.findUnique({ where: { id: dto.farmId } })
     if (!farm) throw new NotFoundException('المزرعة غير موجودة')
 
-    const totalBudget = dto.totalShares * dto.sharePrice
+    const totalBudget = Math.round(dto.totalShares * dto.sharePrice * 100) / 100
+    const code = this.generateCode()
 
     return this.prisma.project.create({
       data: {
         farmId: dto.farmId,
-        code: this.generateCode(),
+        code,
         name: dto.name,
         nameEn: dto.nameEn,
         description: dto.description,
@@ -52,7 +53,8 @@ export class ProjectsService {
         // Create project shares
         shares: {
           create: Array.from({ length: dto.totalShares }, (_, i) => ({
-            shareNumber: String(i + 1),
+            // shareNumber فريد على مستوى الجدول كله، فنضيف رمز المشروع
+            shareNumber: `${code}-${i + 1}`,
             status: 'AVAILABLE',
           })),
         },
@@ -70,7 +72,7 @@ export class ProjectsService {
     const limit = Math.min(query.limit || 20, 100)
     const skip = (page - 1) * limit
 
-    const where: Prisma.ProjectWhereInput = {}
+    const where: Prisma.ProjectWhereInput = { deletedAt: null }
     if (isPublic) where.status = { in: ['FUNDING', 'FUNDED', 'ACTIVE', 'COMPLETED'] }
     if (query.search) {
       where.OR = [
@@ -125,8 +127,9 @@ export class ProjectsService {
   }
 
   async findOne(id: string) {
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+    // نقطة عامة: لا تُعرض المشاريع المسودة/الملغاة/المحذوفة
+    const project = await this.prisma.project.findFirst({
+      where: { id, deletedAt: null, status: { in: ['FUNDING', 'FUNDED', 'ACTIVE', 'COMPLETED'] } },
       include: {
         farm: true,
         projectAnimals: {
@@ -150,18 +153,49 @@ export class ProjectsService {
 
   async update(id: string, dto: UpdateProjectDto, userId: string) {
     const project = await this.prisma.project.findUnique({ where: { id } })
-    if (!project) throw new NotFoundException('المشروع غير موجود')
+    if (!project || project.deletedAt) throw new NotFoundException('المشروع غير موجود')
     if (project.status !== 'DRAFT' && project.status !== 'PENDING_APPROVAL') {
       throw new BadRequestException('لا يمكن تعديل مشروع قيد التنفيذ')
     }
-    return this.prisma.project.update({
-      where: { id },
-      data: {
-        ...dto,
+    const { animalIds, ...fields } = dto as any
+    const totalShares = fields.totalShares ?? project.totalShares
+    const sharePrice = fields.sharePrice ?? project.sharePrice.toNumber()
+    const sharesChanged = fields.totalShares !== undefined && fields.totalShares !== project.totalShares
+    const priceChanged = fields.sharePrice !== undefined
+
+    return this.prisma.$transaction(async (tx) => {
+      const data: any = {
+        ...fields,
         updatedBy: userId,
         ...(dto.startDate && { startDate: new Date(dto.startDate) }),
         ...(dto.expectedEndDate && { expectedEndDate: new Date(dto.expectedEndDate) }),
-      },
+      }
+      if (sharesChanged || priceChanged) {
+        // الأسهم والمبالغ يجب أن تبقى متسقة (المشروع بلا حجوزات/استثمارات وهو مسودة)
+        const used = await tx.shareReservation.count({ where: { projectId: id } })
+        const invs = await tx.investment.count({ where: { projectId: id } })
+        if (used > 0 || invs > 0) throw new BadRequestException('لا يمكن تغيير الأسهم أو السعر بعد وجود حجوزات')
+        const total = Math.round(totalShares * sharePrice * 100) / 100
+        data.targetAmount = total
+        data.totalBudget = total
+        data.availableShares = totalShares
+        if (sharesChanged) {
+          await tx.projectShare.deleteMany({ where: { projectId: id } })
+          await tx.projectShare.createMany({
+            data: Array.from({ length: totalShares }, (_, i) => ({
+              projectId: id, shareNumber: `${project.code}-${i + 1}`, status: 'AVAILABLE',
+            })) as any,
+          })
+        }
+      }
+      const updated = await tx.project.update({ where: { id }, data })
+      if (Array.isArray(animalIds)) {
+        await tx.projectAnimal.deleteMany({ where: { projectId: id } })
+        if (animalIds.length) {
+          await tx.projectAnimal.createMany({ data: animalIds.map((animalId: string) => ({ projectId: id, animalId })) })
+        }
+      }
+      return updated
     })
   }
 

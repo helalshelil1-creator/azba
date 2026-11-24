@@ -212,6 +212,8 @@ export class AnimalsService {
     return this.prisma.$transaction(async (tx) => {
       const animal = await tx.animal.findUnique({ where: { id } })
       if (!animal) throw new NotFoundException('الحيوان غير موجود')
+      if (animal.status === 'DECEASED') throw new BadRequestException('لا يمكن نقل حيوان نافق')
+      if (animal.penId === penId) throw new BadRequestException('الحيوان موجود بالفعل في هذه الحظيرة')
       const pen = await tx.pen.findUnique({ where: { id: penId } })
       if (!pen) throw new NotFoundException('الحظيرة غير موجودة')
       if (pen.capacity != null && pen.currentCount >= pen.capacity) throw new BadRequestException('الحظيرة المقصودة ممتلئة')
@@ -242,12 +244,14 @@ export class AnimalsService {
     return this.prisma.$transaction(async (tx) => {
       const animal = await tx.animal.findUnique({ where: { id }, include: { pen: true } })
       if (!animal) throw new NotFoundException('الحيوان غير موجود')
+      if (animal.status === 'DECEASED') throw new BadRequestException('تم تسجيل نفوق هذا الحيوان من قبل')
       if (animal.penId && animal.pen) {
         await tx.pen.update({ where: { id: animal.penId }, data: { currentCount: { decrement: 1 } } })
       }
       return tx.animal.update({
         where: { id },
         data: {
+          penId: null,
           status: 'DECEASED',
           healthStatus: 'CRITICAL',
           deathDate: new Date(data.date),
@@ -359,6 +363,12 @@ export class AnimalsService {
     if (report.isApproved) throw new BadRequestException('التقرير معتمد بالفعل')
     // Version control
     return this.prisma.$transaction(async (tx) => {
+      // حجز ذري: اعتماد واحد فقط ينجح عند تزامن طلبين
+      const claim = await tx.veterinaryReport.updateMany({
+        where: { id: report.id, isApproved: false },
+        data: { isApproved: true, approvedBy: userId, approvedAt: new Date() },
+      })
+      if (claim.count !== 1) throw new BadRequestException('التقرير معتمد بالفعل')
       const newReport = await tx.veterinaryReport.create({
         data: {
           animalId: report.animalId,
@@ -377,7 +387,6 @@ export class AnimalsService {
           previousVersionId: report.id,
         },
       })
-      await tx.veterinaryReport.update({ where: { id: report.id }, data: { isApproved: true, approvedBy: userId, approvedAt: new Date() } })
       return newReport
     })
   }

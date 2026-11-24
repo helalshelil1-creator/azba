@@ -34,6 +34,7 @@ export class AnimalsController {
 
   @Get('qr/:qr')
   @ApiBearerAuth()
+  @Roles('SUPER_ADMIN', 'ADMIN', 'FARM_MANAGER', 'FARM_EMPLOYEE', 'VETERINARIAN', 'INVESTMENT_MANAGER', 'FINANCE_MANAGER')
   @ApiOperation({ summary: 'البحث بالكود QR' })
   findByQR(@Param('qr') qr: string) {
     return this.animals.findByQR(qr)
@@ -41,6 +42,7 @@ export class AnimalsController {
 
   @Get(':id')
   @ApiBearerAuth()
+  @Roles('SUPER_ADMIN', 'ADMIN', 'FARM_MANAGER', 'FARM_EMPLOYEE', 'VETERINARIAN', 'INVESTMENT_MANAGER', 'FINANCE_MANAGER')
   @ApiOperation({ summary: 'ملف حيوان' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.animals.findOne(id)

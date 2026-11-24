@@ -29,3 +29,14 @@
 2. جلسات الدخول الحالية (refresh tokens مخزنة نصًا) ستبطل ويحتاج المستخدمون تسجيل الدخول مرة.
 3. اضبط APP_URL وSMTP_* لو تريد استعادة كلمة المرور بالبريد، وPAYMENTS_SANDBOX_ENABLED=false لو تريد إيقاف الدفع التجريبي.
 4. شغّل `npm run test:int` في apps/api على قاعدة بيانات اختبار فارغة فقط.
+
+## Round 3 (projects / farms / animals / serverless shim)
+Corrections (bugs, no policy invented):
+- Creating a second project failed: share numbers were "1..n" but `shareNumber` is globally unique. Now `<project code>-<n>`.
+- Editing a draft project's shares/price left shares, available count and amounts inconsistent, and `animalIds` was written straight into the update. Now recomputed in one transaction (blocked if reservations/investments exist).
+- Public project detail exposed drafts/cancelled/deleted projects; public farm detail exposed the manager's email and phone and deleted farms.
+- Animal detail/QR routes were open to any logged-in user (including investors). Now limited to staff roles (the roles already used by the staff screens plus FARM_EMPLOYEE).
+- Death could be recorded twice (pen count decremented twice); transfers of a dead animal or to the same pen were accepted. Vet report approval was not atomic (concurrent approvals created duplicate versions).
+- Vercel shim: no cookie parser (cookie refresh returned 401), no helmet, no trust proxy (all visitors shared one throttle bucket).
+Policy choices still open: SMTP provider, role matrix, pending expenses in profit, fees/tax/company share/leftover cents, real payment provider, wallet funding.
+Deploy note: vercel.json builds only apps/web; the API function also needs `prisma generate` at build time (not verified, no Vercel access).

@@ -73,10 +73,11 @@ export class FarmsService {
   }
 
   async findOne(id: string) {
-    const farm = await this.prisma.farm.findUnique({
-      where: { id },
+    // نقطة عامة: لا نكشف بريد/هاتف مدير المزرعة ولا المزارع المحذوفة
+    const farm = await this.prisma.farm.findFirst({
+      where: { id, deletedAt: null },
       include: {
-        manager: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } },
+        manager: { select: { id: true, firstName: true, lastName: true } },
         buildings: { where: { deletedAt: null }, include: { _count: { select: { pens: true } } } },
         pens: { where: { deletedAt: null }, include: { _count: { select: { animals: true } } } },
         _count: { select: { animals: true, projects: true, employees: true } },
