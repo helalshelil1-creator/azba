@@ -5,6 +5,10 @@ import { Loader2, AlertTriangle, Plus, MessageSquare, Send } from 'lucide-react'
 import { http, getToken } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/auth-store'
+import { StaffConsole } from './staff-console'
+
+const STAFF_ROLES = ['SUPER_ADMIN', 'ADMIN', 'CUSTOMER_SUPPORT', 'SUPPORT_AGENT', 'SUPPORT_MANAGER']
 
 const STATUS: Record<string, { ar: string; cls: string }> = {
   OPEN: { ar: 'مفتوحة', cls: 'badge-warning' },
@@ -28,6 +32,8 @@ interface Ticket {
 }
 
 export default function SupportPage() {
+  const { user } = useAuth()
+  const isStaff = !!user && STAFF_ROLES.includes(String(user.role))
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -50,7 +56,7 @@ export default function SupportPage() {
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { if (!isStaff) load(); else setLoading(false) }, [isStaff])
 
   const create = async () => {
     if (subject.trim().length < 5 || description.trim().length < 10) {
@@ -78,6 +84,18 @@ export default function SupportPage() {
     } catch (e: any) {
       toast.error(e?.message || 'تعذر إرسال الرد')
     }
+  }
+
+  if (isStaff && user) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-extrabold text-primary">لوحة الدعم</h1>
+          <p className="mt-1 text-sm text-muted-foreground">كل تذاكر العملاء.</p>
+        </div>
+        <StaffConsole staffId={String(user.id)} />
+      </div>
+    )
   }
 
   return (

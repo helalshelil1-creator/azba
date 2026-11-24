@@ -110,7 +110,8 @@ export function AdminOverviewClient() {
 
     setFailedSections(failed)
     if (results.every((r) => r.status === 'rejected')) {
-      setError('تعذر تحميل بيانات الإدارة. تأكد من صلاحيات المدير أو أعد المحاولة.')
+      const denied = results.every((r) => r.status === 'rejected' && (r as PromiseRejectedResult).reason?.status === 403)
+      setError(denied ? 'ليس لديك الصلاحية المطلوبة' : 'تعذر تحميل بيانات الإدارة. تأكد من صلاحيات المدير أو أعد المحاولة.')
     }
     setLoading(false)
   }, [])

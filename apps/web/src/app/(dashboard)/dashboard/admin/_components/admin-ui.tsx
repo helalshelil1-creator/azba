@@ -472,6 +472,18 @@ export function ErrorState({
   onRetry?: () => void
   title?: string
 }) {
+  const denied = !!message && message.includes('الصلاحية')
+  if (denied) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-16 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+          <AlertTriangle className="h-6 w-6" />
+        </div>
+        <p className="font-semibold text-primary">هذه الصفحة غير متاحة لحسابك</p>
+        <p className="text-sm text-muted-foreground">ليس لديك صلاحية الوصول إلى هذا القسم.</p>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">

@@ -44,6 +44,15 @@ export function LoadingState({ label = 'جارٍ التحميل...' }: { label?:
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  if (message && message.includes('الصلاحية')) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-12 text-center">
+        <AlertTriangle className="h-10 w-10 text-amber-500" />
+        <p className="font-semibold text-primary">هذه الصفحة غير متاحة لحسابك</p>
+        <p className="text-sm text-muted-foreground">ليس لديك صلاحية الوصول إلى هذا القسم.</p>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-6 py-12 text-center">
       <AlertTriangle className="h-10 w-10 text-red-400" />
