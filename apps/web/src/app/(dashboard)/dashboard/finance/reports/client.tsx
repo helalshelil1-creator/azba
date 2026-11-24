@@ -169,8 +169,8 @@ export function ReportsClient() {
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-5">
-            <div className="card p-0 lg:col-span-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+            <div className="card min-w-0 p-0 lg:col-span-3">
               <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
                 <h3 className="font-bold text-primary">ميزان المراجعة</h3>
                 <span className="text-xs text-muted-foreground">
@@ -217,7 +217,7 @@ export function ReportsClient() {
               )}
             </div>
 
-            <div className="card p-0 lg:col-span-2">
+            <div className="card min-w-0 p-0 lg:col-span-2">
               <div className="border-b border-border/60 px-6 py-4">
                 <h3 className="font-bold text-primary">الأرباح والخسائر</h3>
                 <p className="mt-0.5 text-xs text-muted-foreground">توزيع المصروفات حسب البند</p>
