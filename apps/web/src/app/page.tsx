@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/marketing/how-it-works'
 import { Opportunities } from '@/components/marketing/opportunities'
 import { Features } from '@/components/marketing/features'
 import { Farms } from '@/components/marketing/farms'
+import { Gallery } from '@/components/marketing/gallery'
 import { Transparency } from '@/components/marketing/transparency'
 import { FAQ } from '@/components/marketing/faq'
 import { CTA } from '@/components/marketing/cta'
@@ -21,6 +22,7 @@ export default function HomePage() {
       <Opportunities />
       <Features />
       <Farms />
+      <Gallery />
       <Transparency />
       <FAQ />
       <CTA />
