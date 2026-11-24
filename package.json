@@ -1,0 +1,13 @@
+{
+  "name": "azba-api-deploy",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "cd packages/database && npx prisma generate && cd ../../apps/api && npx nest build",
+    "start": "node apps/api/dist/main.js"
+  }
+}
