@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { DemoNotice } from '@/components/layout/demo-banner'
+import { DemoNotice, DEMO_MODE } from '@/components/layout/demo-banner'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -296,16 +296,16 @@ export function ProjectDetailClient({ id }: { id: string }) {
 
             <button
               onClick={startInvest}
-              disabled={available <= 0}
+              disabled={available <= 0 || DEMO_MODE}
               className="btn-gold mt-5 flex w-full items-center justify-center gap-2 py-3.5 disabled:opacity-60"
             >
               <Sparkles className="h-5 w-5" />
-              {available <= 0 ? 'اكتمل التمويل' : user ? 'استثمر الآن' : 'سجّل الدخول للاستثمار'}
+              {DEMO_MODE ? 'للاستعراض فقط، لا يوجد حجز في هذا العرض' : available <= 0 ? 'اكتمل التمويل' : user ? 'استثمر الآن' : 'سجّل الدخول للاستثمار'}
             </button>
 
             <div className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
               <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
-              الاستثمار يتم عبر عقد إلكتروني ودفع تجريبي (Sandbox) حتى استكمال المتطلبات القانونية.
+              هذا عرض شخصي غير تجاري: لا يتم حجز أسهم أو دفع أو سحب أموال فعلية.
             </div>
           </div>
         </div>
