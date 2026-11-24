@@ -101,7 +101,8 @@ export function Gallery() {
     <section id="gallery" className="section-padding bg-white">
       <div className="container-page">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold text-primary sm:text-4xl">
+          <span className="eyebrow">معرض الصور</span>
+          <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl">
             من حياة المزرعة
           </h2>
           <p className="mt-4 text-muted-foreground">
