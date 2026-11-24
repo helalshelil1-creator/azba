@@ -27,12 +27,12 @@ export default function Page() {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Mail className="h-5 w-5 text-gold" />ملاحظة</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>هذا الموقع عرض شخصي غير تجاري. بيانات التواصل هنا توضيحية وغير فعّالة، ولا يوجد حاليًا قناة تواصل رسمية.</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>هذا الموقع عرض شخصي غير تجاري. بيانات التواصل هنا توضيحية وغير فعّالة، ولا توجد قناة تواصل فعّالة مقدّمة ضمن هذا العرض.</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Phone className="h-5 w-5 text-gold" />التواصل (غير فعّال)</h2>
             <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80">
-              <p className="text-muted-foreground">لا يوجد رقم أو بريد تواصل فعلي معروض في هذا العرض.</p>
+              <p className="text-muted-foreground">لا توجد بيانات تواصل فعّالة مقدّمة ضمن هذا العرض.</p>
             </div>
           </div>
         </div>

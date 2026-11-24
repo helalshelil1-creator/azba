@@ -51,40 +51,10 @@ const COLUMNS = [
   },
 ]
 
-const SOCIAL = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
-]
-
 export function Footer() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   return (
     <footer className="border-t border-white/10 bg-primary-950 pb-24 text-ivory lg:pb-0">
-      {/* Newsletter */}
-      <div className="border-b border-white/10">
-        <div className="container-page flex flex-col items-center justify-between gap-6 py-12 lg:flex-row">
-          <div>
-            <h3 className="text-2xl font-bold text-white">اشترك في نشرة عزبة</h3>
-            <p className="mt-1 text-sm text-ivory/60">
-              آخر تحديثات العرض الشخصي للمنصة.
-            </p>
-          </div>
-          <form className="flex w-full max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="بريدك الإلكتروني"
-              className="flex-1 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm text-white placeholder:text-ivory/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
-            />
-            <button type="submit" className="btn-gold px-6 py-3 text-sm">
-              اشترك
-            </button>
-          </form>
-        </div>
-      </div>
-
       {/* Main footer */}
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
@@ -94,18 +64,6 @@ export function Footer() {
           </p>
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
             <p>بيانات التواصل توضيحية وغير فعّالة في هذا العرض الشخصي.</p>
-          </div>
-          <div className="mt-6 flex gap-2">
-            {SOCIAL.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-ivory/70 transition-all hover:border-gold hover:text-gold"
-              >
-                <s.icon className="h-4 w-4" />
-              </a>
-            ))}
           </div>
         </div>
 
