@@ -146,7 +146,7 @@ export function DashboardSidebar({ open, onClose }: { open: boolean; onClose: ()
           </button>
           <div className="mt-3 flex items-center gap-2 rounded-xl bg-ivory px-4 py-3 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-4 w-4 shrink-0 text-gold" />
-            أموال المستثمرين محفوظة في حسابات منفصلة
+            الأرقام المعروضة للعرض فقط
           </div>
         </div>
       </aside>

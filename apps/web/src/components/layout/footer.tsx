@@ -146,7 +146,7 @@ export function Footer() {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-gold" />
-              أموال المستثمرين محفوظة في حسابات منفصلة
+              الأرقام المعروضة للعرض فقط
             </span>
             <span className="inline-flex items-center gap-1.5">
               <AlertTriangle className="h-3.5 w-3.5 text-gold" />
