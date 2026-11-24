@@ -3,19 +3,28 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Wallet, FolderKanban, BarChart3, Menu } from 'lucide-react'
+import { LayoutDashboard, Wallet, FolderKanban, BarChart3, Briefcase, Menu } from 'lucide-react'
+import { useAuth } from '@/lib/auth-store'
 import { cn } from '@/lib/utils'
 
-const ITEMS = [
+const ALL_ITEMS = [
   { href: '/', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/portfolio', label: 'محفظتي', icon: Wallet },
   { href: '/dashboard/projects', label: 'المشاريع', icon: FolderKanban },
   { href: '/dashboard/finance/reports', label: 'التقارير', icon: BarChart3 },
 ]
 
+// Same roles as the sidebar "المالية والمحاسبة" item. Other roles get 403 on the reports API,
+// so they see the investment page tab instead of a dead-end error page.
+const FINANCE_ROLES = ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER', 'ACCOUNTANT', 'INVESTMENT_MANAGER']
+const INVEST_ITEM = { href: '/dashboard/invest', label: 'الاستثمار', icon: Briefcase }
+
 export function MobileNav({ onMore }: { onMore: () => void }) {
   const pathname = usePathname()
-  const isActive = (item: typeof ITEMS[number]) =>
+  const { user } = useAuth()
+  const canSeeFinance = user?.role != null && FINANCE_ROLES.includes(user.role)
+  const ITEMS = canSeeFinance ? ALL_ITEMS : [...ALL_ITEMS.slice(0, 3), INVEST_ITEM]
+  const isActive = (item: typeof ALL_ITEMS[number]) =>
     item.href === '/' ? false : item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   return (
