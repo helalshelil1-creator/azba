@@ -37,8 +37,8 @@ export default function PortfolioPage() {
   const load = async () => {
     setLoading(true); setError(null)
     try {
-      const res = await http.get<{ items: Investment[] }>('/investments')
-      setItems(res.items ?? [])
+      const res = await http.get<{ items?: Investment[]; data?: Investment[] }>('/investments')
+      setItems(res.items ?? res.data ?? [])
     } catch (e: any) { setError(e?.message || 'تعذر التحميل') }
     finally { setLoading(false) }
   }
@@ -82,7 +82,7 @@ export default function PortfolioPage() {
                   <div className="flex items-start gap-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/5 font-bold text-primary">{inv.shareCount}</div>
                     <div>
-                      <Link href={`/dashboard/projects/${inv.project.id}`} className="font-bold text-primary hover:text-gold-600">{inv.project.name}</Link>
+                      <Link href={`/projects/${inv.project.id}`} className="font-bold text-primary hover:text-gold-600">{inv.project.name}</Link>
                       {inv.contractNumber && <div className="text-[11px] text-muted-foreground" dir="ltr">{inv.contractNumber}</div>}
                       <div className="mt-1 text-xs text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString('ar-EG')}</div>
                     </div>

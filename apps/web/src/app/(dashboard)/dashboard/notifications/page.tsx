@@ -16,7 +16,7 @@ const TYPE_AR: Record<string, string> = {
 export default function NotificationsPage() {
   const [items, setItems] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
-  const load = async () => { setLoading(true); try { const r = await http.get<{ items: Notification[] }>('/notifications'); setItems(r.items ?? []) } catch {} finally { setLoading(false) } }
+  const load = async () => { setLoading(true); try { const r = await http.get<{ items?: Notification[]; data?: Notification[] }>('/notifications'); setItems(r.items ?? r.data ?? []) } catch {} finally { setLoading(false) } }
   useEffect(() => { load() }, [])
 
   const markAll = async () => { try { await http.post('/notifications/read-all', {}); setItems((s) => s.map((n) => ({ ...n, readAt: new Date().toISOString() }))) } catch {} }
