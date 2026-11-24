@@ -13,9 +13,9 @@ import {
 } from 'next/font/google'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://azba.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://azba.vercel.app'),
   title: {
-    default: 'AZBA | عزبة — استثمر في الثروة الحقيقية',
+    default: 'عزبة | AZBA — عرض منصة الاستثمار في الثروة الحيوانية',
     template: '%s | AZBA | عزبة',
   },
   description:
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     'AZBA',
     'عزبة',
   ],
-  authors: [{ name: 'AZBA', url: 'https://azba.com' }],
+  authors: [{ name: 'AZBA' }],
   creator: 'AZBA',
   formatDetection: { telephone: false },
   openGraph: {
@@ -38,7 +38,8 @@ export const metadata: Metadata = {
     locale: 'ar_EG',
     alternateLocale: ['en_US'],
     siteName: 'AZBA | عزبة',
-    title: 'AZBA | عزبة — استثمر في الثروة الحقيقية',
+    title: 'عزبة | AZBA — عرض منصة الاستثمار في الثروة الحيوانية',
+    url: '/',
     description:
       'من المزرعة إلى محفظتك الاستثمارية. منصة متكاملة للاستثمار في الثروة الحيوانية بشفافية كاملة.',
   },
@@ -56,6 +57,7 @@ export const metadata: Metadata = {
     other: [{ url: '/favicon.png', sizes: '64x64', type: 'image/png' }],
   },
   manifest: '/manifest.json',
+  alternates: { canonical: '/' },
   robots: { index: true, follow: true },
 }
 
