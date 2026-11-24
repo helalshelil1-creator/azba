@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/lib/auth-store'
 import { MarketingBottomNav } from '@/components/layout/marketing-bottom-nav'
 import { DemoBanner } from '@/components/layout/demo-banner'
+import { InstallPrompt } from '@/components/layout/install-prompt'
 import { Toaster } from 'sonner'
 import {
   Tajawal,
@@ -119,6 +120,7 @@ export default function RootLayout({
           {children}
           <MarketingBottomNav />
           <DemoBanner />
+          <InstallPrompt />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </body>
