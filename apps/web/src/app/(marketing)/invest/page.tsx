@@ -163,7 +163,7 @@ export default function InvestPage() {
             قارن الفرص <span className="text-gradient-gold">واختر الأنسب</span> لمحفظتك
           </h1>
           <p className="mt-4 max-w-2xl text-ivory/70">
-            كل فرصة مدعومة بمزرعة قائمة ومتابعة بيطرية، وأرقامها معروضة بشفافية قبل ما تستثمر.
+            المشاريع المعروضة هنا للاطلاع فقط، وأرقامها نماذج توضيحية وليست عرضًا استثماريًا فعليًا.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

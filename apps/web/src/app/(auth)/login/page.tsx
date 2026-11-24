@@ -62,7 +62,7 @@ export default function LoginPage() {
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold text-white">مرحبًا بعودتك</h1>
                 <p className="mt-2 text-sm text-ivory/60">
-                  سجّل دخولك لمتابعة محفظتك الاستثمارية
+                  سجّل دخولك لتصفّح المحفظة والمشاريع المعروضة
                 </p>
               </div>
 

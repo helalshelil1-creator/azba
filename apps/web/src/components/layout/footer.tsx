@@ -69,7 +69,7 @@ export function Footer() {
           <div>
             <h3 className="text-2xl font-bold text-white">اشترك في نشرة عزبة</h3>
             <p className="mt-1 text-sm text-ivory/60">
-              آخر الفرص الاستثمارية وتقارير الأداء — بلا إزعاج.
+              آخر تحديثات العرض الشخصي للمنصة.
             </p>
           </div>
           <form className="flex w-full max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
@@ -90,8 +90,7 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo size={48} variant="light" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-ivory/60">
-            منصة مصرية للاستثمار المنظم في الثروة الحيوانية — من المزرعة إلى محفظتك
-            الاستثمارية، بشفافية مؤسسية وإدارة محترفة.
+            نموذج شخصي غير تجاري لمنصة تعرض مشاريع الثروة الحيوانية. المشاريع والأرقام للعرض فقط.
           </p>
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
             <div className="flex items-center gap-2.5">

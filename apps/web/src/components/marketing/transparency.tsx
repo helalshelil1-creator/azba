@@ -10,12 +10,12 @@ const ITEMS = [
   {
     icon: Eye,
     title: 'تقارير دورية',
-    desc: 'تقارير أداء منتظمة للمستثمرين تتضمن الأوزان، التكاليف، الحالة الصحية، والتدفقات النقدية.',
+    desc: 'نموذج تقارير أداء يتضمن الأوزان، التكاليف، الحالة الصحية، والتدفقات النقدية.',
   },
   {
     icon: FileText,
     title: 'وثائق وعقود',
-    desc: 'عقود استثمار موثقة، مستندات شراء وبيع، فواتير، وإيصالات — متاحة للتحميل بصيغة PDF.',
+    desc: 'نماذج عقود ومستندات شراء وبيع وفواتير وإيصالات بصيغة PDF.',
   },
   {
     icon: Scale,
@@ -38,10 +38,10 @@ export function Transparency() {
           <div>
             <span className="eyebrow">الشفافية وإدارة المخاطر</span>
             <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-              نؤمن أن <span className="text-gradient-gold">الثقة</span> تُبنى بالبيانات
+              <span className="text-gradient-gold">وضوح</span> الأرقام والبيانات
             </h2>
             <p className="mt-4 text-muted-foreground">
-              ما نقدمه هو وضوح كامل في الأرقام والمستندات والمخاطر — لتتخذ قرارك عن بينة.
+              عرض لكيفية إظهار الأرقام والمستندات والمخاطر بوضوح.
             </p>
             <div className="mt-8 space-y-4">
               {ITEMS.map((item, i) => (
