@@ -55,27 +55,62 @@ export function StaffConsole({ staffId }: { staffId: string }) {
     }
   }, [])
 
-  const load = useCallback(async () => {
+  const PAGE = 50
+  const pagesRef = useRef(1)
+  const [meta, setMeta] = useState<{ total: number; hasNext: boolean } | null>(null)
+  const [more, setMore] = useState(false)
+  const moreLock = useRef(false)
+
+  const fetchPage = useCallback(async (page: number) => {
+    const q = new URLSearchParams({ page: String(page), limit: String(PAGE) })
+    if (status) q.set('status', status)
+    if (priority) q.set('priority', priority)
+    if (debounced.trim()) q.set('search', debounced.trim())
+    return http.get<any>(`/support/tickets/all?${q.toString()}`, {}, getToken)
+  }, [status, priority, debounced])
+
+  // keepPages: reload every page already shown (after an action); otherwise start from page 1
+  const load = useCallback(async (keepPages = false) => {
     const my = ++reqId.current
+    const n = keepPages ? pagesRef.current : 1
     setLoading(true); setError(null)
     try {
-      const q = new URLSearchParams({ page: '1', limit: '50' })
-      if (status) q.set('status', status)
-      if (priority) q.set('priority', priority)
-      if (debounced.trim()) q.set('search', debounced.trim())
-      const [res, st] = await Promise.all([
-        http.get<any>(`/support/tickets/all?${q.toString()}`, {}, getToken),
-        http.get<any>('/support/tickets/stats', {}, getToken),
-      ])
+      const st = await http.get<any>('/support/tickets/stats', {}, getToken)
+      let all: StaffTicket[] = []
+      let last: any = null
+      for (let i = 1; i <= n; i++) {
+        last = await fetchPage(i)
+        all = all.concat(last?.data ?? [])
+        if (!last?.meta?.hasNext) break
+      }
       if (my !== reqId.current) return
-      setTickets(res?.data ?? []); setStats(st)
+      pagesRef.current = Math.max(1, Math.ceil(all.length / PAGE))
+      setTickets(all); setStats(st)
+      setMeta({ total: last?.meta?.total ?? all.length, hasNext: !!last?.meta?.hasNext })
     } catch (e: any) {
       if (my !== reqId.current) return
       setError(e?.message || 'تعذر تحميل التذاكر')
     } finally { if (my === reqId.current) setLoading(false) }
-  }, [status, priority, debounced])
+  }, [fetchPage])
 
-  useEffect(() => { load() }, [load])
+  const loadMore = async () => {
+    if (moreLock.current || !meta?.hasNext) return
+    moreLock.current = true
+    const my = reqId.current
+    setMore(true)
+    try {
+      const next = pagesRef.current + 1
+      const res = await fetchPage(next)
+      if (my !== reqId.current) return
+      pagesRef.current = next
+      setTickets((prev) => prev.concat(res?.data ?? []))
+      setMeta({ total: res?.meta?.total ?? 0, hasNext: !!res?.meta?.hasNext })
+    } catch (e: any) {
+      toast.error(e?.message || 'تعذر تحميل المزيد')
+    } finally { moreLock.current = false; setMore(false) }
+  }
+
+  useEffect(() => { load(false) }, [load])
 
   const act = async (key: string, fn: () => Promise<any>, ok: string, id?: string) => {
     if (lock.current) return
@@ -83,7 +118,7 @@ export function StaffConsole({ staffId }: { staffId: string }) {
     setBusy(key)
     try {
       await fn(); toast.success(ok)
-      await load()
+      await load(true)
       if (id && openId === id) await loadThread(id)
     } catch (e: any) { toast.error(e?.message || 'تعذر تنفيذ الإجراء') } finally { lock.current = false; setBusy(null) }
   }
@@ -125,11 +160,14 @@ export function StaffConsole({ staffId }: { staffId: string }) {
         <div className="flex flex-col items-center gap-3 py-10">
           <AlertTriangle className="h-8 w-8 text-amber-400" />
           <p className="text-sm text-muted-foreground">{error}</p>
-          <button onClick={load} className="btn-outline text-sm">إعادة المحاولة</button>
+          <button onClick={() => load(false)} className="btn-outline text-sm">إعادة المحاولة</button>
         </div>
       )}
       {!loading && !error && tickets.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border bg-white py-10 text-center text-sm text-muted-foreground">لا توجد تذاكر مطابقة.</div>
+      )}
+      {!loading && !error && meta && tickets.length > 0 && (
+        <p className="text-center text-xs text-muted-foreground">عرض {tickets.length} من {meta.total} تذكرة</p>
       )}
       {tickets.map((t) => {
         const closed = t.status === 'RESOLVED' || t.status === 'CLOSED'
@@ -175,6 +213,11 @@ export function StaffConsole({ staffId }: { staffId: string }) {
           </div>
         )
       })}
+      {!error && meta?.hasNext && (
+        <button onClick={loadMore} disabled={more} className="btn-outline w-full text-sm disabled:opacity-60">
+          {more ? 'جارٍ التحميل...' : `عرض المزيد (${Math.max(0, meta.total - tickets.length)} متبقية)`}
+        </button>
+      )}
     </div>
   )
 }
