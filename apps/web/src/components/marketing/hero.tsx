@@ -14,13 +14,14 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const HERO_IMAGES: { src: string; alt: string; wideOnMobile?: boolean }[] = [
+/** pos: موضع الكادر على الموبايل فقط، بحيث يظهر رأس الحيوان كاملاً ويكون القص من الخلف */
+const HERO_IMAGES: { src: string; alt: string; pos?: string }[] = [
   { src: '/images/cattle.jpg', alt: 'بقرة' },
-  { src: '/images/gallery/buffalo-feeding.jpg', alt: 'جاموس عند المعلف في حظيرة مفتوحة وقت الغروب', wideOnMobile: true },
-  { src: '/images/horse.jpg', alt: 'حصان' },
+  { src: '/images/gallery/buffalo-feeding.jpg', alt: 'جاموس عند المعلف في حظيرة مفتوحة وقت الغروب', pos: 'object-[37%_50%] sm:object-center' },
+  { src: '/images/horse.jpg', alt: 'حصان', pos: 'object-[18%_50%] sm:object-center' },
   { src: '/images/sheep.jpg', alt: 'أغنام وخرفان' },
-  { src: '/images/goat.jpg', alt: 'ماعز' },
-  { src: '/images/buffalo.jpg', alt: 'جاموس' },
+  { src: '/images/goat.jpg', alt: 'ماعز', pos: 'object-[93%_50%] sm:object-center' },
+  { src: '/images/buffalo.jpg', alt: 'جاموس', pos: 'object-[80%_50%] sm:object-center' },
 ]
 
 /** مدة عرض كل صورة بالملي ثانية */
@@ -50,25 +51,13 @@ export function HeroSection() {
               i === index ? 'opacity-100' : 'opacity-0'
             )}
           >
-            {img.wideOnMobile && (
-              <Image
-                src={img.src}
-                alt=""
-                fill
-                sizes="100vw"
-                className="scale-110 object-cover object-center blur-2xl sm:hidden"
-              />
-            )}
             <Image
               src={img.src}
               alt={img.alt}
               fill
               sizes="100vw"
               priority={i === 0}
-              className={cn(
-                'object-center',
-                img.wideOnMobile ? 'object-contain sm:object-cover' : 'object-cover'
-              )}
+              className={cn('object-cover', img.pos ?? 'object-center')}
             />
           </div>
         ))}
