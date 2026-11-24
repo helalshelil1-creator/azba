@@ -2,15 +2,14 @@
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== '0'
 
 export function DemoBanner() {
+  // شريط داخل تدفق الصفحة (غير عائم) في نهاية كل صفحة، مع مساحة محجوزة فوق شريط التنقل السفلي في الموبايل
   if (!DEMO_MODE) return null
   return (
     <div
       role="status"
-      className="pointer-events-none fixed inset-x-0 bottom-[92px] z-[60] flex justify-center px-3 md:bottom-3"
+      className="border-t border-amber-300 bg-amber-100 px-4 py-2 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] text-center text-xs font-bold leading-6 text-amber-900 lg:pb-2"
     >
-      <div className="pointer-events-auto rounded-full border border-amber-300 bg-amber-100 px-4 py-1.5 text-center text-xs font-bold text-amber-900 shadow-lg">
-        نسخة تجريبية: بيانات وهمية، لا استثمار ولا دفع ولا سحب حقيقي
-      </div>
+      نسخة تجريبية: بيانات وهمية، لا استثمار ولا دفع ولا سحب حقيقي
     </div>
   )
 }
