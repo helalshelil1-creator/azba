@@ -1,0 +1,35 @@
+# AZBA on Netlify (Free): web (Next.js) + API (Nest as a function) on one site,
+# so the browser calls same-origin /api and the httpOnly refresh cookie works.
+[build]
+  command = "npm run build --workspace=apps/api && npm run build --workspace=apps/web"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[functions]
+  directory = "netlify/functions"
+  # esbuild cannot bundle Nest (dynamic requires); nft ships the traced files as-is.
+  node_bundler = "nft"
+  included_files = [
+    "apps/api/dist/**",
+    "node_modules/.prisma/client/**",
+    "node_modules/@prisma/client/**",
+    "!node_modules/.prisma/client/libquery_engine-debian*",
+    "!node_modules/@prisma/client/runtime/*.wasm",
+    "!node_modules/@prisma/client/runtime/*mysql*",
+    "!node_modules/@prisma/client/runtime/*sqlite*",
+  ]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
