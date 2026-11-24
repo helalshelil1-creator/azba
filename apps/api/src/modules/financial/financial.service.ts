@@ -59,10 +59,17 @@ export class FinancialService {
 
   // ---------- Journal Entries ----------
   async createJournalEntry(dto: CreateJournalEntryDto, userId: string) {
-    const totalDebit = dto.entries.filter((e) => e.type === 'DEBIT').reduce((s, e) => s + e.amount, 0)
-    const totalCredit = dto.entries.filter((e) => e.type === 'CREDIT').reduce((s, e) => s + e.amount, 0)
+    // الجمع بالقروش لتفادي أخطاء الفاصلة العائمة (0.1 + 0.2)
+    // الأعمدة بدقة قرشين (15,2): نرفض أي مبلغ بأكثر من خانتين عشريتين بدل تقريبه، وإلا قد يختلف تقريب الخادم عن تقريب قاعدة البيانات فيُحفظ قيد غير متوازن
+    const toCents = (n: number) => Math.round(n * 100)
+    if (dto.entries.some((e) => !Number.isFinite(e.amount) || Math.abs(e.amount * 100 - toCents(e.amount)) > 1e-6)) {
+      throw new BadRequestException('المبلغ يجب ألا يزيد عن خانتين عشريتين')
+    }
+    const cents = (t: string) => dto.entries.filter((e) => e.type === t).reduce((s, e) => s + toCents(e.amount), 0)
+    const totalDebit = cents('DEBIT') / 100
+    const totalCredit = cents('CREDIT') / 100
 
-    if (Math.abs(totalDebit - totalCredit) > 0.001) {
+    if (cents('DEBIT') !== cents('CREDIT')) {
       throw new BadRequestException('القيد غير متوازن: إجمالي المدين يجب أن يساوي إجمالي الدائن')
     }
     if (totalDebit === 0) throw new BadRequestException('مبلغ القيد يجب أن يكون أكبر من صفر')
@@ -72,6 +79,9 @@ export class FinancialService {
     const accounts = await this.prisma.ledgerAccount.findMany({ where: { id: { in: accountIds } } })
     if (accounts.length !== accountIds.length) {
       throw new BadRequestException('أحد الحسابات غير موجود')
+    }
+    if (accounts.some((a) => a.isActive === false)) {
+      throw new BadRequestException('لا يمكن الترحيل على حساب غير نشط')
     }
 
     const entryNumber = `JE-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`
@@ -95,7 +105,7 @@ export class FinancialService {
             create: dto.entries.map((e) => ({
               accountId: e.accountId,
               type: e.type as LedgerEntryType,
-              amount: e.amount,
+              amount: toCents(e.amount) / 100,
               description: e.description,
               projectId: e.projectId,
               farmId: e.farmId,
@@ -152,11 +162,18 @@ export class FinancialService {
     const entry = await this.prisma.journalEntry.findUnique({ where: { id } })
     if (!entry) throw new NotFoundException('القيد غير موجود')
     if (entry.status === 'REVERSED') throw new BadRequestException('القيد معكوس بالفعل')
+    if (entry.referenceType === 'REVERSAL') throw new BadRequestException('لا يمكن عكس قيد عكسي')
     if (!reason) throw new BadRequestException('يجب تحديد سبب العكس')
 
     const reversalNumber = `REV-${randomBytes(4).toString('hex').toUpperCase()}`
 
     return this.prisma.$transaction(async (tx) => {
+      // نحجز القيد الأصلي ذريًا قبل إنشاء العكس (يمنع عكسه مرتين بالتوازي)
+      const claimed = await tx.journalEntry.updateMany({
+        where: { id, status: { not: 'REVERSED' } },
+        data: { status: 'REVERSED', reversedBy: userId, reversedAt: new Date(), reversalReason: reason },
+      })
+      if (claimed.count !== 1) throw new BadRequestException('القيد معكوس بالفعل')
       // Flip entries
       const flipped = await tx.journalEntry.create({
         data: {
@@ -185,10 +202,6 @@ export class FinancialService {
           },
         },
         include: { entries: { include: { account: true } } },
-      })
-      await tx.journalEntry.update({
-        where: { id },
-        data: { status: 'REVERSED', reversedBy: userId, reversedAt: new Date(), reversalReason: reason },
       })
       return flipped
     })
@@ -254,14 +267,21 @@ export class FinancialService {
     return this.prisma.$transaction(async (tx) => {
       const expense = await tx.expense.findUnique({ where: { id }, include: { account: true } })
       if (!expense) throw new NotFoundException('المصروف غير موجود')
-      if (expense.approvedAt) throw new BadRequestException('المصروف معتمد بالفعل')
+      if (expense.approvedAt || expense.rejectedAt) throw new BadRequestException('تم البت في هذا المصروف بالفعل')
+
+      // حجز ذري: يمنع الاعتماد المزدوج (قيد محاسبي مكرر)
+      const claim = await tx.expense.updateMany({
+        where: { id, approvedAt: null, rejectedAt: null },
+        data: { updatedAt: new Date() },
+      })
+      if (claim.count !== 1) throw new BadRequestException('تم البت في هذا المصروف بالفعل')
 
       const updated = await tx.expense.update({
         where: { id },
         data:
           dto.action === 'APPROVED'
-            ? { approvedBy: userId, approvedAt: new Date() }
-            : { rejectedBy: userId, rejectedAt: new Date(), rejectionReason: dto.comment },
+            ? { status: 'APPROVED', approvedBy: userId, approvedAt: new Date() }
+            : { status: 'REJECTED', rejectedBy: userId, rejectedAt: new Date(), rejectionReason: dto.comment },
       })
 
       if (dto.action === 'APPROVED') {
@@ -321,7 +341,8 @@ export class FinancialService {
   }
 
   async getProfitLoss(query: { from?: string; to?: string; projectId?: string }) {
-    const where: Prisma.ExpenseWhereInput = {}
+    // المصروفات المرفوضة لا تدخل في النتيجة
+    const where: Prisma.ExpenseWhereInput = { rejectedAt: null }
     if (query.projectId) where.projectId = query.projectId
     if (query.from || query.to) {
       where.expenseDate = {
@@ -374,12 +395,12 @@ export class FinancialService {
         _sum: { netPrice: true },
       })
       const expenses = await tx.expense.aggregate({
-        where: { projectId: dto.projectId },
+        where: { projectId: dto.projectId, rejectedAt: null },
         _sum: { totalAmount: true },
       })
       const totalRevenue = revenue._sum.netPrice?.toNumber() || 0
       const totalExpenses = expenses._sum.totalAmount?.toNumber() || 0
-      const netProfit = totalRevenue - totalExpenses
+      const netProfit = Math.round((totalRevenue - totalExpenses) * 100) / 100
 
       if (netProfit <= 0) {
         throw new BadRequestException('لا يمكن توزيع أرباح — صافي النتيجة غير موجب')
@@ -392,6 +413,10 @@ export class FinancialService {
       if (totalShares === 0) throw new BadRequestException('لا توجد استثمارات في المشروع')
 
       const distributionRate = investorPool / totalShares
+      // عمود distributionRate بدقة (8,4): أي قيمة 10000 أو أكثر تفشل في قاعدة البيانات، فنرفضها برسالة واضحة بدل خطأ 500
+      if (distributionRate >= 10000) {
+        throw new BadRequestException('عائد السهم المحسوب يتجاوز الحد الأقصى المسموح للتسجيل (أقل من 10000). راجع المبيعات والمصروفات أو عدد الحصص')
+      }
       const distNumber = `DST-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`
 
       return tx.profitDistribution.create({
@@ -437,10 +462,12 @@ export class FinancialService {
       const dist = await tx.profitDistribution.findUnique({ where: { id } })
       if (!dist) throw new NotFoundException('التوزيع غير موجود')
       if (dist.status !== 'CALCULATED') throw new BadRequestException('التوزيع ليس في حالة الحساب')
-      return tx.profitDistribution.update({
-        where: { id },
+      const claimed = await tx.profitDistribution.updateMany({
+        where: { id, status: 'CALCULATED' },
         data: { status: 'APPROVED', approvedBy: userId, approvedAt: new Date() },
       })
+      if (claimed.count !== 1) throw new BadRequestException('التوزيع ليس في حالة الحساب')
+      return tx.profitDistribution.findUniqueOrThrow({ where: { id } })
     })
   }
 
@@ -453,10 +480,27 @@ export class FinancialService {
       if (!dist) throw new NotFoundException('التوزيع غير موجود')
       if (dist.status !== 'APPROVED') throw new BadRequestException('يجب اعتماد التوزيع أولًا')
 
+      // حجز ذري: تنفيذ واحد فقط (يمنع دفع الأرباح مرتين)
+      const claimed = await tx.profitDistribution.updateMany({
+        where: { id, status: 'APPROVED' },
+        data: { status: 'APPROVED', approvedAt: dist.approvedAt ?? new Date() },
+      })
+      if (claimed.count !== 1) throw new BadRequestException('يجب اعتماد التوزيع أولًا')
+
       for (const detail of dist.details) {
         if (detail.status === 'PAID') continue
-        const wallet = await tx.wallet.findUnique({ where: { userId: (await tx.investment.findUnique({ where: { id: detail.investmentId } }))!.userId } })
-        if (!wallet) continue
+        const inv = await tx.investment.findUnique({ where: { id: detail.investmentId } })
+        if (!inv) continue
+        const wallet = await tx.wallet.findUnique({ where: { userId: inv.userId } })
+        if (!wallet) {
+          throw new BadRequestException('محفظة أحد المستثمرين غير موجودة: لا يمكن إتمام التوزيع')
+        }
+        // لا نقفز بصمت: حجز تفصيل التوزيع قبل الدفع
+        const claimDetail = await tx.profitDistributionDetail.updateMany({
+          where: { id: detail.id, status: { not: 'PAID' } },
+          data: { status: 'PAID', paidAt: new Date() },
+        })
+        if (claimDetail.count !== 1) continue
         const balanceBefore = wallet.balance.toNumber()
         await tx.walletTransaction.create({
           data: {
