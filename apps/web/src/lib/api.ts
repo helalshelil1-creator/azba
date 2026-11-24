@@ -19,6 +19,12 @@ function resolveApiBase(): string {
 
 const API_URL = resolveApiBase()
 
+/**
+ * وضع المسار الثابت: Vercel Serverless لا ينفّذ catch-all داخل api/ بشكل صحيح،
+ * فالطلب يذهب على مسار ثابت واحد وننقل المسار الحقيقي في الهيدر `x-azba-route`.
+ */
+const FIXED_ENDPOINT = process.env.NEXT_PUBLIC_API_MODE === 'fixed'
+
 export class ApiError extends Error {
   code: string
   status: number
@@ -38,9 +44,17 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   params?: Record<string, string | number | boolean | undefined | null>
 }
 
-function buildUrl(path: string, params?: RequestOptions['params']): string {
+function buildUrl(
+  path: string,
+  params?: RequestOptions['params'],
+  fixedBase?: string,
+): string {
   // بلا عنوان مخصص = نفس النطاق مع بادئة /api الافتراضية
-  const full = path.startsWith('http') ? path : `${API_URL || '/api'}${path}`
+  const full = path.startsWith('http')
+    ? path
+    : fixedBase != null
+      ? fixedBase
+      : `${API_URL || '/api'}${path}`
   const base = typeof window !== 'undefined' ? window.location.origin : undefined
   const url = new URL(full, base)
   if (params) {
@@ -63,9 +77,11 @@ export async function api<T = unknown>(
 
   let res: Response
   try {
-    res = await fetch(buildUrl(path, params), {
+    const fixed = FIXED_ENDPOINT && !!API_URL && !path.startsWith('http')
+    res = await fetch(buildUrl(path, params, fixed ? API_URL : undefined), {
       ...rest,
       headers: {
+        ...(fixed && { 'x-azba-route': path }),
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),

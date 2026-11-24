@@ -48,3 +48,4 @@ packages/database/node_modules
 .expo-shared
 
 .vercel
+.env*

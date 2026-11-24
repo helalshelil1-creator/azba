@@ -7,4 +7,3 @@ packages/database/.env
 
 # مخرجات البناء المحلية
 apps/web/.next
-apps/api/dist
