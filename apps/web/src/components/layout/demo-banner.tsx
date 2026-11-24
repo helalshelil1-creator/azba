@@ -16,5 +16,6 @@ export function DemoNotice({ className = '' }: { className?: string }) {
 }
 
 export function isDemoProject(code?: string | null) {
-  return false && DEMO_MODE && !!code && /DEMO/i.test(code)
+  void code
+  return false
 }
