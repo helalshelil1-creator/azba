@@ -14,9 +14,9 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const HERO_IMAGES = [
+const HERO_IMAGES: { src: string; alt: string; wideOnMobile?: boolean }[] = [
   { src: '/images/cattle.jpg', alt: 'بقرة' },
-  { src: '/images/gallery/buffalo-feeding.jpg', alt: 'جاموس عند المعلف في حظيرة مفتوحة وقت الغروب' },
+  { src: '/images/gallery/buffalo-feeding.jpg', alt: 'جاموس عند المعلف في حظيرة مفتوحة وقت الغروب', wideOnMobile: true },
   { src: '/images/horse.jpg', alt: 'حصان' },
   { src: '/images/sheep.jpg', alt: 'أغنام وخرفان' },
   { src: '/images/goat.jpg', alt: 'ماعز' },
@@ -24,7 +24,7 @@ const HERO_IMAGES = [
 ]
 
 /** مدة عرض كل صورة بالملي ثانية */
-const HERO_INTERVAL = 7000
+const HERO_INTERVAL = 5000
 
 export function HeroSection() {
   const [index, setIndex] = useState(0)
@@ -39,22 +39,38 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full overflow-hidden bg-primary-950 min-h-svh">
-      {/* خلفية متحركة: خمس صور تتبدل كل ٣ ثواني */}
+      {/* خلفية متحركة: خمس صور تتبدل كل ٥ ثواني */}
       <div className="absolute inset-0">
         {HERO_IMAGES.map((img, i) => (
-          <Image
+          <div
             key={img.src}
-            src={img.src}
-            alt={img.alt}
             aria-hidden={i !== index}
-            fill
-            sizes="100vw"
-            priority={i === 0}
             className={cn(
-              'object-cover object-center transition-opacity duration-1000',
+              'absolute inset-0 transition-opacity duration-1000',
               i === index ? 'opacity-100' : 'opacity-0'
             )}
-          />
+          >
+            {img.wideOnMobile && (
+              <Image
+                src={img.src}
+                alt=""
+                fill
+                sizes="100vw"
+                className="scale-110 object-cover object-center blur-2xl sm:hidden"
+              />
+            )}
+            <Image
+              src={img.src}
+              alt={img.alt}
+              fill
+              sizes="100vw"
+              priority={i === 0}
+              className={cn(
+                'object-center',
+                img.wideOnMobile ? 'object-contain sm:object-cover' : 'object-cover'
+              )}
+            />
+          </div>
         ))}
       </div>
 
