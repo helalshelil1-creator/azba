@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { DemoModeGuard } from './common/guards/demo-mode.guard'
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
+import { ThrottlerModule } from '@nestjs/throttler'
+import { ClientIpThrottlerGuard } from './common/guards/client-ip-throttler.guard'
 import { ScheduleModule } from '@nestjs/schedule'
 import { PrismaModule } from './prisma/prisma.module'
 import { AuthModule } from './modules/auth/auth.module'
@@ -58,7 +59,7 @@ import { RolesGuard } from './common/guards/roles.guard'
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ClientIpThrottlerGuard,
     },
     {
       provide: APP_GUARD,
