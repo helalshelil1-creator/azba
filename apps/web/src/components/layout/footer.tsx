@@ -93,18 +93,7 @@ export function Footer() {
             نموذج شخصي غير تجاري لمنصة تعرض مشاريع الثروة الحيوانية. المشاريع والأرقام للعرض فقط.
           </p>
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
-            <div className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 text-gold" />
-              <span dir="ltr">{CONTACT.phoneDisplay}</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Mail className="h-4 w-4 text-gold" />
-              <span>بريد توضيحي للعرض فقط</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <MapPin className="h-4 w-4 text-gold" />
-              <span>القاهرة، مصر</span>
-            </div>
+            <p>بيانات التواصل توضيحية وغير فعّالة في هذا العرض الشخصي.</p>
           </div>
           <div className="mt-6 flex gap-2">
             {SOCIAL.map((s) => (

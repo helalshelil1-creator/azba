@@ -111,18 +111,7 @@ export function MobileMenu({
           {/* Contact info */}
           <div className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-gold">تواصل معنا</p>
-            <div className="flex items-center gap-3 text-sm text-ivory/80">
-              <Phone className="h-4 w-4 text-gold" />
-              <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" dir="ltr" className="hover:text-gold">{CONTACT.phoneDisplay}</a>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-ivory/80">
-              <Mail className="h-4 w-4 text-gold" />
-              <span>بريد توضيحي للعرض فقط</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-ivory/80">
-              <MapPin className="h-4 w-4 text-gold" />
-              <span>القاهرة، مصر</span>
-            </div>
+            <p className="text-sm text-ivory/80">بيانات التواصل توضيحية وغير فعّالة في هذا العرض الشخصي.</p>
           </div>
         </nav>
 
