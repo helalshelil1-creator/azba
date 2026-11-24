@@ -23,18 +23,19 @@ export function CTA() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-5 py-2 text-sm font-semibold text-gold">
             <Sparkles className="h-4 w-4" />
-            جولة في المنصة
+            ابدأ رحلتك الاستثمارية
           </span>
           <h2 className="mt-6 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            تصفّح <span className="text-gradient-gold">المنصة</span> بنفسك
+            استثمر في <span className="text-gradient-gold">الثروة الحقيقية</span> اليوم
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-ivory/60">
-            اطّلع على شكل المشاريع والتقارير وطريقة عمل المنصة. عرض شخصي غير تجاري.
+            انضم إلى مجتمع المستثمرين الذين يضعون أموالهم في أصول حقيقية ملموسة،
+            بشفافية مؤسسية وإدارة محترفة.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link href="/register" className="btn-gold group px-8 py-4 text-base">
               <TrendingUp className="h-5 w-5" />
-              إنشاء حساب
+              إنشاء حساب مجاني
               <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
             </Link>
             <Link

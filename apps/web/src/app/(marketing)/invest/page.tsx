@@ -163,7 +163,7 @@ export default function InvestPage() {
             قارن الفرص <span className="text-gradient-gold">واختر الأنسب</span> لمحفظتك
           </h1>
           <p className="mt-4 max-w-2xl text-ivory/70">
-            المشاريع المعروضة هنا للاطلاع فقط، وأرقامها نماذج توضيحية وليست عرضًا استثماريًا فعليًا.
+            كل فرصة مدعومة بمزرعة قائمة ومتابعة بيطرية، وأرقامها معروضة بشفافية قبل ما تستثمر.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -323,13 +323,13 @@ export default function InvestPage() {
         {/* دعوة للاستثمار */}
         <div className="mt-12 overflow-hidden rounded-3xl bg-primary-950 px-6 py-10 text-center text-white sm:px-12">
           <h2 className="text-2xl font-extrabold sm:text-3xl">
-            تصفّح <span className="text-gradient-gold">المشاريع المعروضة</span> بنفسك
+            جاهز تبدأ؟ <span className="text-gradient-gold">سجّل حسابك</span> واحجز أسهمك
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-ivory/70">
-            عرض شخصي غير تجاري: لا يوجد حجز أو دفع فعلي. يمكنك إنشاء حساب لتجربة لوحة المتابعة.
+            العملية تستغرق دقائق: إنشاء حساب، اختيار الفرصة، ثم تأكيد الحجز إلكترونيًا.
           </p>
           <Link href="/register" className="btn-gold mt-6 px-8 py-3.5">
-            إنشاء حساب للتجربة
+            إنشاء حساب مستثمر
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </div>

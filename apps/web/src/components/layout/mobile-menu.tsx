@@ -111,7 +111,7 @@ export function MobileMenu({
           {/* Contact info */}
           <div className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-gold">تواصل معنا</p>
-            <p className="text-sm text-ivory/80">بيانات التواصل توضيحية وغير فعّالة في هذا العرض الشخصي.</p>
+            <p className="text-sm text-ivory/80">بيانات التواصل توضيحية وغير فعّالة.</p>
           </div>
         </nav>
 
@@ -123,7 +123,7 @@ export function MobileMenu({
             className="btn-gold w-full text-center"
           >
             <TrendingUp className="h-5 w-5" />
-            تصفّح المشاريع
+            ابدأ الاستثمار
           </Link>
           <div className="mt-4 flex items-center justify-center gap-4 text-xs text-ivory/50">
             <Link href="/login" onClick={onClose} className="hover:text-gold transition-colors">

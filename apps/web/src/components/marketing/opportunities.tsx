@@ -97,7 +97,7 @@ export function Opportunities() {
           <div className="max-w-2xl">
             <span className="eyebrow">فرص الاستثمار</span>
             <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-              مشاريع <span className="text-gradient-gold">معروضة</span> للاطلاع
+              مشاريع <span className="text-gradient-gold">موثقة</span> متاحة الآن
             </h2>
             <p className="mt-4 text-muted-foreground">
               كل مشروع يمر بمراجعة بيطرية ومالية وقانونية قبل نشره.

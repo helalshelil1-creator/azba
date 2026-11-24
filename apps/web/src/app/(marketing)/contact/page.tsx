@@ -19,7 +19,7 @@ export default function Page() {
               <Mail className="h-3.5 w-3.5" />صفحة توضيحية
             </div>
             <h1 className="text-3xl font-extrabold sm:text-4xl">اتصل بنا</h1>
-            <p className="mt-3 max-w-2xl text-ivory/70">هذه صفحة توضيحية ضمن عرض شخصي غير تجاري.</p>
+            <p className="mt-3 max-w-2xl text-ivory/70">هذه صفحة توضيحية.</p>
           </Reveal>
         </div>
       </section>
@@ -27,7 +27,7 @@ export default function Page() {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Mail className="h-5 w-5 text-gold" />ملاحظة</h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>هذا الموقع عرض شخصي غير تجاري. بيانات التواصل هنا توضيحية وغير فعّالة، ولا توجد قناة تواصل فعّالة مقدّمة ضمن هذا العرض.</p></div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/80"><p>بيانات التواصل هنا توضيحية وغير فعّالة، ولا توجد قناة تواصل فعّالة مقدّمة ضمن هذا العرض.</p></div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
             <h2 className="flex items-center gap-2 text-lg font-bold text-primary"><Phone className="h-5 w-5 text-gold" />التواصل (غير فعّال)</h2>

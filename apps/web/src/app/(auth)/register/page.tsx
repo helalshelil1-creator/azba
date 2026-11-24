@@ -95,7 +95,7 @@ export default function RegisterPage() {
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold text-white">أنشئ حسابك المجاني</h1>
                 <p className="mt-2 text-sm text-ivory/60">
-                  حساب لتصفّح العرض الشخصي للمنصة
+                  ابدأ رحلتك الاستثمارية في الثروة الحقيقية
                 </p>
               </div>
 

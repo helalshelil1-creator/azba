@@ -60,10 +60,11 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo size={48} variant="light" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-ivory/60">
-            نموذج شخصي غير تجاري لمنصة تعرض مشاريع الثروة الحيوانية. المشاريع والأرقام للعرض فقط.
+            منصة مصرية للاستثمار المنظم في الثروة الحيوانية — من المزرعة إلى محفظتك
+            الاستثمارية، بشفافية مؤسسية وإدارة محترفة.
           </p>
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
-            <p>بيانات التواصل توضيحية وغير فعّالة في هذا العرض الشخصي.</p>
+            <p>بيانات التواصل توضيحية وغير فعّالة.</p>
           </div>
         </div>
 

@@ -122,7 +122,7 @@ export function Navbar() {
 
               <Link href="/invest" className="btn-gold">
                 <TrendingUp className="h-4 w-4" />
-                تصفّح المشاريع
+                ابدأ الاستثمار
               </Link>
             </div>
 

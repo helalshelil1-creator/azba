@@ -135,16 +135,16 @@ export default function InvestorDashboardPage() {
           <div>
             <span className="badge border border-gold/40 bg-gold/15 text-gold">AZBA | عزبة</span>
             <h2 className="mt-3 text-2xl font-extrabold leading-snug sm:text-3xl">
-              لوحة <span className="text-gradient-gold">المتابعة</span>
+              استثمر في مستقبل <span className="text-gradient-gold">أكثر ازدهارًا</span>
             </h2>
             <p className="mt-2 max-w-xl text-sm text-ivory/75">
-              مرحبًا {user?.firstName}، هذه نظرة على المحفظة والمشاريع المعروضة.
+              مرحبًا {user?.firstName} — إليك نظرة شاملة على محفظتك الاستثمارية ومشاريعك.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Link href="/dashboard/invest" className="btn-gold">
               <Sparkles className="h-4 w-4" />
-              تصفّح المشاريع
+              ابدأ الاستثمار
             </Link>
             <button
               onClick={load}

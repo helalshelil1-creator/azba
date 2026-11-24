@@ -10,7 +10,7 @@ const STEPS = [
   {
     num: '٠١',
     title: 'اكتشف الفرص',
-    desc: 'تصفح مشاريع الثروة الحيوانية المعروضة، وقارن بينها حسب العائد والمدة والمخاطر.',
+    desc: 'تصفح مشاريع الثروة الحيوانية الموثقة بعناية، وقارن بينها حسب العائد والمدة والمخاطر.',
     icon: Search,
   },
   {
@@ -21,7 +21,7 @@ const STEPS = [
   },
   {
     num: '٠٣',
-    title: 'جرّب خطوات الحجز',
+    title: 'استثمر بأمان',
     desc: 'احجز أسهمك، راجع العقد، وأكّد الدفع. التصميم المقصود حفظ الأموال في حساب منفصل، وهذه النسخة لا تستقبل أموالًا فعلية.',
     icon: ShieldCheck,
   },
@@ -41,10 +41,10 @@ export function HowItWorks() {
         <div className="mx-auto max-w-3xl text-center">
           <span className="eyebrow">كيف تعمل عزبة؟</span>
           <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-            جولة في <span className="text-gradient-gold">أربع خطوات</span>
+            رحلة استثمارك في <span className="text-gradient-gold">أربع خطوات</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            من أول نظرة على المشروع حتى متابعة العائد المعروض، للعرض فقط.
+            من أول نظرة على الفرصة حتى استلام العائد — كل خطوة موثقة وشفافة.
           </p>
         </div>
 
