@@ -4,7 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
 import { AlertTriangle, ShieldCheck } from 'lucide-react'
 
-export const metadata = { title: 'إفصاح المخاطر', description: 'إفصاح كامل عن المخاطر المرتبطة بالاستثمار في الثروة الحيوانية' }
+export const metadata = { alternates: { canonical: '/disclosures' }, title: 'إفصاح المخاطر', description: 'إفصاح كامل عن المخاطر المرتبطة بالاستثمار في الثروة الحيوانية' }
 
 export default function Page() {
   return (

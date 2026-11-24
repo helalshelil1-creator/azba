@@ -15,7 +15,7 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://azba.vercel.app'),
   title: {
-    default: 'عزبة | AZBA — عرض منصة الاستثمار في الثروة الحيوانية',
+    default: 'عزبة | AZBA: عرض منصة الاستثمار في الثروة الحيوانية',
     template: '%s | AZBA | عزبة',
   },
   description:
@@ -38,8 +38,7 @@ export const metadata: Metadata = {
     locale: 'ar_EG',
     alternateLocale: ['en_US'],
     siteName: 'AZBA | عزبة',
-    title: 'عزبة | AZBA — عرض منصة الاستثمار في الثروة الحيوانية',
-    url: '/',
+    title: 'عزبة | AZBA: عرض منصة الاستثمار في الثروة الحيوانية',
     description:
       'من المزرعة إلى محفظتك الاستثمارية. منصة متكاملة للاستثمار في الثروة الحيوانية بشفافية كاملة.',
   },
@@ -57,7 +56,6 @@ export const metadata: Metadata = {
     other: [{ url: '/favicon.png', sizes: '64x64', type: 'image/png' }],
   },
   manifest: '/manifest.json',
-  alternates: { canonical: '/' },
   robots: { index: true, follow: true },
 }
 

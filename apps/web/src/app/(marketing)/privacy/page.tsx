@@ -4,7 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
 import { ShieldCheck, Database, Lock } from 'lucide-react'
 
-export const metadata = { title: 'سياسة الخصوصية', description: 'كيف نجمع ونستخدم ونحمي بياناتك الشخصية' }
+export const metadata = { alternates: { canonical: '/privacy' }, title: 'سياسة الخصوصية', description: 'كيف نجمع ونستخدم ونحمي بياناتك الشخصية' }
 
 export default function Page() {
   return (

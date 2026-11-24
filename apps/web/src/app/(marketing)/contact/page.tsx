@@ -5,7 +5,7 @@ import { Reveal } from '@/components/marketing/reveal'
 import { Mail, Phone, MapPin, Clock, MessageCircle } from 'lucide-react'
 import { CONTACT } from '@/lib/contact'
 
-export const metadata = { title: 'اتصل بنا', description: 'فريق الدعم جاهز للإجابة على استفساراتك' }
+export const metadata = { alternates: { canonical: '/contact' }, title: 'اتصل بنا', description: 'فريق الدعم جاهز للإجابة على استفساراتك' }
 
 export default function Page() {
   return (

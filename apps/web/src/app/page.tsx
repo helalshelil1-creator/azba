@@ -10,6 +10,8 @@ import { Transparency } from '@/components/marketing/transparency'
 import { FAQ } from '@/components/marketing/faq'
 import { CTA } from '@/components/marketing/cta'
 
+export const metadata = { alternates: { canonical: '/' } }
+
 export default function HomePage() {
   return (
     <main className="relative min-h-screen">

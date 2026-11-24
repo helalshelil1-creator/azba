@@ -2,6 +2,7 @@ import React from 'react'
 import { OpportunitiesClient } from './client'
 
 export const metadata = {
+  alternates: { canonical: '/opportunities' },
   title: 'فرص الاستثمار',
   description: 'تصفح فرص الاستثمار في الثروة الحيوانية المتاحة على منصة عزبة',
 }

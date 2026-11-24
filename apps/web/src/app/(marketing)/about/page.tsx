@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
 import { Info, Target, Eye, Users, ShieldCheck } from 'lucide-react'
 
-export const metadata = { title: 'عن عزبة', description: 'تعرف على رؤية ورسالة منصة عزبة في الاستثمار الزراعي' }
+export const metadata = { alternates: { canonical: '/about' }, title: 'عن عزبة', description: 'تعرف على رؤية ورسالة منصة عزبة في الاستثمار الزراعي' }
 
 export default function Page() {
   return (

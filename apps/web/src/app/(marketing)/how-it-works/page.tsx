@@ -4,7 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
 import { Sparkles, UserPlus, Search, Wallet, TrendingUp } from 'lucide-react'
 
-export const metadata = { title: 'كيف تعمل المنصة', description: 'خطوات الاستثمار في الثروة الحيوانية عبر منصة عزبة' }
+export const metadata = { alternates: { canonical: '/how-it-works' }, title: 'كيف تعمل المنصة', description: 'خطوات الاستثمار في الثروة الحيوانية عبر منصة عزبة' }
 
 export default function Page() {
   return (

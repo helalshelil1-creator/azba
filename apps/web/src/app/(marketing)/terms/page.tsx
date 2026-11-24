@@ -4,7 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { Reveal } from '@/components/marketing/reveal'
 import { FileText, ShieldCheck, AlertTriangle } from 'lucide-react'
 
-export const metadata = { title: 'الشروط والأحكام', description: 'الشروط والأحكام الحاكمة لاستخدام منصة عزبة' }
+export const metadata = { alternates: { canonical: '/terms' }, title: 'الشروط والأحكام', description: 'الشروط والأحكام الحاكمة لاستخدام منصة عزبة' }
 
 export default function Page() {
   return (

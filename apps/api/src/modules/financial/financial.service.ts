@@ -408,6 +408,10 @@ export class FinancialService {
       if (totalShares === 0) throw new BadRequestException('لا توجد استثمارات في المشروع')
 
       const distributionRate = investorPool / totalShares
+      // عمود distributionRate بدقة (8,4): أي قيمة 10000 أو أكثر تفشل في قاعدة البيانات، فنرفضها برسالة واضحة بدل خطأ 500
+      if (distributionRate >= 10000) {
+        throw new BadRequestException('عائد السهم المحسوب يتجاوز الحد الأقصى المسموح للتسجيل (أقل من 10000). راجع المبيعات والمصروفات أو عدد الحصص')
+      }
       const distNumber = `DST-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`
 
       return tx.profitDistribution.create({
