@@ -17,9 +17,9 @@ const BLOCKED = [
   /^\/financial\/distributions\/[^/]+\/execute$/,
 ]
 
-async function handle(req: Request, ctx: { params: { path: string[] } }) {
+async function handle(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
   if (!ORIGIN) return new Response('Not Found', { status: 404 })
-  const route = '/' + (ctx.params.path || []).map(encodeURIComponent).join('/')
+  const route = '/' + ((await ctx.params).path || []).map(encodeURIComponent).join('/')
   if (DEMO && req.method === 'POST' && BLOCKED.some((r) => r.test(route))) {
     return Response.json({ message: 'هذه نسخة تجريبية: لا يمكن إنشاء استثمار أو دفع أو سحب أموال.', statusCode: 403 }, { status: 403 })
   }
