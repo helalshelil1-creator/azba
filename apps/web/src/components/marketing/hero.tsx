@@ -15,15 +15,17 @@ import {
 import { cn } from '@/lib/utils'
 
 const HERO_IMAGES = [
-  { src: '/images/cattle.jpg', alt: 'بقرة' },
-  { src: '/images/horse.jpg', alt: 'حصان' },
-  { src: '/images/sheep.jpg', alt: 'أغنام وخرفان' },
-  { src: '/images/goat.jpg', alt: 'ماعز' },
-  { src: '/images/buffalo.jpg', alt: 'جاموس' },
+  { src: '/images/gallery/aerial-herd.jpg', alt: 'لقطة جوية لقطيع على مرعى أخضر وقت الغروب' },
+  { src: '/images/gallery/sheep-cattle-shelter.jpg', alt: 'أغنام وماشية عند المعالف المسقوفة' },
+  { src: '/images/gallery/mixed-yard-sunset.jpg', alt: 'أغنام وماعز وأبقار في ساحة مزرعة وقت الغروب' },
+  { src: '/images/gallery/sunlit-barn.jpg', alt: 'عنبر مسقوف بإضاءة طبيعية' },
+  { src: '/images/gallery/barn-open-gate.jpg', alt: 'عنبر واسع بباب مفتوح على مرعى أخضر' },
+  { src: '/images/gallery/vets-feed-lane.jpg', alt: 'فريق بيطري في ممر العلف' },
+  { src: '/images/gallery/vet-exam.jpg', alt: 'فحص بيطري لبقرة داخل حظيرة' },
 ]
 
 /** مدة عرض كل صورة بالملي ثانية */
-const HERO_INTERVAL = 7000
+const HERO_INTERVAL = 6000
 
 export function HeroSection() {
   const [index, setIndex] = useState(0)
@@ -38,7 +40,7 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full overflow-hidden bg-primary-950 min-h-svh">
-      {/* خلفية متحركة: خمس صور تتبدل كل ٣ ثواني */}
+      {/* خلفية متحركة: سبع صور تتبدل كل ٦ ثواني */}
       <div className="absolute inset-0">
         {HERO_IMAGES.map((img, i) => (
           <Image
