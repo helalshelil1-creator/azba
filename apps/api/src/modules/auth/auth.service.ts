@@ -2,7 +2,7 @@ import {
   Injectable, ConflictException, UnauthorizedException, BadRequestException,
   NotFoundException, Logger,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
+import { JwtService, JwtSignOptions } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 import { PrismaService } from '../../prisma/prisma.service'
@@ -230,13 +230,13 @@ export class AuthService {
     const payload = { sub: userId, email, role }
     const accessToken = await this.jwt.signAsync(payload, {
       secret: this.config.get<string>('JWT_SECRET') || 'dev-secret-change-me',
-      expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES') || '15m',
+      expiresIn: (this.config.get<string>('JWT_ACCESS_EXPIRES') || '15m') as JwtSignOptions['expiresIn'],
     })
     const refreshToken = await this.jwt.signAsync(
       { sub: userId, type: 'refresh', jti: randomBytes(16).toString('hex') },
       {
         secret: this.config.get<string>('JWT_REFRESH_SECRET') || 'dev-refresh-secret',
-        expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRES') || '7d',
+        expiresIn: (this.config.get<string>('JWT_REFRESH_EXPIRES') || '7d') as JwtSignOptions['expiresIn'],
       },
     )
     await this.prisma.session.create({
