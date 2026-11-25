@@ -1,5 +1,5 @@
 import {
-  Injectable, NotFoundException, ForbiddenException, Logger,
+  Injectable, NotFoundException, ForbiddenException, BadRequestException, Logger,
 } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { CreateTicketDto, UpdateTicketDto, AssignTicketDto, ReplyTicketDto, FeedbackDto, TicketQueryDto } from './dto/support.dto'
@@ -126,6 +126,7 @@ export class SupportService {
     if (!ticket) throw new NotFoundException('التذكرة غير موجودة')
     const assignee = await this.prisma.user.findUnique({ where: { id: dto.assigneeId } })
     if (!assignee) throw new NotFoundException('الموظف غير موجود')
+    if (!this.isStaff(assignee.role)) throw new BadRequestException('لا يمكن إسناد التذكرة إلا لأحد موظفي الدعم')
     return this.prisma.supportTicket.update({
       where: { id },
       data: { assigneeId: dto.assigneeId, status: 'ASSIGNED' },
