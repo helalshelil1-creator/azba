@@ -5,43 +5,57 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { ShieldAlert, Eye, FileText, Scale, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLang, tx } from '@/lib/lang-store'
 
 const ITEMS = [
   {
     icon: Eye,
     title: 'تقارير دورية',
+    titleEn: 'Periodic reports',
     desc: 'تقارير أداء منتظمة للمستثمرين تتضمن الأوزان، التكاليف، الحالة الصحية، والتدفقات النقدية.',
+    descEn: 'Regular performance reports for investors covering weights, costs, health status, and cash flows.',
   },
   {
     icon: FileText,
     title: 'وثائق وعقود',
+    titleEn: 'Documents and contracts',
     desc: 'عقود استثمار موثقة، مستندات شراء وبيع، فواتير، وإيصالات — متاحة للتحميل بصيغة PDF.',
+    descEn: 'Certified investment contracts, purchase and sale documents, invoices, and receipts, available to download as PDF.',
   },
   {
     icon: Scale,
     title: 'محاسبة مزدوجة',
+    titleEn: 'Double-entry accounting',
     desc: 'دفتر أستاذ مزدوج لكل حركة مالية، مع قيود معتمدة لا تُحذف بل تُعكس وتُصحح بمستند.',
+    descEn: 'A double-entry ledger for every financial movement, with approved entries that are never deleted, only reversed and corrected with a document.',
   },
   {
     icon: AlertTriangle,
     title: 'إفصاح المخاطر',
+    titleEn: 'Risk disclosure',
     desc: 'كل مشروع يعرض سجل المخاطر الخاص به: أمراض، أسعار، نفوق، سيولة — مع خطط التخفيف.',
+    descEn: 'Every project shows its own risk register: disease, prices, mortality, liquidity, with mitigation plans.',
   },
 ]
 
 export function Transparency() {
+  const { lang } = useLang()
   return (
     <section id="transparency" className="section-padding relative overflow-hidden bg-white">
       <div className="absolute inset-0 grid-pattern opacity-30" />
       <div className="container-page relative">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <span className="eyebrow">الشفافية وإدارة المخاطر</span>
+            <span className="eyebrow">{tx(lang, 'الشفافية وإدارة المخاطر', 'Transparency and risk management')}</span>
             <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-              نؤمن أن <span className="text-gradient-gold">الثقة</span> تُبنى بالبيانات
+              {lang === 'ar' ? (
+                <>نؤمن أن <span className="text-gradient-gold">الثقة</span> تُبنى بالبيانات</>
+              ) : (
+                <>We believe <span className="text-gradient-gold">trust</span> is built on data</>
+              )}
             </h2>
             <p className="mt-4 text-muted-foreground">
-              ما نقدمه هو وضوح كامل في الأرقام والمستندات والمخاطر — لتتخذ قرارك عن بينة.
+              {tx(lang, 'ما نقدمه هو وضوح كامل في الأرقام والمستندات والمخاطر — لتتخذ قرارك عن بينة.', 'What we offer is complete clarity in numbers, documents, and risks, so you can decide with full knowledge.')}
             </p>
             <div className="mt-8 space-y-4">
               {ITEMS.map((item, i) => (
@@ -57,8 +71,8 @@ export function Transparency() {
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-primary">{item.title}</h4>
-                    <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
+                    <h4 className="font-bold text-primary">{lang === 'ar' ? item.title : item.titleEn}</h4>
+                    <p className="mt-1 text-sm text-muted-foreground">{lang === 'ar' ? item.desc : item.descEn}</p>
                   </div>
                 </motion.div>
               ))}
@@ -78,11 +92,11 @@ export function Transparency() {
               <div className="absolute bottom-6 right-6 left-6 grid grid-cols-2 gap-3">
                 <div className="glass-dark rounded-xl p-4 text-center">
                   <div className="text-2xl font-bold text-white">100%</div>
-                  <div className="text-[10px] text-ivory/70">توثيق العمليات</div>
+                  <div className="text-[10px] text-ivory/70">{tx(lang, 'توثيق العمليات', 'Documented operations')}</div>
                 </div>
                 <div className="glass-dark rounded-xl p-4 text-center">
                   <div className="text-2xl font-bold text-white">0</div>
-                  <div className="text-[10px] text-ivory/70">قيود محذوفة</div>
+                  <div className="text-[10px] text-ivory/70">{tx(lang, 'قيود محذوفة', 'Deleted entries')}</div>
                 </div>
               </div>
             </div>

@@ -13,6 +13,7 @@ import {
   BadgeCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLang, tx } from '@/lib/lang-store'
 
 /** pos: موضع الكادر على الموبايل فقط، بحيث يظهر رأس الحيوان كاملاً ويكون القص من الخلف */
 const HERO_IMAGES: { src: string; alt: string; pos?: string }[] = [
@@ -28,6 +29,7 @@ const HERO_IMAGES: { src: string; alt: string; pos?: string }[] = [
 const HERO_INTERVAL = 5000
 
 export function HeroSection() {
+  const { lang } = useLang()
   const [index, setIndex] = useState(0)
   const prefersReducedMotion = useReducedMotion()
   const count = HERO_IMAGES.length
@@ -104,8 +106,11 @@ export function HeroSection() {
             className="max-w-4xl text-balance text-4xl font-bold leading-[1.3] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             style={{ fontFamily: 'var(--font-tajawal)' }}
           >
-            استثمر في{' '}
-            <span className="text-gradient-gold">الثروة الحقيقية</span>
+            {lang === 'ar' ? (
+              <>استثمر في <span className="text-gradient-gold">الثروة الحقيقية</span></>
+            ) : (
+              <>Invest in <span className="text-gradient-gold">Real Wealth</span></>
+            )}
           </motion.h1>
 
           {/* Subheading */}
@@ -115,7 +120,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-4 max-w-2xl text-balance text-base text-ivory/85 sm:text-xl lg:text-2xl"
           >
-            من المزرعة إلى محفظتك الاستثمارية.
+            {tx(lang, 'من المزرعة إلى محفظتك الاستثمارية.', 'From the farm to your investment portfolio.')}
           </motion.p>
 
           {/* Description */}
@@ -125,8 +130,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.65 }}
             className="mt-3 max-w-3xl text-balance text-sm leading-relaxed text-ivory/60 sm:text-base"
           >
-            منصة متكاملة تتيح لك متابعة فرص الاستثمار في الثروة الحيوانية، ومراقبة
-            مشروعاتك، والاطلاع على تفاصيل التشغيل والتكاليف والنتائج بكل شفافية.
+            {tx(lang, 'منصة متكاملة تتيح لك متابعة فرص الاستثمار في الثروة الحيوانية، ومراقبة مشروعاتك، والاطلاع على تفاصيل التشغيل والتكاليف والنتائج بكل شفافية.', 'An integrated platform to follow livestock investment opportunities, monitor your projects, and review operations, costs, and results with full transparency.')}
           </motion.p>
 
           {/* CTAs */}
@@ -137,7 +141,7 @@ export function HeroSection() {
             className="mt-6 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
           >
             <Link href="/invest" className="btn-gold group px-8 py-4 text-base">
-              اكتشف فرص الاستثمار
+              {tx(lang, 'اكتشف فرص الاستثمار', 'Explore investment opportunities')}
               <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
             </Link>
             <Link
@@ -145,7 +149,7 @@ export function HeroSection() {
               className="group inline-flex items-center gap-2 rounded-full border-2 border-white/25 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-gold hover:text-gold"
             >
               <Play className="h-5 w-5" />
-              كيف تعمل عزبة؟
+              {tx(lang, 'كيف تعمل عزبة؟', 'How does AZBA work?')}
             </Link>
           </motion.div>
 
@@ -158,15 +162,15 @@ export function HeroSection() {
           >
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <ShieldCheck className="h-4 w-4 text-gold" />
-              شفافية كاملة
+              {tx(lang, 'شفافية كاملة', 'Full transparency')}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <BadgeCheck className="h-4 w-4 text-gold" />
-              إدارة محترفة
+              {tx(lang, 'إدارة محترفة', 'Professional management')}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-md">
               <Leaf className="h-4 w-4 text-gold" />
-              رعاية بيطرية
+              {tx(lang, 'رعاية بيطرية', 'Veterinary care')}
             </span>
           </motion.div>
         </div>
@@ -181,7 +185,7 @@ export function HeroSection() {
         className="absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 sm:block"
       >
         <div className="flex flex-col items-center gap-2 text-ivory/40">
-          <span className="text-[10px] font-medium uppercase tracking-widest">اسحب للأسفل</span>
+          <span className="text-[10px] font-medium uppercase tracking-widest">{tx(lang, 'اسحب للأسفل', 'Scroll down')}</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}

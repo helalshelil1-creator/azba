@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Logo } from '@azba/ui/logo'
 import { CONTACT } from '@/lib/contact'
+import { useLang, tx } from '@/lib/lang-store'
 import {
   Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin, ArrowUp,
   ShieldCheck, Scale, AlertTriangle, Globe,
@@ -12,46 +13,51 @@ import {
 const COLUMNS = [
   {
     title: 'المنصة',
+    titleEn: 'Platform',
     links: [
-      { href: '/', label: 'الرئيسية' },
-      { href: '/invest', label: 'فرص الاستثمار' },
-      { href: '/how-it-works', label: 'كيف نعمل؟' },
-      { href: '/farms', label: 'المزارع' },
-      { href: '/about', label: 'من نحن' },
+      { href: '/', label: 'الرئيسية', labelEn: 'Home' },
+      { href: '/invest', label: 'فرص الاستثمار', labelEn: 'Invest' },
+      { href: '/how-it-works', label: 'كيف نعمل؟', labelEn: 'How it works' },
+      { href: '/farms', label: 'المزارع', labelEn: 'Farms' },
+      { href: '/about', label: 'من نحن', labelEn: 'About us' },
     ],
   },
   {
     title: 'المستثمرين',
+    titleEn: 'Investors',
     links: [
-      { href: '/register', label: 'إنشاء حساب' },
-      { href: '/login', label: 'تسجيل الدخول' },
-      { href: '/dashboard/portfolio', label: 'محفظتي' },
-      { href: '/dashboard/invest', label: 'محاكي الاستثمار' },
-      { href: '/#faq', label: 'الأسئلة الشائعة' },
+      { href: '/register', label: 'إنشاء حساب', labelEn: 'Create account' },
+      { href: '/login', label: 'تسجيل الدخول', labelEn: 'Sign in' },
+      { href: '/dashboard/portfolio', label: 'محفظتي', labelEn: 'My portfolio' },
+      { href: '/dashboard/invest', label: 'محاكي الاستثمار', labelEn: 'Investment simulator' },
+      { href: '/#faq', label: 'الأسئلة الشائعة', labelEn: 'FAQ' },
     ],
   },
   {
     title: 'شفافية وامتثال',
+    titleEn: 'Transparency',
     links: [
-      { href: '/#transparency', label: 'الشفافية والتقارير' },
-      { href: '/disclosures', label: 'إدارة المخاطر' },
-      { href: '/disclosures', label: 'إفصاحات الاستثمار' },
-      { href: '/terms', label: 'الشروط والأحكام' },
-      { href: '/privacy', label: 'سياسة الخصوصية' },
+      { href: '/#transparency', label: 'الشفافية والتقارير', labelEn: 'Transparency & reports' },
+      { href: '/disclosures', label: 'إدارة المخاطر', labelEn: 'Risk management' },
+      { href: '/disclosures', label: 'إفصاحات الاستثمار', labelEn: 'Investment disclosures' },
+      { href: '/terms', label: 'الشروط والأحكام', labelEn: 'Terms' },
+      { href: '/privacy', label: 'سياسة الخصوصية', labelEn: 'Privacy policy' },
     ],
   },
   {
     title: 'تواصل',
+    titleEn: 'Contact',
     links: [
-      { href: '/contact', label: 'اتصل بنا' },
-      { href: '/dashboard/support', label: 'الدعم الفني' },
-      { href: '/contact', label: 'وظائف' },
-      { href: '/contact', label: 'صحافة' },
+      { href: '/contact', label: 'اتصل بنا', labelEn: 'Contact us' },
+      { href: '/dashboard/support', label: 'الدعم الفني', labelEn: 'Support' },
+      { href: '/contact', label: 'وظائف', labelEn: 'Careers' },
+      { href: '/contact', label: 'صحافة', labelEn: 'Press' },
     ],
   },
 ]
 
 export function Footer() {
+  const { lang } = useLang()
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   return (
     <footer className="border-t border-white/10 bg-primary-950 pb-24 text-ivory lg:pb-0">
@@ -60,17 +66,16 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo size={48} variant="light" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-ivory/60">
-            منصة مصرية للاستثمار المنظم في الثروة الحيوانية — من المزرعة إلى محفظتك
-            الاستثمارية، بشفافية مؤسسية وإدارة محترفة.
+            {tx(lang, 'منصة مصرية للاستثمار المنظم في الثروة الحيوانية — من المزرعة إلى محفظتك الاستثمارية، بشفافية مؤسسية وإدارة محترفة.', 'An Egyptian platform for organized livestock investment, from the farm to your portfolio, with institutional transparency and professional management.')}
           </p>
           <div className="mt-6 space-y-2 text-sm text-ivory/60">
-            <p>بيانات التواصل توضيحية وغير فعّالة.</p>
+            <p>{tx(lang, 'بيانات التواصل توضيحية وغير فعّالة.', 'Contact details are illustrative and not active.')}</p>
           </div>
         </div>
 
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gold">{col.title}</h4>
+            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gold">{lang === 'ar' ? col.title : col.titleEn}</h4>
             <ul className="space-y-2.5">
               {col.links.map((link) => (
                 <li key={link.href + link.label}>
@@ -78,7 +83,7 @@ export function Footer() {
                     href={link.href}
                     className="text-sm text-ivory/60 transition-colors hover:text-gold"
                   >
-                    {link.label}
+                    {lang === 'ar' ? link.label : link.labelEn}
                   </Link>
                 </li>
               ))}
@@ -93,15 +98,15 @@ export function Footer() {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-gold" />
-              الأرقام المعروضة للعرض فقط
+              {tx(lang, 'الأرقام المعروضة للعرض فقط', 'Figures shown are for display only')}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <AlertTriangle className="h-3.5 w-3.5 text-gold" />
-              الاستثمار في الثروة الحيوانية ينطوي على مخاطر
+              {tx(lang, 'الاستثمار في الثروة الحيوانية ينطوي على مخاطر', 'Livestock investment involves risk')}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span>© {new Date().getFullYear()} AZBA | عزبة — جميع الحقوق محفوظة</span>
+            <span>© {new Date().getFullYear()} AZBA | عزبة — {tx(lang, 'جميع الحقوق محفوظة', 'All rights reserved')}</span>
             <button
               onClick={scrollTop}
               aria-label="Back to top"

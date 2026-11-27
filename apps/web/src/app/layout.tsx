@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/lib/auth-store'
+import { LanguageProvider } from '@/lib/lang-store'
 import { MarketingBottomNav } from '@/components/layout/marketing-bottom-nav'
 import { DemoBanner } from '@/components/layout/demo-banner'
 import { InstallPrompt } from '@/components/layout/install-prompt'
@@ -117,11 +118,13 @@ export default function RootLayout({
 
       <body className="min-h-screen bg-background text-foreground">
         <AuthProvider>
-          {children}
-          <MarketingBottomNav />
-          <DemoBanner />
-          <InstallPrompt />
-          <Toaster position="top-center" richColors />
+          <LanguageProvider>
+            {children}
+            <MarketingBottomNav />
+            <DemoBanner />
+            <InstallPrompt />
+            <Toaster position="top-center" richColors />
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

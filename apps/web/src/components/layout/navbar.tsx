@@ -5,20 +5,21 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, Globe, LogIn, UserPlus, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLang } from '@/lib/lang-store'
 import { MobileMenu } from './mobile-menu'
 
 const NAV_LINKS = [
-  { href: '/', label: 'الرئيسية' },
-  { href: '/invest', label: 'فرص الاستثمار' },
-  { href: '/farms', label: 'المزارع' },
-  { href: '/how-it-works', label: 'كيف نعمل؟' },
-  { href: '/about', label: 'من نحن' },
+  { href: '/', label: 'الرئيسية', labelEn: 'Home' },
+  { href: '/invest', label: 'فرص الاستثمار', labelEn: 'Invest' },
+  { href: '/farms', label: 'المزارع', labelEn: 'Farms' },
+  { href: '/how-it-works', label: 'كيف نعمل؟', labelEn: 'How it works' },
+  { href: '/about', label: 'من نحن', labelEn: 'About us' },
 ]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [lang, setLang] = useState<'ar' | 'en'>('ar')
+  const { lang, setLang } = useLang()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function Navbar() {
                     pathname === link.href && (isTransparent ? 'text-white' : 'text-primary')
                   )}
                 >
-                  {link.label}
+                  {lang === 'ar' ? link.label : link.labelEn}
                   {pathname === link.href && (
                     <span className="absolute -bottom-0.5 right-4 left-4 h-0.5 rounded-full bg-gold" />
                   )}
@@ -93,7 +94,7 @@ export function Navbar() {
             {/* Actions */}
             <div className="hidden lg:flex items-center gap-3">
               <button
-                onClick={() => setLang((l) => (l === 'ar' ? 'en' : 'ar'))}
+                onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors',
                   isTransparent ? 'text-ivory/80 hover:text-white hover:bg-white/10' : 'text-foreground/70 hover:bg-primary/5'
@@ -112,24 +113,24 @@ export function Navbar() {
                 )}
               >
                 <LogIn className="h-4 w-4" />
-                تسجيل الدخول
+                {lang === 'ar' ? 'تسجيل الدخول' : 'Sign in'}
               </Link>
 
               <Link href="/register" className="btn-outline hidden xl:inline-flex">
                 <UserPlus className="h-4 w-4" />
-                إنشاء حساب
+                {lang === 'ar' ? 'إنشاء حساب' : 'Create account'}
               </Link>
 
               <Link href="/invest" className="btn-gold">
                 <TrendingUp className="h-4 w-4" />
-                ابدأ الاستثمار
+                {lang === 'ar' ? 'ابدأ الاستثمار' : 'Start investing'}
               </Link>
             </div>
 
             {/* Mobile: lang + hamburger */}
             <div className="flex lg:hidden items-center gap-2">
               <button
-                onClick={() => setLang((l) => (l === 'ar' ? 'en' : 'ar'))}
+                onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
                 className={cn(
                   'inline-flex items-center justify-center h-10 w-10 rounded-full transition-colors',
                   isTransparent ? 'text-ivory hover:bg-white/10' : 'text-primary hover:bg-primary/5'

@@ -5,12 +5,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Wallet, FolderKanban, BarChart3, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLang } from '@/lib/lang-store'
 
 const ITEMS = [
-  { href: '/', label: 'الرئيسية', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/portfolio', label: 'محفظتي', icon: Wallet },
-  { href: '/dashboard/projects', label: 'المشاريع', icon: FolderKanban },
-  { href: '/dashboard/finance/reports', label: 'التقارير', icon: BarChart3 },
+  { href: '/', label: 'الرئيسية', labelEn: 'Home', icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/portfolio', label: 'محفظتي', labelEn: 'Portfolio', icon: Wallet },
+  { href: '/dashboard/projects', label: 'المشاريع', labelEn: 'Projects', icon: FolderKanban },
+  { href: '/dashboard/finance/reports', label: 'التقارير', labelEn: 'Reports', icon: BarChart3 },
 ]
 
 /**
@@ -18,6 +19,7 @@ const ITEMS = [
  * بيختفي تلقائيًا داخل /dashboard لأنه هناك بيستخدم الشريط الأصلي.
  */
 export function MarketingBottomNav() {
+  const { lang } = useLang()
   const pathname = usePathname() || ''
   if (pathname.startsWith('/dashboard')) return null
 
@@ -43,7 +45,7 @@ export function MarketingBottomNav() {
               )}
             >
               <item.icon className={cn('h-[18px] w-[18px] sm:h-5 sm:w-5', active && 'text-gold')} />
-              {item.label}
+              {lang === 'ar' ? item.label : item.labelEn}
             </Link>
           )
         })}
@@ -53,7 +55,7 @@ export function MarketingBottomNav() {
           className="flex flex-col items-center gap-1 rounded-2xl border border-white/15 bg-white/5 px-1 py-2 text-[10px] leading-tight text-ivory/70 backdrop-blur-md transition-all hover:border-gold/30 hover:text-white"
         >
           <Menu className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
-          المزيد
+          {lang === 'ar' ? 'المزيد' : 'More'}
         </button>
       </div>
     </nav>

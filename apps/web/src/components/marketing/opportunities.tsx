@@ -9,6 +9,7 @@ import { cn, formatEGP, formatPercent } from '@/lib/utils'
 import { http, getToken } from '@/lib/api'
 import { animalImage, animalLabel } from '@/lib/animals'
 import { SHOWCASE_PROJECTS } from '@/lib/showcase'
+import { useLang, tx, type Lang } from '@/lib/lang-store'
 
 type Project = {
   id: string
@@ -30,6 +31,9 @@ type Project = {
 const PURPOSE_AR: Record<string, string> = {
   FATTENING: 'تسمين', DAIRY: 'ألبان', BREEDING: 'تربية', RESALE: 'إعادة بيع',
 }
+const PURPOSE_EN: Record<string, string> = {
+  FATTENING: 'Fattening', DAIRY: 'Dairy', BREEDING: 'Breeding', RESALE: 'Resale',
+}
 
 const RISK_STYLES: Record<string, string> = {
   LOW: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -38,6 +42,7 @@ const RISK_STYLES: Record<string, string> = {
   CRITICAL: 'bg-red-50 text-red-700 border-red-200',
 }
 const RISK_LABEL: Record<string, string> = { LOW: 'منخفض', MEDIUM: 'متوسط', HIGH: 'مرتفع', CRITICAL: 'حرج' }
+const RISK_LABEL_EN: Record<string, string> = { LOW: 'Low', MEDIUM: 'Medium', HIGH: 'High', CRITICAL: 'Critical' }
 
 function monthsBetween(a?: string | null, b?: string | null): number {
   if (!a || !b) return 0
@@ -47,18 +52,23 @@ function monthsBetween(a?: string | null, b?: string | null): number {
   return Math.max(1, Math.round((d2 - d1) / (30 * 24 * 60 * 60 * 1000)))
 }
 
-function mapProject(p: any): Project {
+const ANIMAL_EN: Record<string, string> = {
+  'أبقار حلابة': 'Dairy cows', 'أبقار لحم': 'Beef cattle', 'جاموس': 'Buffalo', 'ماعز': 'Goats',
+  'أغنام': 'Sheep', 'خيل': 'Horses', 'عجول': 'Calves', 'دواجن': 'Poultry', 'أسماك': 'Fish', 'أخرى': 'Other',
+}
+
+function mapProject(p: any, lang: Lang = 'ar'): Project {
   const target = Number(p.targetAmount ?? 0)
   const funded = Number(p.fundedAmount ?? p.raisedAmount ?? 0)
   const pct = target > 0 ? Math.min(100, Math.round((funded / target) * 100)) : 0
   return {
     id: p.id,
     name: p.name,
-    animalType: animalLabel(p.animalType),
+    animalType: lang === 'ar' ? animalLabel(p.animalType) : (ANIMAL_EN[animalLabel(p.animalType)] ?? animalLabel(p.animalType)),
     breed: p.breed ?? '—',
-    purpose: PURPOSE_AR[p.purpose] ?? p.purpose ?? '—',
+    purpose: lang === 'ar' ? (PURPOSE_AR[p.purpose] ?? p.purpose ?? '—') : (PURPOSE_EN[p.purpose] ?? p.purpose ?? '—'),
     status: p.status,
-    location: p.farm?.governorate ?? 'مصر',
+    location: p.farm?.governorate ?? (lang === 'ar' ? 'مصر' : 'Egypt'),
     sharePrice: Number(p.sharePrice ?? 0),
     fundedPercent: pct,
     expectedReturn: Number(p.expectedReturnRate ?? 0),
@@ -70,6 +80,7 @@ function mapProject(p: any): Project {
 }
 
 export function Opportunities() {
+  const { lang } = useLang()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -79,32 +90,36 @@ export function Opportunities() {
       try {
         const res = await http.get<any>('/projects?page=1&limit=6', {}, getToken)
         const data = Array.isArray(res?.data) ? res.data : []
-        if (alive) setProjects(data.map(mapProject))
+        if (alive) setProjects(data.map((p: any) => mapProject(p, lang)))
       } catch {
         // الـ API غير متاح: عرض مشاريع العرض من نفس بيانات الـ seed
-        if (alive) setProjects(SHOWCASE_PROJECTS.map(mapProject))
+        if (alive) setProjects(SHOWCASE_PROJECTS.map((p: any) => mapProject(p, lang)))
       } finally {
         if (alive) setLoading(false)
       }
     })()
     return () => { alive = false }
-  }, [])
+  }, [lang])
 
   return (
     <section className="section-padding relative overflow-hidden bg-white">
       <div className="container-page">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div className="max-w-2xl">
-            <span className="eyebrow">فرص الاستثمار</span>
+            <span className="eyebrow">{tx(lang, 'فرص الاستثمار', 'Investment opportunities')}</span>
             <h2 className="mt-5 text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-              مشاريع <span className="text-gradient-gold">موثقة</span> متاحة الآن
+              {lang === 'ar' ? (
+                <>مشاريع <span className="text-gradient-gold">موثقة</span> متاحة الآن</>
+              ) : (
+                <>Verified projects <span className="text-gradient-gold">available now</span></>
+              )}
             </h2>
             <p className="mt-4 text-muted-foreground">
-              كل مشروع يمر بمراجعة بيطرية ومالية وقانونية قبل نشره.
+              {tx(lang, 'كل مشروع يمر بمراجعة بيطرية ومالية وقانونية قبل نشره.', 'Every project passes veterinary, financial, and legal review before it is listed.')}
             </p>
           </div>
           <Link href="/opportunities" className="btn-outline shrink-0 group">
-            كل الفرص
+            {tx(lang, 'كل الفرص', 'All opportunities')}
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           </Link>
         </div>
@@ -128,7 +143,7 @@ export function Opportunities() {
 
         {!loading && projects.length === 0 && (
           <div className="mt-12 rounded-2xl border border-dashed border-border bg-ivory py-16 text-center text-sm text-muted-foreground">
-            لا توجد فرص متاحة حاليًا — تابع جديد المشاريع قريبًا.
+            {tx(lang, 'لا توجد فرص متاحة حاليًا — تابع جديد المشاريع قريبًا.', 'No opportunities available right now. New projects coming soon.')}
           </div>
         )}
 
@@ -154,7 +169,7 @@ export function Opportunities() {
                 <div className="absolute right-4 top-4">
                   <span className={cn('inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold backdrop-blur-md', RISK_STYLES[p.riskLevel] ?? RISK_STYLES.MEDIUM)}>
                     <ShieldAlert className="h-3 w-3" />
-                    مخاطر {RISK_LABEL[p.riskLevel] ?? p.riskLevel}
+                    {tx(lang, 'مخاطر', 'Risk')} {(lang === 'ar' ? RISK_LABEL : RISK_LABEL_EN)[p.riskLevel] ?? p.riskLevel}
                   </span>
                 </div>
                 <div className="absolute bottom-4 right-4 left-4">
@@ -175,7 +190,7 @@ export function Opportunities() {
 
                 <div className="mt-5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-primary">نسبة التمويل</span>
+                    <span className="font-semibold text-primary">{tx(lang, 'نسبة التمويل', 'Funded')}</span>
                     <span className="font-bold text-gold-600">{p.fundedPercent}٪</span>
                   </div>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-primary/10">
@@ -186,25 +201,25 @@ export function Opportunities() {
                 <div className="mt-5 grid grid-cols-3 gap-3 border-t border-border/60 pt-5 text-center">
                   <div>
                     <div className="text-sm font-bold text-primary sm:text-base">{formatPercent(p.expectedReturn)}</div>
-                    <div className="text-[10px] text-muted-foreground">عائد سنوي تقديري</div>
+                    <div className="text-[10px] text-muted-foreground">{tx(lang, 'عائد سنوي تقديري', 'Est. annual return')}</div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-primary sm:text-base">{p.duration || '—'} شهر</div>
-                    <div className="text-[10px] text-muted-foreground">مدة المشروع</div>
+                    <div className="text-sm font-bold text-primary sm:text-base">{p.duration || '—'} {tx(lang, 'شهر', 'months')}</div>
+                    <div className="text-[10px] text-muted-foreground">{tx(lang, 'مدة المشروع', 'Duration')}</div>
                   </div>
                   <div>
                     <div className="text-sm font-bold text-primary sm:text-base">{formatEGP(p.sharePrice)}</div>
-                    <div className="text-[10px] text-muted-foreground">سعر السهم</div>
+                    <div className="text-[10px] text-muted-foreground">{tx(lang, 'سعر السهم', 'Share price')}</div>
                   </div>
                 </div>
 
                 <div className="mt-5 flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
                     <Clock className="ml-1 inline h-3.5 w-3.5" />
-                    {p.sharesAvailable} سهم متاح
+                    {p.sharesAvailable} {tx(lang, 'سهم متاح', 'shares available')}
                   </span>
                   <Link href={`/projects/${p.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-gold-600 transition-colors hover:text-primary">
-                    التفاصيل
+                    {tx(lang, 'التفاصيل', 'Details')}
                     <ChevronLeft className="h-4 w-4" />
                   </Link>
                 </div>

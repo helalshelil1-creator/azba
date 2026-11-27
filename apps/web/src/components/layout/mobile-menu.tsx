@@ -110,8 +110,8 @@ export function MobileMenu({
 
           {/* Contact info */}
           <div className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gold">تواصل معنا</p>
-            <p className="text-sm text-ivory/80">بيانات التواصل توضيحية وغير فعّالة.</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gold">{lang === 'ar' ? 'تواصل معنا' : 'Contact us'}</p>
+            <p className="text-sm text-ivory/80">{lang === 'ar' ? 'بيانات التواصل توضيحية وغير فعّالة.' : 'Contact details are illustrative and not active.'}</p>
           </div>
         </nav>
 
@@ -123,15 +123,15 @@ export function MobileMenu({
             className="btn-gold w-full text-center"
           >
             <TrendingUp className="h-5 w-5" />
-            ابدأ الاستثمار
+            {lang === 'ar' ? 'ابدأ الاستثمار' : 'Start investing'}
           </Link>
           <div className="mt-4 flex items-center justify-center gap-4 text-xs text-ivory/50">
             <Link href="/login" onClick={onClose} className="hover:text-gold transition-colors">
-              تسجيل الدخول
+              {lang === 'ar' ? 'تسجيل الدخول' : 'Sign in'}
             </Link>
             <span className="h-3 w-px bg-white/20" />
             <Link href="/register" onClick={onClose} className="hover:text-gold transition-colors">
-              إنشاء حساب
+              {lang === 'ar' ? 'إنشاء حساب' : 'Create account'}
             </Link>
           </div>
         </div>

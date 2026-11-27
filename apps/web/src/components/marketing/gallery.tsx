@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import React from 'react'
+import { useLang, tx } from '@/lib/lang-store'
 
 type Shot = { file: string; title: string; desc: string; alt: string }
 
@@ -97,15 +100,19 @@ const SHOTS: Shot[] = [
 ]
 
 export function Gallery() {
+  const { lang } = useLang()
+  const title = tx(lang, 'من حياة المزرعة', 'From farm life')
+  const subtitle = tx(lang, 'صور توضيحية للرعاية والتغذية والمتابعة البيطرية وتنظيم العنابر.', 'Illustrative photos of care, feeding, veterinary follow-up, and barn organization.')
+  const footnote = tx(lang, 'الصور للتوضيح فقط، ولا تعني أن المزارع أو الأشخاص الظاهرين فيها تابعون لعزبة.', 'Photos are illustrative only and do not imply that the farms or people shown belong to AZBA.')
   return (
     <section id="gallery" className="section-padding bg-white">
       <div className="container-page">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-primary sm:text-4xl">
-            من حياة المزرعة
+            {title}
           </h2>
           <p className="mt-4 text-muted-foreground">
-            صور توضيحية للرعاية والتغذية والمتابعة البيطرية وتنظيم العنابر.
+            {subtitle}
           </p>
         </div>
 
@@ -134,7 +141,7 @@ export function Gallery() {
         </div>
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
-          الصور للتوضيح فقط، ولا تعني أن المزارع أو الأشخاص الظاهرين فيها تابعون لعزبة.
+          {footnote}
         </p>
       </div>
     </section>

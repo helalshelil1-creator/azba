@@ -5,59 +5,77 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { ShieldCheck, TrendingUp, Stethoscope, Briefcase, Eye, Lock, BarChart3, FileCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLang, tx } from '@/lib/lang-store'
 
 const FEATURES = [
   {
     icon: Eye,
     title: 'شفافية كاملة',
+    titleEn: 'Full transparency',
     desc: 'كل عملية شراء، وتكلفة، وبيع، وتوزيع مسجلة في دفتر الأستاذ المزدوج ويمكن الاطلاع عليها في أي وقت.',
+    descEn: 'Every purchase, cost, sale, and distribution is recorded in the double-entry ledger and can be viewed at any time.',
     color: 'from-emerald-500/15 to-emerald-500/5 text-emerald-600',
   },
   {
     icon: TrendingUp,
     title: 'عوائد مستدامة',
+    titleEn: 'Sustainable returns',
     desc: 'نماذج استثمارية مبنية على دورات الإنتاج الحيواني الفعلية، مع تنويع المخاطر عبر مشاريع متعددة.',
+    descEn: 'Investment models built on real animal production cycles, with risk diversified across multiple projects.',
     color: 'from-amber-500/15 to-amber-500/5 text-amber-600',
   },
   {
     icon: Stethoscope,
     title: 'رعاية بيطرية',
+    titleEn: 'Veterinary care',
     desc: 'تقارير بيطرية معتمدة من أطباء بيطريين مرخصين، مع سجل صحي رقمي لكل حيوان يمكن تتبعه عبر QR.',
+    descEn: 'Vet reports certified by licensed veterinarians, with a digital health record for every animal, traceable via QR.',
     color: 'from-sky-500/15 to-sky-500/5 text-sky-600',
   },
   {
     icon: Briefcase,
     title: 'إدارة محترفة',
+    titleEn: 'Professional management',
     desc: 'فرق تشغيل وإدارة مزارع ومالية ومشتريات ومبيعات تعمل بمنهجية مؤسسية ومساءلة واضحة.',
+    descEn: 'Farm operations, finance, procurement, and sales teams working with institutional methodology and clear accountability.',
     color: 'from-violet-500/15 to-violet-500/5 text-violet-600',
   },
   {
     icon: Lock,
     title: 'أمان وحماية',
+    titleEn: 'Safety and protection',
     desc: 'تصميم المنصة يفصل أموال الشركة عن أموال المستثمرين، مع سجل تدقيق وصلاحيات متعددة المستويات (تصور وليس تشغيلًا فعليًا حاليًا).',
+    descEn: 'The platform design separates company funds from investor funds, with an audit log and multi-level permissions (a concept, not live operations yet).',
     color: 'from-rose-500/15 to-rose-500/5 text-rose-600',
   },
   {
     icon: BarChart3,
     title: 'تحليلات ذكية',
+    titleEn: 'Smart analytics',
     desc: 'لوحات مؤشرات، تحليل اتجاهات الأوزان وتكاليف الأعلاف، وكشف الشذوذ في المصروفات — مدعومة ببيانات فعلية.',
+    descEn: 'Dashboards, weight-trend and feed-cost analysis, and expense anomaly detection, backed by real data.',
     color: 'from-teal-500/15 to-teal-500/5 text-teal-600',
   },
 ]
 
 export function Features() {
+  const { lang } = useLang()
   return (
     <section className="section-padding relative overflow-hidden bg-primary-950 text-ivory">
       <div className="absolute inset-0 grid-pattern opacity-20" />
       <div className="absolute -top-40 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
       <div className="container-page relative">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="eyebrow border-gold/40 bg-gold/10 text-gold">لماذا عزبة؟</span>
+          <span className="eyebrow border-gold/40 bg-gold/10 text-gold">{tx(lang, 'لماذا عزبة؟', 'Why AZBA?')}</span>
           <h2 className="mt-5 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            منصة صُممت على معايير <span className="text-gradient-gold">مؤسسية</span>
+            {lang === 'ar' ? (
+              <>منصة صُممت على معايير <span className="text-gradient-gold">مؤسسية</span></>
+            ) : (
+              <>A platform built to <span className="text-gradient-gold">institutional</span> standards</>
+            )}
           </h2>
           <p className="mt-4 text-ivory/60">
-            نطبق الحوكمة والشفافية التي اعتدتها في الأسواق المالية على قطاع الثروة الحيوانية.
+            {tx(lang, 'نطبق الحوكمة والشفافية التي اعتدتها في الأسواق المالية على قطاع الثروة الحيوانية.', 'We apply the governance and transparency you expect in financial markets to the livestock sector.')}
           </p>
         </div>
 
@@ -80,15 +98,18 @@ export function Features() {
               >
                 <f.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">{f.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-ivory/60">{f.desc}</p>
+              <h3 className="text-lg font-bold text-white">{lang === 'ar' ? f.title : f.titleEn}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ivory/60">{lang === 'ar' ? f.desc : f.descEn}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Trust strip */}
         <div className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-white/10 pt-10">
-          {['تقارير مالية موثقة', 'سجل تدقيق كامل', 'صلاحيات RBAC', 'تشفير وحماية'].map((t) => (
+          {(lang === 'ar'
+            ? ['تقارير مالية موثقة', 'سجل تدقيق كامل', 'صلاحيات RBAC', 'تشفير وحماية']
+            : ['Certified financial reports', 'Full audit log', 'RBAC permissions', 'Encryption and protection']
+          ).map((t) => (
             <span key={t} className="inline-flex items-center gap-2 text-sm text-ivory/50">
               <FileCheck className="h-4 w-4 text-gold" />
               {t}
@@ -99,9 +120,9 @@ export function Features() {
     
         <div className="mt-14 grid grid-cols-2 gap-4 opacity-90 lg:grid-cols-3">
           {[
-            { src: '/images/dairy.jpg', label: 'أبقار ألبان' },
-            { src: '/images/hay.jpg', label: 'علف وتغذية' },
-            { src: '/images/beef.jpg', label: 'عجول تسمين' },
+            { src: '/images/dairy.jpg', label: tx(lang, 'أبقار ألبان', 'Dairy cows') },
+            { src: '/images/hay.jpg', label: tx(lang, 'علف وتغذية', 'Feed and nutrition') },
+            { src: '/images/beef.jpg', label: tx(lang, 'عجول تسمين', 'Fattening calves') },
           ].map((img) => (
             <div key={img.src} className="relative h-40 overflow-hidden rounded-2xl lg:h-52">
               <Image src={img.src} alt={img.label} fill sizes="(max-width: 1024px) 100vw, 640px" className="object-cover" />
